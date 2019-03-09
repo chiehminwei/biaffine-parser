@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from parser.modules import CHAR_LSTM, LSTM, MLP, BiAffine
+from parser.modules import CHAR_LSTM, LSTM, MLP, Biaffine
 from parser.modules.dropout import IndependentDropout, SharedDropout
 
 import torch
@@ -47,11 +47,11 @@ class BiAffineParser(nn.Module):
                              n_hidden=params['n_mlp_lab'],
                              dropout=params['mlp_dropout'])
 
-        # the BiAffine layers
-        self.arc_attn = BiAffine(n_in=params['n_mlp_arc'],
+        # the Biaffine layers
+        self.arc_attn = Biaffine(n_in=params['n_mlp_arc'],
                                  bias_x=True,
                                  bias_y=False)
-        self.lab_attn = BiAffine(n_in=params['n_mlp_lab'],
+        self.lab_attn = Biaffine(n_in=params['n_mlp_lab'],
                                  n_out=vocab.n_labels,
                                  bias_x=True,
                                  bias_y=True)
