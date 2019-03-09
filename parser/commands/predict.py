@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from parser import BiAffineParser, Model
+from parser import BiaffineParser, Model
 from parser.utils import Corpus, TextDataset, collate_fn
 
 import torch
@@ -20,30 +20,15 @@ class Predict(object):
                                help='path to dataset')
         subparser.add_argument('--fpred', default='pred.conllx',
                                help='path to predicted result')
-        subparser.add_argument('--file', '-f', default='model.pt',
-                               help='path to model file')
-        subparser.add_argument('--seed', '-s', default=1, type=int,
-                               help='seed for generating random numbers')
-        subparser.add_argument('--threads', '-t', default=4, type=int,
-                               help='max num of threads')
-        subparser.add_argument('--device', '-d', default='-1',
-                               help='id of GPU to use')
         subparser.set_defaults(func=self)
 
         return subparser
 
     def __call__(self, args):
-        print(f"Set the max num of threads to {args.threads}")
-        print(f"Set the seed for generating random numbers to {args.seed}")
-        torch.set_num_threads(args.threads)
-        torch.manual_seed(args.seed)
-
-        print(f"Set the device with ID {args.device} visible")
-        os.environ['CUDA_VISIBLE_DEVICES'] = args.device
-
         print("Load the model")
-        parser = BiAffineParser.load(args.file)
-        vocab = parser.vocab
+        vocab = torch.load(args.vocab)
+        network = BiaffineParser.load(args.file)
+        model = Model(vocab, network)
 
         print("Load the dataset")
         corpus = Corpus.load(args.fdata)
@@ -54,10 +39,9 @@ class Predict(object):
                             collate_fn=collate_fn)
 
         print("Predict the dataset")
-        model = Model(parser=parser)
-        all_heads, all_labels = model.predict(loader)
-        corpus.head_seqs = [seq.tolist() for seq in all_heads]
-        corpus.label_seqs = [vocab.id2label(seq) for seq in all_labels]
+        all_arcs, all_rels = model.predict(loader)
+        corpus.heads = all_arcs
+        corpus.rels = all_rels
 
         print(f"Save the predicted result")
-        corpus.dump(args.fpred)
+        corpus.save(args.fpred)
