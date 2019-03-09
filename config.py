@@ -5,14 +5,13 @@ class Config(object):
 
     # [Network]
     n_embed = 100
-    n_char_embed = 50
-    n_char_out = 100
+    n_tag_embed = 100
     embed_dropout = 0.33
     n_lstm_hidden = 400
     n_lstm_layers = 3
     lstm_dropout = 0.33
     n_mlp_arc = 500
-    n_mlp_lab = 100
+    n_mlp_rel = 100
     mlp_dropout = 0.33
 
     # [Optimizer]
