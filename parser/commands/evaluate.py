@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from parser import BiAffineParser, Model
+from parser import BiaffineParser, Model
 from parser.utils import Corpus, TextDataset, collate_fn
 
 import torch
@@ -16,32 +16,19 @@ class Evaluate(object):
         )
         subparser.add_argument('--batch-size', default=200, type=int,
                                help='batch size')
+        subparser.add_argument('--include-punct', action='store_true',
+                               help='whether to include punctuation')
         subparser.add_argument('--fdata', default='data/test.conllx',
                                help='path to dataset')
-        subparser.add_argument('--file', '-f', default='model.pt',
-                               help='path to model file')
-        subparser.add_argument('--seed', '-s', default=1, type=int,
-                               help='seed for generating random numbers')
-        subparser.add_argument('--threads', '-t', default=4, type=int,
-                               help='max num of threads')
-        subparser.add_argument('--device', '-d', default='-1',
-                               help='id of GPU to use')
         subparser.set_defaults(func=self)
 
         return subparser
 
     def __call__(self, args):
-        print(f"Set the max num of threads to {args.threads}")
-        print(f"Set the seed for generating random numbers to {args.seed}")
-        torch.set_num_threads(args.threads)
-        torch.manual_seed(args.seed)
-
-        print(f"Set the device with ID {args.device} visible")
-        os.environ['CUDA_VISIBLE_DEVICES'] = args.device
-
         print("Load the model")
-        parser = BiAffineParser.load(args.file)
-        vocab = parser.vocab
+        vocab = torch.load(args.vocab)
+        network = BiaffineParser.load(args.file)
+        model = Model(vocab, network)
 
         print("Load the dataset")
         corpus = Corpus.load(args.fdata)
@@ -52,6 +39,5 @@ class Evaluate(object):
                             collate_fn=collate_fn)
 
         print("Evaluate the dataset")
-        model = Model(parser=parser)
-        loss, metric = model.evaluate(loader)
+        loss, metric = model.evaluate(loader, include_punct=args.include_punct)
         print(f"Loss: {loss:.4f} {metric}")
