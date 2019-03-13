@@ -37,7 +37,7 @@ class Train(object):
         vocab = Vocab.from_corpus(corpus=train, min_freq=2)
         vocab.read_embeddings(embed=embed, unk='unk')
         torch.save(vocab, args.vocab)
-        subprocess.call('gsutil', 'cp', args.vocab, args.cloud_address+args.vocab)
+        subprocess.call(['gsutil', 'cp', args.vocab, args.cloud_address+args.vocab])
         print(vocab)
 
         print("Load the dataset")
@@ -87,7 +87,7 @@ class Train(object):
         last_epoch = 0
         # Start training from checkpoint if one exists
         if not os.path.isfile(args.file):
-          subprocess.call('gsutil', 'cp', args.cloud_address+args.file, args.file)
+          subprocess.call(['gsutil', 'cp', args.cloud_address+args.file, args.file])
         if os.path.isfile(args.file):
           if torch.cuda.is_available():
             device = torch.device('cuda')
