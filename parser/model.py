@@ -7,7 +7,7 @@ from parser.parser import BiaffineParser
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
+from tqdm import tqdm
 
 class Model(object):
 
@@ -27,7 +27,7 @@ class Model(object):
                                     lr=lr, betas=betas, eps=epsilon)
         self.scheduler = optim.lr_scheduler.LambdaLR(optimizer=self.optimizer,
                                                      lr_lambda=annealing)
-
+        print('***Started training at {}***'.format(datetime.now()))
         for epoch in range(1, epochs + 1):
             start = datetime.now()
             # train one epoch and update the parameters
@@ -50,6 +50,7 @@ class Model(object):
                 max_e, max_metric = epoch, dev_metric
             elif epoch - max_e >= patience:
                 break
+        print('***Finished training at {}***'.format(datetime.now()))
         self.network = BiaffineParser.load(file)
         loss, metric = self.evaluate(test_loader)
 
@@ -61,7 +62,7 @@ class Model(object):
     def train(self, loader):
         self.network.train()
 
-        for words, chars, arcs, rels in loader:
+        for words, chars, arcs, rels in tqdm(loader):
             self.optimizer.zero_grad()
 
             mask = words.ne(self.vocab.pad_index)
@@ -107,7 +108,7 @@ class Model(object):
         self.network.eval()
 
         all_arcs, all_rels = [], []
-        for words, chars, arcs, rels in loader:
+        for words, chars, arcs, rels in tqdm(loader):
             mask = words.ne(self.vocab.pad_index)
             # ignore the first token of each sentence
             mask[:, 0] = 0
