@@ -7,7 +7,8 @@ import torch
 from torch.utils.data import DataLoader
 
 from config import Config
-
+import os
+import subprocess
 
 class Train(object):
 
@@ -36,6 +37,7 @@ class Train(object):
         vocab = Vocab.from_corpus(corpus=train, min_freq=2)
         vocab.read_embeddings(embed=embed, unk='unk')
         torch.save(vocab, args.vocab)
+        subprocess.call('gsutil', 'cp', args.vocab, args.cloud_address+args.vocab)
         print(vocab)
 
         print("Load the dataset")
@@ -82,6 +84,20 @@ class Train(object):
             network = network.cuda()
         print(f"{network}\n")
 
+        last_epoch = 0
+        # Start training from checkpoint if one exists
+        if not os.path.isfile(args.file):
+          subprocess.call('gsutil', 'cp', args.cloud_address+args.file, args.file)
+        if os.path.isfile(args.file):
+          if torch.cuda.is_available():
+            device = torch.device('cuda')
+          else:
+              device = torch.device('cpu')
+          state = torch.load(args.file, map_location=device)
+          last_epoch = state['last_epoch']
+          network.load(args.file, args.cloud_address)
+
+
         model = Model(vocab, network)
         model(loaders=(train_loader, dev_loader, test_loader),
               epochs=Config.epochs,
@@ -90,4 +106,6 @@ class Train(object):
               betas=(Config.beta_1, Config.beta_2),
               epsilon=Config.epsilon,
               annealing=lambda x: Config.decay ** (x / Config.decay_steps),
-              file=args.file)
+              file=args.file,
+              last_epoch=last_epoch,
+              cloud_address=args.cloud_address)

@@ -6,7 +6,7 @@ from parser.utils import Corpus, TextDataset, collate_fn
 
 import torch
 from torch.utils.data import DataLoader
-
+import subprocess
 
 class Predict(object):
 
@@ -26,8 +26,10 @@ class Predict(object):
 
     def __call__(self, args):
         print("Load the model")
+        if not os.path.isfile(args.vocab):
+            subprocess.call(['gsutil', 'cp', args.cloud_address+args.vocab, args.vocab])
         vocab = torch.load(args.vocab)
-        network = BiaffineParser.load(args.file)
+        network = BiaffineParser.load(args.file, args.cloud_address)
         model = Model(vocab, network)
 
         print("Load the dataset")
@@ -42,4 +44,4 @@ class Predict(object):
         corpus.heads, corpus.rels = model.predict(loader)
 
         print(f"Save the predicted result")
-        corpus.save(args.fpred)
+        corpus.save(args.fpred, args.cloud_address)

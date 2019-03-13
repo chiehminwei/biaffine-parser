@@ -3,7 +3,7 @@
 from collections import namedtuple
 
 import torch
-
+import subprocess
 
 Sentence = namedtuple(typename='Sentence',
                       field_names=['ID', 'FORM', 'LEMMA', 'CPOS',
@@ -73,6 +73,8 @@ class Corpus(object):
     def save(self, fname):
         with open(fname, 'w') as f:
             f.write(f"{self}\n")
+        subprocess.call(['gsutil', 'cp', fname, cloud_address+fname])
+
 
 
 class Embedding(object):

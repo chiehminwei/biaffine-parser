@@ -7,7 +7,8 @@ import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import (pack_padded_sequence, pad_packed_sequence,
                                 pad_sequence)
-
+from pytorch_pretrained_bert import BertTokenizer, BertModel
+import subprocess
 
 class BiaffineParser(nn.Module):
 
@@ -64,6 +65,8 @@ class BiaffineParser(nn.Module):
         nn.init.zeros_(self.embed.weight)
 
     def forward(self, words, chars):
+        # run words through bert
+
         # get the mask and lengths of given batch
         mask = words.ne(self.pad_index)
         lens = mask.sum(dim=1)
@@ -103,22 +106,30 @@ class BiaffineParser(nn.Module):
         return s_arc, s_rel
 
     @classmethod
-    def load(cls, fname):
-        if torch.cuda.is_available():
-            device = torch.device('cuda')
-        else:
-            device = torch.device('cpu')
-        state = torch.load(fname, map_location=device)
-        network = cls(state['params'], state['embeddings'])
-        network.load_state_dict(state['state_dict'])
-        network.to(device)
+    def load(cls, fname, cloud_address):
+        # Copy from cloud if there's no saved checkpoint
+        if not os.path.isfile(fname):
+            subprocess.call(['gsutil', 'cp', cloud_address+fname, fname])
+        # Proceed only if either [1] copy success [2] local file already exists
+        if os.path.isfile(fname):
+            if torch.cuda.is_available():
+                device = torch.device('cuda')
+            else:
+                device = torch.device('cpu')
+            state = torch.load(fname, map_location=device)
+            network = cls(state['params'], state['embeddings'])
+            network.load_state_dict(state['state_dict'])
+            network.to(device)
 
         return network
 
-    def save(self, fname):
+    def save(self, fname, epoch, cloud_address):
         state = {
             'params': self.params,
             'embeddings': self.pretrained.weight,
             'state_dict': self.state_dict(),
+            'last_epoch': epoch,
         }
         torch.save(state, fname)
+        # Save a copy to cloud as well
+        subprocess.call(['gsutil', 'cp', fname, cloud_address+fname])

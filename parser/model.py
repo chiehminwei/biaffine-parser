@@ -19,7 +19,7 @@ class Model(object):
         self.criterion = nn.CrossEntropyLoss()
 
     def __call__(self, loaders, epochs, patience,
-                 lr, betas, epsilon, annealing, file):
+                 lr, betas, epsilon, annealing, file, last_epoch, cloud_address):
         total_time = timedelta()
         max_e, max_metric = 0, 0.0
         train_loader, dev_loader, test_loader = loaders
@@ -28,7 +28,7 @@ class Model(object):
         self.scheduler = optim.lr_scheduler.LambdaLR(optimizer=self.optimizer,
                                                      lr_lambda=annealing)
         print('***Started training at {}***'.format(datetime.now()))
-        for epoch in range(1, epochs + 1):
+        for epoch in range(last_epoch + 1, epochs + 1):
             start = datetime.now()
             # train one epoch and update the parameters
             self.train(train_loader)
@@ -46,12 +46,12 @@ class Model(object):
 
             # save the model if it is the best so far
             if dev_metric > max_metric:
-                self.network.save(file)
+                self.network.save(file, epoch, cloud_address)
                 max_e, max_metric = epoch, dev_metric
             elif epoch - max_e >= patience:
                 break
         print('***Finished training at {}***'.format(datetime.now()))
-        self.network = BiaffineParser.load(file)
+        self.network = BiaffineParser.load(file, cloud_address)
         loss, metric = self.evaluate(test_loader)
 
         print(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
