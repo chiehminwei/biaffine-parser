@@ -110,7 +110,7 @@ class BiaffineParser(nn.Module):
         # [batch_size, seq_len, seq_len, n_rels]
         s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
         # set the scores that exceed the length of each sentence to -inf
-        s_arc.masked_fill_((1 - mask).unsqueeze(1), float('-inf'))
+        # s_arc.masked_fill_((1 - mask).unsqueeze(1), float('-inf'))
 
         return s_arc, s_rel
 
