@@ -22,7 +22,7 @@ def length_to_mask(length, max_len=None, dtype=None):
                         dtype=length.dtype).expand(len(length), max_len) < length.unsqueeze(1)
     if dtype is not None:
         mask = torch.as_tensor(mask, dtype=dtype, device=length.device)
-    return mask.sum
+    return mask
 
 class BiaffineParser(nn.Module):
 
