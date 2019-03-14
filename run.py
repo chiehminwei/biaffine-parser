@@ -5,8 +5,11 @@ import argparse
 from parser.commands import Evaluate, Predict, Train
 
 import torch
+import logging
+
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(
         description='Create the Biaffine Parser model.'
     )

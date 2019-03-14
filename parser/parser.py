@@ -17,24 +17,24 @@ class BiaffineParser(nn.Module):
         super(BiaffineParser, self).__init__()
 
         self.params = params
-        # the embedding layer
-        self.pretrained = nn.Embedding.from_pretrained(embeddings)
-        self.embed = nn.Embedding(num_embeddings=params['n_words'],
-                                  embedding_dim=params['n_embed'])
-        # the char-lstm layer
-        self.char_lstm = CHAR_LSTM(n_chars=params['n_chars'],
-                                   n_embed=params['n_char_embed'],
-                                   n_out=params['n_char_out'])
+        # # the embedding layer
+        # self.pretrained = nn.Embedding.from_pretrained(embeddings)
+        # self.embed = nn.Embedding(num_embeddings=params['n_words'],
+        #                           embedding_dim=params['n_embed'])
+        # # the char-lstm layer
+        # self.char_lstm = CHAR_LSTM(n_chars=params['n_chars'],
+        #                            n_embed=params['n_char_embed'],
+        #                            n_out=params['n_char_out'])
         self.embed_dropout = IndependentDropout(p=params['embed_dropout'])
 
         # BERT
         self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
         # the word-lstm layer
-        self.lstm = LSTM(input_size=params['n_embed']+params['n_char_out'],
-                         hidden_size=params['n_lstm_hidden'],
-                         num_layers=params['n_lstm_layers'],
-                         dropout=params['lstm_dropout'],
-                         bidirectional=True)
+        # self.lstm = LSTM(input_size=params['n_embed']+params['n_char_out'],
+        #                  hidden_size=params['n_lstm_hidden'],
+        #                  num_layers=params['n_lstm_layers'],
+        #                  dropout=params['lstm_dropout'],
+        #                  bidirectional=True)
         self.lstm_dropout = SharedDropout(p=params['lstm_dropout'])
 
         # the MLP layers
@@ -74,31 +74,29 @@ class BiaffineParser(nn.Module):
         mask = words.ne(self.pad_index)
         lens = mask.sum(dim=1)
         # get outputs from embedding layers
-        # embed, _ = self.bert(tokens_tensor, attention_mask=input_mask, output_all_encoded_layers=False)
-        # embed, char_embed = self.embed_dropout(embed, embed)
-        # x = embe
+        embed, _ = self.bert(tokens_tensor, attention_mask=mask, output_all_encoded_layers=False)
+        embed, char_embed = self.embed_dropout(embed, embed)
+        x = embed
 
-        embed = self.pretrained(words)
-        embed += self.embed(
-            words.masked_fill_(words.ge(self.embed.num_embeddings),
-                               self.unk_index)
-        )
-        char_embed = self.char_lstm(chars[mask])
-        char_embed = pad_sequence(torch.split(char_embed, lens.tolist()), True)
-        embed, char_embed = self.embed_dropout(embed, char_embed)
-        # concatenate the word and char representations
-        x = torch.cat((embed, char_embed), dim=-1)
-        print(x.shape)        
+        # embed = self.pretrained(words)
+        # embed += self.embed(
+        #     words.masked_fill_(words.ge(self.embed.num_embeddings),
+        #                        self.unk_index)
+        # )
+        # char_embed = self.char_lstm(chars[mask])
+        # char_embed = pad_sequence(torch.split(char_embed, lens.tolist()), True)
+        # embed, char_embed = self.embed_dropout(embed, char_embed)
+        # # concatenate the word and char representations
+        # x = torch.cat((embed, char_embed), dim=-1)
+        
 
-
-        sorted_lens, indices = torch.sort(lens, descending=True)
-        inverse_indices = indices.argsort()
-        x = pack_padded_sequence(x[indices], sorted_lens, True)
-        x = self.lstm(x)
-        x, _ = pad_packed_sequence(x, True)
-        x = self.lstm_dropout(x)[inverse_indices]
-        print(x.shape)
-
+        # sorted_lens, indices = torch.sort(lens, descending=True)
+        # inverse_indices = indices.argsort()
+        # x = pack_padded_sequence(x[indices], sorted_lens, True)
+        # x = self.lstm(x)
+        # x, _ = pad_packed_sequence(x, True)
+        # x = self.lstm_dropout(x)[inverse_indices]
+        
         # apply MLPs to the LSTM output states
         arc_h = self.mlp_arc_h(x)
         arc_d = self.mlp_arc_d(x)

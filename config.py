@@ -8,7 +8,7 @@ class Config(object):
     n_char_embed = 50
     n_char_out = 100
     embed_dropout = 0.33
-    n_lstm_hidden = 400
+    n_lstm_hidden = 384
     n_lstm_layers = 3
     lstm_dropout = 0.33
     n_mlp_arc = 500
