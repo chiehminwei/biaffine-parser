@@ -94,7 +94,7 @@ class Vocab(object):
         arcs_numerical = []
         rels_numerical = []
         token_start_mask = []
-        for words, arcs, rels in zip(corpus.words, corpus.arcs, corpus.rels):
+        for words, arcs, rels in zip(corpus.words, corpus.heads, corpus.rels):
             sentence_token_ids = []
             sentence_arc_ids = []
             sentence_rel_ids = []
