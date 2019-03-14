@@ -113,10 +113,10 @@ class Vocab(object):
                 sentence_arc_ids.extend([arc] * len(tokens))
                 sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
                 token_starts.extend([1] + [0] * (len(tokens) - 1))
-            words_numerical.append(sentence_token_ids)
-            arcs_numerical.append(sentence_arc_ids)
-            rels_numerical.append(sentence_rel_ids)
-            token_start_mask.append(token_starts)
+            words_numerical.append(torch.tensor(sentence_token_ids))
+            arcs_numerical.append(torch.tensor(sentence_arc_ids))
+            rels_numerical.append(torch.tensor(sentence_rel_ids))
+            token_start_mask.append(torch.tensor(token_starts))
         return words_numerical, token_start_mask, arcs_numerical, rels_numerical
 
 
