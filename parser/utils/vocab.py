@@ -5,7 +5,7 @@ from collections import Counter
 import regex
 import torch
 import torch.nn as nn
-
+from pytorch_pretrained_bert import BertTokenizer
 
 class Vocab(object):
     PAD = '<PAD>'
@@ -31,6 +31,8 @@ class Vocab(object):
         self.n_chars = len(self.chars)
         self.n_rels = len(self.rels)
         self.n_train_words = self.n_words
+
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
     def __repr__(self):
         info = f"{self.__class__.__name__}(\n"

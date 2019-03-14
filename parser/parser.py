@@ -26,6 +26,8 @@ class BiaffineParser(nn.Module):
                                    n_out=params['n_char_out'])
         self.embed_dropout = IndependentDropout(p=params['embed_dropout'])
 
+        # BERT
+        self.bert = BertModel.from_pretrained('bert-base-uncased')
         # the word-lstm layer
         self.lstm = LSTM(input_size=params['n_embed']+params['n_char_out'],
                          hidden_size=params['n_lstm_hidden'],
@@ -71,16 +73,30 @@ class BiaffineParser(nn.Module):
         mask = words.ne(self.pad_index)
         lens = mask.sum(dim=1)
         # get outputs from embedding layers
+        print(words.shape)
+        print(words)
+        print(chars.shape)
+        print(chars)
+        # encoded_layers, _ = self.bert(tokens_tensor, segments_tensor)
+        # embed = encoded_layers[-1]
+
         embed = self.pretrained(words)
+        print(embed.shape)
         embed += self.embed(
             words.masked_fill_(words.ge(self.embed.num_embeddings),
                                self.unk_index)
         )
+        print(embed.shape)
         char_embed = self.char_lstm(chars[mask])
+        print(char_embed.shape)
         char_embed = pad_sequence(torch.split(char_embed, lens.tolist()), True)
+        print(char_embed.shape)
         embed, char_embed = self.embed_dropout(embed, char_embed)
         # concatenate the word and char representations
         x = torch.cat((embed, char_embed), dim=-1)
+        print(x.shape)
+        # embed, char_embed = self.embed_dropout(embed, embed)
+        # x = embed
 
         sorted_lens, indices = torch.sort(lens, descending=True)
         inverse_indices = indices.argsort()
