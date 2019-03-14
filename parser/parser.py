@@ -75,7 +75,7 @@ class BiaffineParser(nn.Module):
         # lens = mask.sum(dim=1)
         
         # get outputs from embedding layers
-        embed, _ = self.bert(tokens_tensor, attention_mask=mask, output_all_encoded_layers=False)
+        embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
         embed, char_embed = self.embed_dropout(embed, embed)
         x = embed
 

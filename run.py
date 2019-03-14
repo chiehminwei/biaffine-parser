@@ -10,6 +10,8 @@ import logging
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
+    torch.set_printoptions(threshold=10000)
+
     parser = argparse.ArgumentParser(
         description='Create the Biaffine Parser model.'
     )
