@@ -94,11 +94,13 @@ class Vocab(object):
         arcs_numerical = []
         rels_numerical = []
         token_start_mask = []
+        attention_mask = []
         for words, arcs, rels in zip(corpus.words, corpus.heads, corpus.rels):
             sentence_token_ids = []
             sentence_arc_ids = []
             sentence_rel_ids = []
             token_starts = []
+            attentions = []
             words = ['[CLS]'] + words + ['[SEP]']
             arcs = [0] + arcs + [0]
             rels = ['PAD'] + rels + ['PAD']
@@ -113,11 +115,13 @@ class Vocab(object):
                 sentence_arc_ids.extend([arc] * len(tokens))
                 sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
                 token_starts.extend([1] + [0] * (len(tokens) - 1))
+                attentions.extend([1] * len(tokens))
             words_numerical.append(torch.tensor(sentence_token_ids))
             arcs_numerical.append(torch.tensor(sentence_arc_ids))
             rels_numerical.append(torch.tensor(sentence_rel_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
-        return words_numerical, token_start_mask, arcs_numerical, rels_numerical
+            attention_mask.append(torch.ByteTensor(attentions))
+        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
 
     def yeet(self, corpus):
