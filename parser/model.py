@@ -76,7 +76,7 @@ class Model(object):
             token_start_mask[:, 0] = 0
             # ignore <ROOT>
             token_start_mask[:, 1] = 0
-            # ignore [SEP], don't need to subtract 1 from lens since <ROOT> is also 0
+            # ignore [SEP] (don't need to subtract 1 from lens since <ROOT> is also 0)
             lens = words.ne(self.vocab.pad_index).sum(dim=1)
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0            
 
