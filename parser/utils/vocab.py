@@ -87,7 +87,7 @@ class Vocab(object):
         self.n_chars = len(self.chars)
 
     def numericalize(self, corpus):
-        words = [seq for seq in corpus.words]
+        words = [self.word2id(seq) for seq in corpus.words]
         chars = [self.char2id(seq) for seq in corpus.words]
         arcs = [torch.tensor(seq) for seq in corpus.heads]
         rels = [self.rel2id(seq) for seq in corpus.rels]
