@@ -62,7 +62,7 @@ class BiaffineParser(nn.Module):
         self.pad_index = params['pad_index']
         self.unk_index = params['unk_index']
 
-        self.reset_parameters()
+        # self.reset_parameters()
 
     def reset_parameters(self):
         nn.init.zeros_(self.embed.weight)
