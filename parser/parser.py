@@ -9,6 +9,7 @@ from torch.nn.utils.rnn import (pack_padded_sequence, pad_packed_sequence,
                                 pad_sequence)
 from pytorch_pretrained_bert import BertTokenizer, BertModel
 import subprocess
+import os
 
 class BiaffineParser(nn.Module):
 
@@ -118,7 +119,8 @@ class BiaffineParser(nn.Module):
     def load(cls, fname, cloud_address):
         # Copy from cloud if there's no saved checkpoint
         if not os.path.isfile(fname):
-            subprocess.call(['gsutil', 'cp', cloud_address+fname, fname])
+            FNULL = open(os.devnull, 'w')
+            subprocess.call(['gsutil', 'cp', cloud_address+fname, fname], stdout=FNULL, stderr=subprocess.STDOUT)
         # Proceed only if either [1] copy success [2] local file already exists
         if os.path.isfile(fname):
             if torch.cuda.is_available():
@@ -141,4 +143,5 @@ class BiaffineParser(nn.Module):
         }
         torch.save(state, fname)
         # Save a copy to cloud as well
-        subprocess.call(['gsutil', 'cp', fname, cloud_address+fname])
+        FNULL = open(os.devnull, 'w')
+        subprocess.call(['gsutil', 'cp', fname, cloud_address+fname], stdout=FNULL, stderr=subprocess.STDOUT)
