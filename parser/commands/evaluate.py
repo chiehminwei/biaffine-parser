@@ -27,7 +27,8 @@ class Evaluate(object):
     def __call__(self, args):
         print("Load the model")
         if not os.path.isfile(args.vocab):
-            subprocess.call(['gsutil', 'cp', args.cloud_address+args.vocab, args.vocab])
+            FNULL = open(os.devnull, 'w')
+            subprocess.call(['gsutil', 'cp', args.cloud_address+args.vocab, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         vocab = torch.load(args.vocab)
         network = BiaffineParser.load(args.file, args.cloud_address)
         model = Model(vocab, network)
