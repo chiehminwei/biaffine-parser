@@ -95,10 +95,10 @@ class Vocab(object):
         arcs = [torch.tensor(seq) for seq in corpus.heads]
         rels = [self.rel2id(seq) for seq in corpus.rels]
 
-        print(np.array(words).shape)
-        print(np.array(chars).shape)
-        print(np.array(arcs).shape)
-        print(np.array(rels).shape)
+        print(words)
+        print(chars)
+        print(arcs)
+        print(rels)
         assert 1 == 2
 
         return words, chars, arcs, rels
