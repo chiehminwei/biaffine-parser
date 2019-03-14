@@ -106,8 +106,9 @@ class Vocab(object):
             rels = ['PAD'] + rels + ['PAD']
             for word, arc, rel in zip(words, arcs, rels):
                 if word == '<ROOT>':
-                    tokens = ['<ROOT>']
-                    ids = [0]
+                    # tokens = ['<ROOT>']
+                    # ids = [0]
+                    continue
                 else:
                     tokens = self.tokenizer.tokenize(word)
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
