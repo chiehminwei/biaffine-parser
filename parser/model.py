@@ -70,10 +70,17 @@ class Model(object):
         for words, mask, arcs, rels in tqdm(loader):
             self.optimizer.zero_grad()
 
+            if i == 0:
+                print(words)
+                print(mask)
+                print(arcs)
+                print(rels)
             # mask = words.ne(self.vocab.pad_index)
             # ignore the first token of each sentence (<ROOT>)
             mask[:, 1] = 0
             s_arc, s_rel = self.network(words, mask)
+            if i == 0:
+                print(s_arc, s_rel)
             # ignore [CLS]
             mask[:, 0] = 0
             # ignore [SEP], don't need to subtract 1 from lens since <ROOT> is also 0
@@ -82,6 +89,13 @@ class Model(object):
 
             s_arc, s_rel = s_arc[mask], s_rel[mask]
             gold_arcs, gold_rels = arcs[mask], rels[mask]
+
+            if i == 0:
+                print(mask)
+                print(s_arc)
+                print(s_rel)
+                print(gold_arcs)
+                print(gold_rels)
 
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             loss.backward()
