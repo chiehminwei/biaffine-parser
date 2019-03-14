@@ -11,6 +11,19 @@ from pytorch_pretrained_bert import BertTokenizer, BertModel
 import subprocess
 import os
 
+def length_to_mask(length, max_len=None, dtype=None):
+    """length: B.
+    return B x max_len.
+    If max_len is None, then max of length will be used.
+    """
+    assert len(length.shape) == 1, 'Length shape should be 1 dimensional.'
+    max_len = max_len or length.max().item()
+    mask = torch.arange(max_len, device=length.device,
+                        dtype=length.dtype).expand(len(length), max_len) < length.unsqueeze(1)
+    if dtype is not None:
+        mask = torch.as_tensor(mask, dtype=dtype, device=length.device)
+    return mask.sum
+
 class BiaffineParser(nn.Module):
 
     def __init__(self, params, embeddings):
@@ -64,13 +77,14 @@ class BiaffineParser(nn.Module):
 
         # self.reset_parameters()
 
-    def reset_parameters(self):
-        nn.init.zeros_(self.embed.weight)
+    # def reset_parameters(self):
+    #     nn.init.zeros_(self.embed.weight)
 
     def forward(self, words, mask):
         # run words through bert
 
         # get the mask and lengths of given batch
+        lens = words.ne(self.pad_index).sum(dim=1)
         # mask = words.ne(self.pad_index)
         # lens = mask.sum(dim=1)
         
@@ -110,7 +124,8 @@ class BiaffineParser(nn.Module):
         # [batch_size, seq_len, seq_len, n_rels]
         s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
         # set the scores that exceed the length of each sentence to -inf
-        # s_arc.masked_fill_((1 - mask).unsqueeze(1), float('-inf'))
+        len_mask = length_to_mask(lens, max_len=words.shape[-1], dtype=torch.uint8)
+        s_arc.masked_fill_((1 - len_mask).unsqueeze(1), float('-inf'))
 
         return s_arc, s_rel
 
