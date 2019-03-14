@@ -68,7 +68,7 @@ class Model(object):
         self.network.train()
         i = 0
         for words, mask, arcs, rels in tqdm(loader):
-            if i > 0: break
+            if i > 0: assert 1 == 2
             self.optimizer.zero_grad()
             # mask = words.ne(self.vocab.pad_index)
             # ignore the first token of each sentence (<ROOT>)
