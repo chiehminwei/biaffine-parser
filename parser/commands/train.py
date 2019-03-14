@@ -105,6 +105,7 @@ class Train(object):
               lr=Config.lr,
               betas=(Config.beta_1, Config.beta_2),
               epsilon=Config.epsilon,
+              weight_decay=Config.weight_decay,
               annealing=lambda x: Config.decay ** (x / Config.decay_steps),
               file=args.file,
               last_epoch=last_epoch,

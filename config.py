@@ -20,6 +20,7 @@ class Config(object):
     beta_1 = 0.9
     beta_2 = 0.9
     epsilon = 1e-12
+    weight_decay = 0.01
     decay = .75
     decay_steps = 5000
 
