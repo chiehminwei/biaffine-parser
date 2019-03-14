@@ -18,7 +18,7 @@ if __name__ == '__main__':
     }
     for name, subcommand in subcommands.items():
         subparser = subcommand.add_subparser(name, subparsers)
-        subparser.add_argument('--device', '-d', default='-1',
+        subparser.add_argument('--device', '-d', default='0',
                                help='ID of GPU to use')
         subparser.add_argument('--seed', '-s', default=1, type=int,
                                help='seed for generating random numbers')
