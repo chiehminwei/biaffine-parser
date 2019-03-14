@@ -93,8 +93,10 @@ class BiaffineParser(nn.Module):
         embed, char_embed = self.embed_dropout(embed, embed)
         x = embed
 
+        print('attention_mask', mask.shape)
+        print(mask[0])
         print('bert_output', x.shape)
-        print(x)
+        print(x[0])
 
         # embed = self.pretrained(words)
         # embed += self.embed(
