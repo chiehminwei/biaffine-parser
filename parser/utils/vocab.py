@@ -116,7 +116,7 @@ class Vocab(object):
             words_numerical.append(torch.tensor(sentence_token_ids))
             arcs_numerical.append(torch.tensor(sentence_arc_ids))
             rels_numerical.append(torch.tensor(sentence_rel_ids))
-            token_start_mask.append(torch.tensor(token_starts))
+            token_start_mask.append(torch.ByteTensor(token_starts))
         return words_numerical, token_start_mask, arcs_numerical, rels_numerical
 
 
