@@ -74,10 +74,10 @@ class Model(object):
             mask[:, 1] = 0
             s_arc, s_rel = self.network(words, mask)
             if i == 0:
-                print(s_arc.shape)
-                print(s_rel.shape)
+                print(s_arc.shape) # [8, 71, 71]
+                print(s_rel.shape) # [8, 71, 71, 46]
                 print(s_arc[0])
-                print(s_rel[0])
+                print(s_rel[0][10])
             # ignore [CLS]
             mask[:, 0] = 0
             # ignore [SEP], don't need to subtract 1 from lens since <ROOT> is also 0
