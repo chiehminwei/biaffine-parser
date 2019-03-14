@@ -68,16 +68,12 @@ class Model(object):
         self.network.train()
         i = 0
         for words, mask, arcs, rels in tqdm(loader):
+            if i > 0: break
             self.optimizer.zero_grad()
             # mask = words.ne(self.vocab.pad_index)
             # ignore the first token of each sentence (<ROOT>)
             mask[:, 1] = 0
             s_arc, s_rel = self.network(words, mask)
-            if i == 0:
-                print(s_arc.shape) # [8, 71, 71]
-                print(s_rel.shape) # [8, 71, 71, 46]
-                print(s_arc[0])
-                print(s_rel[0][10])
             # ignore [CLS]
             mask[:, 0] = 0
             # ignore [SEP], don't need to subtract 1 from lens since <ROOT> is also 0
@@ -92,8 +88,8 @@ class Model(object):
             # nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
             self.optimizer.step()
             self.scheduler.step()
-
             i += 1
+
  
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
