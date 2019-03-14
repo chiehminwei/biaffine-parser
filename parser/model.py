@@ -75,7 +75,7 @@ class Model(object):
             mask[:, 1] = 0
             s_arc, s_rel = self.network(words, mask)
             # ignore [CLS]
-            mask[:, 0] = 
+            mask[:, 0] = 0
             # ignore [SEP], don't need to subtract 1 from lens since <ROOT> is also 0
             lens = words.ne(self.vocab.pad_index).sum(dim=1)
             mask[torch.arange(len(mask)), lens] = 0
