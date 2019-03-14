@@ -90,14 +90,41 @@ class Vocab(object):
         self.n_chars = len(self.chars)
 
     def numericalize(self, corpus):
+        words_numerical = []
+        arcs_numerical = []
+        rels_numerical = []
+        token_start_mask = []
+        for words, arcs, rels in zip(corpus.words, corpus.arcs, corpus.rels):
+            sentence_token_ids = []
+            sentence_arc_ids = []
+            sentence_rel_ids = []
+            token_starts = []
+            words = ['[CLS]'] + words + ['[SEP]']
+            arcs = [0] + arcs + [0]
+            rels = ['PAD'] + rels + ['PAD']
+            for word, arc, rel in zip(words, arcs, rels):
+                if word == '<ROOT>':
+                    tokens = ['<ROOT>']
+                    ids = [0]
+                else:
+                    tokens = self.tokenizer.tokenize(word)
+                    ids = self.tokenizer.convert_tokens_to_ids(tokens)
+                sentence_token_ids.extend(ids)
+                sentence_arc_ids.extend([arc] * len(tokens))
+                sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
+                token_starts.extend([1] + [0] * (len(tokens) - 1))
+            words_yeet.append(sentence_token_ids)
+            arcs_yeet.append(sentence_arc_ids)
+            rels_yeet.append(sentence_rel_ids)
+            token_start_mask.append(token_starts)
+        return words_numerical, token_start_mask, arcs_numerical, rels_numerical
+
+
+    def yeet(self, corpus):
         words = [self.word2id(seq) for seq in corpus.words]
         chars = [self.char2id(seq) for seq in corpus.words]
         arcs = [torch.tensor(seq) for seq in corpus.heads]
         rels = [self.rel2id(seq) for seq in corpus.rels]
-
-        print(corpus.words)
-        print(corpus.heads)
-        assert 1 == 2
 
         return words, chars, arcs, rels
 

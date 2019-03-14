@@ -66,14 +66,20 @@ class Model(object):
 
     def train(self, loader):
         self.network.train()
-
-        for words, chars, arcs, rels in tqdm(loader):
+        i = 0
+        for words, mask, arcs, rels in tqdm(loader):
             self.optimizer.zero_grad()
 
-            mask = words.ne(self.vocab.pad_index)
-            # ignore the first token of each sentence
-            mask[:, 0] = 0
-            s_arc, s_rel = self.network(words, chars)
+            # mask = words.ne(self.vocab.pad_index)
+            # ignore the first token of each sentence (<ROOT>)
+            mask[:, 1] = 0
+            s_arc, s_rel = self.network(words, mask)
+            # ignore [CLS]
+            mask[:, 0] = 
+            # ignore [SEP], don't need to subtract 1 from lens since <ROOT> is also 0
+            lens = words.ne(self.vocab.pad_index).sum(dim=1)
+            mask[torch.arange(len(mask)), lens] = 0
+
             s_arc, s_rel = s_arc[mask], s_rel[mask]
             gold_arcs, gold_rels = arcs[mask], rels[mask]
 
@@ -83,6 +89,8 @@ class Model(object):
             self.optimizer.step()
             self.scheduler.step()
 
+            i += 1
+ 
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
         self.network.eval()
