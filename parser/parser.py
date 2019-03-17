@@ -76,6 +76,13 @@ class BiaffineParser(nn.Module):
         # concatenate the word and tag representations
         x = torch.cat((embed, tag_embed), dim=-1)
 
+        print('words', words.shape)
+        print(words[0])
+        print('attention_mask', mask.shape)
+        print(mask[0])
+        print('embedding', x.shape)
+        print(x[0, :10])
+
         sorted_lens, indices = torch.sort(lens, descending=True)
         inverse_indices = indices.argsort()
         x = pack_padded_sequence(x[indices], sorted_lens, True)
@@ -83,11 +90,23 @@ class BiaffineParser(nn.Module):
         x, _ = pad_packed_sequence(x, True)
         x = self.lstm_dropout(x)[inverse_indices]
 
+        print('after lstm', x.shape)
+        print(x[0, :10])
+
         # apply MLPs to the LSTM output states
         arc_h = self.mlp_arc_h(x)
         arc_d = self.mlp_arc_d(x)
         rel_h = self.mlp_rel_h(x)
         rel_d = self.mlp_rel_d(x)
+
+        print('arc_h', arc_h.shape)
+        print(x[0, :10])
+        print('arc_d', arc_d.shape)
+        print(x[0, :10])
+        print('rel_h', rel_h.shape)
+        print(x[0, :10])
+        print('rel_d', rel_d.shape)
+        print(x[0, :10])
 
         # get arc and rel scores from the bilinear attention
         # [batch_size, seq_len, seq_len]
@@ -96,6 +115,12 @@ class BiaffineParser(nn.Module):
         s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
         # set the scores that exceed the length of each sentence to -inf
         s_arc.masked_fill_((1 - mask).unsqueeze(1), float('-inf'))
+
+        print('s_arc', s_arc.shape)
+        print(s_arc[0, :10])
+
+        print('s_rel', s_rel.shape)
+        print(s_rel[0, :10])
 
         return s_arc, s_rel
 

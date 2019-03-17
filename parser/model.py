@@ -60,8 +60,9 @@ class Model(object):
 
     def train(self, loader):
         self.network.train()
-
+        i = 0
         for words, tags, arcs, rels in loader:
+            if i >= 1: assert 1==2
             self.optimizer.zero_grad()
 
             mask = words.ne(self.vocab.pad_index)
@@ -76,6 +77,7 @@ class Model(object):
             nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
             self.optimizer.step()
             self.scheduler.step()
+            i += 1
 
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
