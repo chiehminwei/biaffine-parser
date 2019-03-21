@@ -77,11 +77,11 @@ class BiaffineParser(nn.Module):
         x = torch.cat((embed, tag_embed), dim=-1)
 
         print('words', words.shape)
-        print(words[0])
+        print(words)
         print('attention_mask', mask.shape)
-        print(mask[0])
+        print(mask)
         print('embedding', x.shape)
-        print(x[0, :10])
+        print(x[:, -10:])
 
         sorted_lens, indices = torch.sort(lens, descending=True)
         inverse_indices = indices.argsort()
