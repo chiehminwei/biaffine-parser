@@ -129,6 +129,10 @@ class Model(object):
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
 
+            print(lens)
+            print(pred_arcs)
+            print(pred_rels)
+
             all_arcs.extend(torch.split(pred_arcs, lens))
             all_rels.extend(torch.split(pred_rels, lens))
         all_arcs = [seq.tolist() for seq in all_arcs]
