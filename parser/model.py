@@ -120,7 +120,7 @@ class Model(object):
         self.network.eval()
 
         all_arcs, all_rels = [], []
-        for words, attention_mask, token_start_mask, arcs, rels i in tqdm(loader):
+        for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
             # mask = words.ne(self.vocab.pad_index)
             # ignore the first token of each sentence
             token_start_mask[:, 0] = 0
