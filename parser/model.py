@@ -129,6 +129,7 @@ class Model(object):
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
 
+            print(words)
             print(lens)
             print(pred_arcs)
             print(pred_rels)
