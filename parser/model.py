@@ -68,7 +68,7 @@ class Model(object):
         self.network.train()
         i = 0
         for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
-            if i > 0: assert 1 == 2
+            #if i > 0: assert 1 == 2
             self.optimizer.zero_grad()
             s_arc, s_rel = self.network(words, attention_mask)
 
