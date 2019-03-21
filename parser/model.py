@@ -96,18 +96,17 @@ class Model(object):
         self.network.eval()
 
         loss, metric = 0, AttachmentMethod()
-
-        for words, chars, arcs, rels in loader:
-            mask = words.ne(self.vocab.pad_index)
+        for words, attention_mask, token_start_mask, arcs, rels in loader:
+            # mask = words.ne(self.vocab.pad_index)
             # ignore the first token of each sentence
-            mask[:, 0] = 0
+            token_start_mask[:, 0] = 0
             # ignore all punctuation if specified
             if not include_punct:
                 puncts = words.new_tensor(self.vocab.puncts)
-                mask &= words.unsqueeze(-1).ne(puncts).all(-1)
+                token_start_mask &= words.unsqueeze(-1).ne(puncts).all(-1)
             s_arc, s_rel = self.network(words, chars)
-            s_arc, s_rel = s_arc[mask], s_rel[mask]
-            gold_arcs, gold_rels = arcs[mask], rels[mask]
+            s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
+            gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
 
             loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
