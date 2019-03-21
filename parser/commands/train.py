@@ -33,14 +33,14 @@ class Train(object):
         train = Corpus.load(args.ftrain)
         dev = Corpus.load(args.fdev)
         test = Corpus.load(args.ftest)
-        embed = Embedding.load(args.fembed)
+        # embed = Embedding.load(args.fembed)
 
         if not os.path.isfile(args.vocab):
             FNULL = open(os.devnull, 'w')
             subprocess.call(['gsutil', 'cp', args.cloud_address+args.vocab, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         if not os.path.isfile(args.vocab):
           vocab = Vocab.from_corpus(corpus=train, min_freq=2)
-          vocab.read_embeddings(embed=embed, unk='unk')
+          # vocab.read_embeddings(embed=embed, unk='unk')
           torch.save(vocab, args.vocab)
           FNULL = open(os.devnull, 'w')
           subprocess.call(['gsutil', 'cp', args.vocab, args.cloud_address+args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
@@ -88,7 +88,7 @@ class Train(object):
         }
         for k, v in params.items():
             print(f"  {k}: {v}")
-        network = BiaffineParser(params, vocab.embeddings)
+        network = BiaffineParser(params)
         if torch.cuda.is_available():
             network = network.cuda()
         print(f"{network}\n")

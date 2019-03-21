@@ -26,7 +26,7 @@ def length_to_mask(length, max_len=None, dtype=None):
 
 class BiaffineParser(nn.Module):
 
-    def __init__(self, params, embeddings):
+    def __init__(self, params):
         super(BiaffineParser, self).__init__()
 
         self.params = params
@@ -160,7 +160,7 @@ class BiaffineParser(nn.Module):
             else:
                 device = torch.device('cpu')
             state = torch.load(fname, map_location=device)
-            network = cls(state['params'], state['embeddings'])
+            network = cls(state['params'])
             network.load_state_dict(state['state_dict'])
             network.to(device)
 
@@ -169,7 +169,7 @@ class BiaffineParser(nn.Module):
     def save(self, fname, epoch, cloud_address):
         state = {
             'params': self.params,
-            'embeddings': self.pretrained.weight,
+            # 'embeddings': self.pretrained.weight,
             'state_dict': self.state_dict(),
             'last_epoch': epoch,
         }
