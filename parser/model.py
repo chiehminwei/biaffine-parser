@@ -120,13 +120,13 @@ class Model(object):
         self.network.eval()
 
         all_arcs, all_rels = [], []
-        for words, chars, arcs, rels in tqdm(loader):
-            mask = words.ne(self.vocab.pad_index)
+        for words, attention_mask, token_start_mask, arcs, rels i in tqdm(loader):
+            # mask = words.ne(self.vocab.pad_index)
             # ignore the first token of each sentence
-            mask[:, 0] = 0
+            token_start_mask[:, 0] = 0
             lens = mask.sum(dim=1).tolist()
-            s_arc, s_rel = self.network(words, chars)
-            s_arc, s_rel = s_arc[mask], s_rel[mask]
+            s_arc, s_rel = self.network(words, attention_mask)
+            s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
 
             all_arcs.extend(torch.split(pred_arcs, lens))
