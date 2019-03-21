@@ -124,7 +124,7 @@ class Model(object):
             # mask = words.ne(self.vocab.pad_index)
             # ignore the first token of each sentence
             token_start_mask[:, 0] = 0
-            lens = mask.sum(dim=1).tolist()
+            lens = attention_mask.sum(dim=1).tolist()
             s_arc, s_rel = self.network(words, attention_mask)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
