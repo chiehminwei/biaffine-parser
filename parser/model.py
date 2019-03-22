@@ -73,23 +73,16 @@ class Model(object):
         for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
             if i > 3: assert 1 == 2
             self.optimizer.zero_grad()
-            s_arc, s_rel = self.network(words, attention_mask)
-            for sentence in words:
-                print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
-            print(s_arc)
-            print(s_arc.shape)
-            
-            
-
+            s_arc, s_rel = self.network(words, attention_mask)            
             # ignore [CLS]
             token_start_mask[:, 0] = 0
-            # ignore <ROOT>
-            # token_start_mask[:, 1] = 0
             # ignore [SEP] 
             lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
-            print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
+            # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
+            # for sentence in words:
+            #     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
                         
 
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
@@ -97,11 +90,10 @@ class Model(object):
 
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             loss.backward()
-            # nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
+            nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
             self.optimizer.step()
             self.scheduler.step()
 
-            print(token_start_mask)
             print(s_arc)
             print(gold_arcs)
             i += 1
