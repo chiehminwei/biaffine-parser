@@ -89,6 +89,8 @@ class Train(object):
         network = BiaffineParser(params)
         if torch.cuda.is_available():
             network = network.cuda()
+        if torch.cuda.device_count() > 1:
+            network = torch.nn.DataParallel(network)
         # print(f"{network}\n")
 
         last_epoch = 0

@@ -21,6 +21,10 @@ class Model(object):
         self.vocab = vocab
         self.network = network
         self.criterion = nn.CrossEntropyLoss()
+        if torch.cuda.is_available():
+            self.device = torch.device('cuda')
+        else:
+            self.device = torch.device('cpu')
         # self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
     def __call__(self, loaders, epochs, patience,
@@ -73,7 +77,9 @@ class Model(object):
 
     def train(self, loader):
         self.network.train()
-        for step, (words, attention_mask, token_start_mask, arcs, rels) in enumerate(tqdm(loader)):
+        for step, batch in enumerate(tqdm(loader)):
+            batch = tuple(t.to(self.device) for t in batch)
+            words, attention_mask, token_start_mask, arcs, rels = batch
 
             s_arc, s_rel = self.network(words, attention_mask)
             # ignore [CLS]
@@ -106,9 +112,10 @@ class Model(object):
         self.network.eval()
 
         loss, metric = 0, AttachmentMethod()
-        i = 0
-        for words, attention_mask, token_start_mask, arcs, rels in loader:
-            i += 1
+        for batch in loader:
+            batch = tuple(t.to(self.device) for t in batch)
+            words, attention_mask, token_start_mask, arcs, rels = batch
+
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
