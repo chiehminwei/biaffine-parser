@@ -4,7 +4,7 @@
 class Config(object):
 
     # [Network]
-    n_bert_hidden = 384
+    n_bert_hidden = 768
     bert_dropout = 0.33
     n_mlp_arc = 500
     n_mlp_rel = 100
