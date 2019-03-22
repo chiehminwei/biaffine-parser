@@ -154,7 +154,7 @@ class Vocab(object):
 
     @classmethod
     def from_corpus(cls, corpus, min_freq=1):
-        words = Counter(word.lower() for seq in corpus.words for word in seq)
+        words = Counter(word for seq in corpus.words for word in seq)
         words = list(word for word, freq in words.items() if freq >= min_freq)
         chars = list({char for seq in corpus.words for char in ''.join(seq)})
         rels = list({rel for seq in corpus.rels for rel in seq})
