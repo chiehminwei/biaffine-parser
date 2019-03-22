@@ -139,7 +139,10 @@ class Model(object):
         self.network.eval()
 
         all_arcs, all_rels = [], []
+        i = 0
         for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
+            i += 1
+            if i > 10: assert 1==2, 'eeet'
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP] 
@@ -160,7 +163,9 @@ class Model(object):
             print(pred_rels.shape)
             print(pred_rels)
 
-            lens = lens.tolist()
+            # lens for splitting
+            lens = token_start_mask.sum(dim=1).tolist()
+
             all_arcs.extend(torch.split(pred_arcs, lens))
             all_rels.extend(torch.split(pred_rels, lens))
         all_arcs = [seq.tolist() for seq in all_arcs]
