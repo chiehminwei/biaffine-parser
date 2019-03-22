@@ -10,6 +10,7 @@ import torch.nn as nn
 import subprocess
 import os
 
+
 def length_to_mask(length, max_len=None, dtype=None):
     """length: B.
     return B x max_len.
@@ -22,6 +23,7 @@ def length_to_mask(length, max_len=None, dtype=None):
     if dtype is not None:
         mask = torch.as_tensor(mask, dtype=dtype, device=length.device)
     return mask
+
 
 class BiaffineParser(nn.Module):
 
@@ -65,15 +67,14 @@ class BiaffineParser(nn.Module):
         lens = words.ne(self.pad_index).sum(dim=1)
         # word dropout
         # words, yeet = self.embed_dropout(words, words)
-        
+
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
         x = embed
 
         # bert dropout
         x = self.bert_dropout(x)
-        
-        
+
         # apply MLPs to the BERT output states
         arc_h = self.mlp_arc_h(x)
         arc_d = self.mlp_arc_d(x)

@@ -8,6 +8,7 @@ import torch
 from torch.utils.data import DataLoader
 import subprocess
 
+
 class Predict(object):
 
     def add_subparser(self, name, parser):
@@ -28,7 +29,8 @@ class Predict(object):
         print("Load the model")
         if not os.path.isfile(args.vocab):
             FNULL = open(os.devnull, 'w')
-            subprocess.call(['gsutil', 'cp', args.cloud_address+args.vocab, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
+            cloud_address = os.path.join(args.cloud_address, args.vocab)
+            subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         vocab = torch.load(args.vocab)
         network = BiaffineParser.load(args.file, args.cloud_address)
         model = Model(vocab, network)

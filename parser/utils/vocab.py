@@ -8,6 +8,7 @@ import torch.nn as nn
 from pytorch_pretrained_bert import BertTokenizer
 import numpy as np
 
+
 class Vocab(object):
     PAD = '<PAD>'
 
@@ -24,8 +25,8 @@ class Vocab(object):
 
         # ids of punctuation that appear in words
         self.puncts = set(sorted(i for word, i in self.word_dict.items()
-                             if regex.match(r'\p{P}+$', word)))
-        
+                                    if regex.match(r'\p{P}+$', word)))
+
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
         self.n_rels = len(self.rels)
@@ -55,7 +56,7 @@ class Vocab(object):
         self.word_dict = {w: i for i, w in enumerate(self.words)}
         self.char_dict = {c: i for i, c in enumerate(self.chars)}
         self.puncts = set(sorted(i for word, i in self.word_dict.items()
-                             if regex.match(r'\p{P}+$', word)))
+                                        if regex.match(r'\p{P}+$', word)))
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
 
@@ -109,9 +110,8 @@ class Vocab(object):
             rels_numerical.append(torch.tensor(sentence_rel_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
             attention_mask.append(torch.ByteTensor(attentions))
-        
-        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
+        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
     @classmethod
     def from_corpus(cls, corpus, min_freq=1):

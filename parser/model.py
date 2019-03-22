@@ -25,13 +25,15 @@ class Model(object):
         # self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
     def __call__(self, loaders, epochs, patience,
-                 lr, betas, epsilon, weight_decay, annealing, file, last_epoch, cloud_address, gradient_accumulation_steps=1):
+                 lr, betas, epsilon, weight_decay, annealing, file, 
+                 last_epoch, cloud_address, gradient_accumulation_steps=1):
+
         self.gradient_accumulation_steps = gradient_accumulation_steps
         total_time = timedelta()
         max_e, max_metric = 0, 0.0
         train_loader, dev_loader, test_loader = loaders
         self.optimizer = BertAdam(params=self.network.parameters(),
-                                  lr=lr, b1=betas[0], b2=betas[1], 
+                                  lr=lr, b1=betas[0], b2=betas[1],
                                   e=epsilon, weight_decay=weight_decay,
                                   max_grad_norm=5.0)
         # self.optimizer = optim.Adam(params=self.network.parameters(),
@@ -74,13 +76,13 @@ class Model(object):
         self.network.train()
         for step, (words, attention_mask, token_start_mask, arcs, rels) in enumerate(tqdm(loader)):
 
-            s_arc, s_rel = self.network(words, attention_mask)            
+            s_arc, s_rel = self.network(words, attention_mask)
             # ignore [CLS]
             token_start_mask[:, 0] = 0
-            # ignore [SEP] 
+            # ignore [SEP]
             lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
-                   
+
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
 
@@ -96,11 +98,9 @@ class Model(object):
                 # self.scheduler.step()
                 self.optimizer.zero_grad()
 
-            
             # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
             # for sentence in words:
             #     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
-
  
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
@@ -140,10 +140,9 @@ class Model(object):
         for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
             # ignore [CLS]
             token_start_mask[:, 0] = 0
-            # ignore [SEP] 
+            # ignore [SEP]
             lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
-
 
             s_arc, s_rel = self.network(words, attention_mask)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]

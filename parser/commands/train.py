@@ -11,6 +11,7 @@ from config import Config
 import os
 import subprocess
 
+
 class Train(object):
 
     def add_subparser(self, name, parser):
@@ -32,20 +33,22 @@ class Train(object):
         train = Corpus.load(args.ftrain)
         dev = Corpus.load(args.fdev)
         test = Corpus.load(args.ftest)
-        
+
         if not os.path.isfile(args.vocab):
-          FNULL = open(os.devnull, 'w')
-          cloud_address = os.path.join(args.cloud_address, args.vocab)
-          subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
+            FNULL = open(os.devnull, 'w')
+            cloud_address = os.path.join(args.cloud_address, args.vocab)
+            subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], 
+                            stdout=FNULL, stderr=subprocess.STDOUT)
         if not os.path.isfile(args.vocab):
-          vocab = Vocab.from_corpus(corpus=train, min_freq=2)
-          torch.save(vocab, args.vocab)
-          FNULL = open(os.devnull, 'w')
-          cloud_address = os.path.join(args.cloud_address, args.vocab)
-          subprocess.call(['gsutil', 'cp', args.vocab, cloud_address], stdout=FNULL, stderr=subprocess.STDOUT)
+            vocab = Vocab.from_corpus(corpus=train, min_freq=2)
+            torch.save(vocab, args.vocab)
+            FNULL = open(os.devnull, 'w')
+            cloud_address = os.path.join(args.cloud_address, args.vocab)
+            subprocess.call(['gsutil', 'cp', args.vocab, cloud_address], 
+                            stdout=FNULL, stderr=subprocess.STDOUT)
         else:
-          vocab = torch.load(args.vocab)
-       
+            vocab = torch.load(args.vocab)
+
         print(vocab)
 
         print("Load the dataset")
@@ -91,18 +94,17 @@ class Train(object):
         last_epoch = 0
         # Start training from checkpoint if one exists
         if not os.path.isfile(args.file):
-          FNULL = open(os.devnull, 'w')
-          cloud_address = os.path.join(args.cloud_address, args.file)
-          subprocess.call(['gsutil', 'cp', cloud_address, args.file], stdout=FNULL, stderr=subprocess.STDOUT)
+            FNULL = open(os.devnull, 'w')
+            cloud_address = os.path.join(args.cloud_address, args.file)
+            subprocess.call(['gsutil', 'cp', cloud_address, args.file], stdout=FNULL, stderr=subprocess.STDOUT)
         if os.path.isfile(args.file):
-          if torch.cuda.is_available():
-            device = torch.device('cuda')
-          else:
-              device = torch.device('cpu')
-          state = torch.load(args.file, map_location=device)
-          last_epoch = state['last_epoch']
-          network.load(args.file, args.cloud_address)
-
+            if torch.cuda.is_available():
+              device = torch.device('cuda')
+            else:
+                device = torch.device('cpu')
+            state = torch.load(args.file, map_location=device)
+            last_epoch = state['last_epoch']
+            network.load(args.file, args.cloud_address)
 
         model = Model(vocab, network)
         model(loaders=(train_loader, dev_loader, test_loader),
