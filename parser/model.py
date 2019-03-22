@@ -69,7 +69,7 @@ class Model(object):
 
     def train(self, loader):
         self.network.train()
-        self.evaluate(loader)
+        self.predict(loader)
         assert 1==2, 'yeet'
         i = 0
         #for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
@@ -120,15 +120,8 @@ class Model(object):
 
             # ignore all punctuation if specified
             if not include_punct:
-                print(self.vocab.puncts)
                 puncts = words.new_tensor([punct for punct in self.vocab.puncts])
-                print(puncts)
-                print(words.unsqueeze(-1).ne(puncts).all(-1))
                 token_start_mask &= words.unsqueeze(-1).ne(puncts).all(-1)
-
-            print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
-            for sentence in words:
-                print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
 
             s_arc, s_rel = self.network(words, attention_mask)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
