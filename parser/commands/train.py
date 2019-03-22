@@ -39,7 +39,7 @@ class Train(object):
           print('Copying vocab from cloud...')
           FNULL = open(os.devnull, 'w')
           subprocess.call(['gsutil', 'cp', args.cloud_address+args.vocab, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
-        if os.path.isfile(args.vocab):
+        if not os.path.isfile(args.vocab):
           print('No vocab found. Processing...')
           vocab = Vocab.from_corpus(corpus=train, min_freq=2)
           # vocab.read_embeddings(embed=embed, unk='unk')
