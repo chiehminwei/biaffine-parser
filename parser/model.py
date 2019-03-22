@@ -78,7 +78,7 @@ class Model(object):
         corpus.heads, corpus.rels = self.predict(loader)
 
         print(f"Save the predicted result")
-        corpus.save(args.fpred, args.cloud_address)
+        corpus.save('prediction_results', args.cloud_address)
         assert 1 == 2, 'yeeeet'
         i = 0
         #for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
