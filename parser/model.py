@@ -94,7 +94,8 @@ class Model(object):
             self.optimizer.step()
             self.scheduler.step()
 
-            print(s_arc)
+            pred_arcs, pred_rels = self.decode(s_arc, s_rel)
+            print(pred_arcs)
             print(gold_arcs)
             i += 1
 
@@ -105,9 +106,12 @@ class Model(object):
 
         loss, metric = 0, AttachmentMethod()
         for words, attention_mask, token_start_mask, arcs, rels in loader:
-            # mask = words.ne(self.vocab.pad_index)
-            # ignore the first token of each sentence
+            # ignore [CLS]
             token_start_mask[:, 0] = 0
+            # ignore [SEP] 
+            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+
             # ignore all punctuation if specified
             if not include_punct:
                 puncts = words.new_tensor(self.vocab.puncts)
@@ -129,10 +133,12 @@ class Model(object):
 
         all_arcs, all_rels = [], []
         for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
-            # mask = words.ne(self.vocab.pad_index)
-            # ignore the first token of each sentence
+            # ignore [CLS]
             token_start_mask[:, 0] = 0
-            lens = attention_mask.sum(dim=1).tolist()
+            # ignore [SEP] 
+            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+
             s_arc, s_rel = self.network(words, attention_mask)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
