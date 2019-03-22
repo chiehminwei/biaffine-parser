@@ -63,6 +63,8 @@ class Corpus(object):
         with open(fname, 'r') as f:
             lines = [line for line in f]
         for i, line in enumerate(lines):
+            if line[0] == '#':
+                start += 1
             if len(line) <= 1:
                 sentence = Sentence(*zip(*[l.split() for l in lines[start:i]]))
                 sentences.append(sentence)
