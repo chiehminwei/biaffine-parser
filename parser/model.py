@@ -10,6 +10,8 @@ import torch.optim as optim
 from pytorch_pretrained_bert import BertAdam
 from tqdm import tqdm
 
+from pytorch_pretrained_bert import BertTokenizer
+
 class Model(object):
 
     def __init__(self, vocab, network):
@@ -18,6 +20,7 @@ class Model(object):
         self.vocab = vocab
         self.network = network
         self.criterion = nn.CrossEntropyLoss()
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
     def __call__(self, loaders, epochs, patience,
                  lr, betas, epsilon, weight_decay, annealing, file, last_epoch, cloud_address):
@@ -68,9 +71,13 @@ class Model(object):
         self.network.train()
         i = 0
         for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
-            #if i > 0: assert 1 == 2
+            if i > 3: assert 1 == 2
             self.optimizer.zero_grad()
             s_arc, s_rel = self.network(words, attention_mask)
+            print(self.tokenizer.convert_ids_to_tokens(words))
+            print(s_arc)
+            print(s_arc.shape)
+            print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask]))
 
             # ignore [CLS]
             token_start_mask[:, 0] = 0
@@ -78,7 +85,8 @@ class Model(object):
             # token_start_mask[:, 1] = 0
             # ignore [SEP] (don't need to subtract 1 from lens since <ROOT> is also 0)
             # lens = words.ne(self.vocab.pad_index).sum(dim=1)
-            # token_start_mask[torch.arange(len(token_start_mask)), lens] = 0            
+            # token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+                        
 
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
@@ -88,6 +96,10 @@ class Model(object):
             # nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
             self.optimizer.step()
             self.scheduler.step()
+
+            print(token_start_mask)
+            print(s_arc)
+            print(gold_arcs)
             i += 1
 
  
