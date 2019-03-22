@@ -12,6 +12,9 @@ from tqdm import tqdm
 
 from pytorch_pretrained_bert import BertTokenizer
 
+from parser.utils import Corpus, TextDataset, collate_fn
+
+
 class Model(object):
 
     def __init__(self, vocab, network):
@@ -69,8 +72,14 @@ class Model(object):
 
     def train(self, loader):
         self.network.train()
-        self.predict(loader)
-        assert 1==2, 'yeet'
+        
+        corpus = Corpus.load(args.fdata)
+        print("Predict the dataset")
+        corpus.heads, corpus.rels = self.predict(loader)
+
+        print(f"Save the predicted result")
+        corpus.save(args.fpred, args.cloud_address)
+        assert 1 == 2, 'yeeeet'
         i = 0
         #for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
         for words, attention_mask, token_start_mask, arcs, rels in loader:
