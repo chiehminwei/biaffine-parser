@@ -72,17 +72,9 @@ class Model(object):
 
     def train(self, loader):
         self.network.train()
-        
-        corpus = Corpus.load('data/train.conllx')
-        print("Predict the dataset")
-        corpus.heads, corpus.rels = self.predict(loader)
-
-        print(f"Save the predicted result")
-        corpus.save('prediction_results', 'yeeeeet')
-        assert 1 == 2, 'yeeeet'
         i = 0
-        #for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
-        for words, attention_mask, token_start_mask, arcs, rels in loader:
+        for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
+        #for words, attention_mask, token_start_mask, arcs, rels in loader:
             i += 1
             if i > 500: assert 1 == 2
             self.optimizer.zero_grad()
@@ -103,8 +95,8 @@ class Model(object):
             self.scheduler.step()
 
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
-            print('')
-            print('predict_arcs: ', pred_arcs)
+            # print('')
+            # print('predict_arcs: ', pred_arcs)
             # print('gold_arcs: ', gold_arcs)
             
             # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
