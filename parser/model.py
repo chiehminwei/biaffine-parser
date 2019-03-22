@@ -73,16 +73,10 @@ class Model(object):
     def train(self, loader):
         self.network.train()
         
-        corpus = Corpus.load('data/train.conllx')
-        print("Predict the dataset")
-        corpus.heads, corpus.rels = self.predict(loader)
-
-        print(f"Save the predicted result")
-        corpus.save('prediction_results', args.cloud_address)
-        assert 1 == 2, 'yeeeet'
         i = 0
         #for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
         for words, attention_mask, token_start_mask, arcs, rels in loader:
+            i += 1
             if i > 500: assert 1 == 2
             self.optimizer.zero_grad()
             s_arc, s_rel = self.network(words, attention_mask)            
@@ -91,10 +85,6 @@ class Model(object):
             # ignore [SEP] 
             lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
-
-            # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
-            # for sentence in words:
-            #     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
                    
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
@@ -109,8 +99,10 @@ class Model(object):
             print('')
             print('predict_arcs: ', pred_arcs)
             # print('gold_arcs: ', gold_arcs)
-            i += 1
-
+            
+            # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
+            # for sentence in words:
+            #     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
  
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
