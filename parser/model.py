@@ -110,7 +110,6 @@ class Model(object):
         loss, metric = 0, AttachmentMethod()
         i = 0
         for words, attention_mask, token_start_mask, arcs, rels in loader:
-            if i > 10: assert 1==2, 'eeeet'
             i += 1
             # ignore [CLS]
             token_start_mask[:, 0] = 0
@@ -139,10 +138,7 @@ class Model(object):
         self.network.eval()
 
         all_arcs, all_rels = [], []
-        i = 0
         for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
-            i += 1
-            if i > 10: assert 1==2, 'eeet'
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP] 
@@ -153,15 +149,6 @@ class Model(object):
             s_arc, s_rel = self.network(words, attention_mask)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
-
-            print(words.shape)
-            print(words)
-
-            print(lens)
-            print(pred_arcs.shape)
-            print(pred_arcs)
-            print(pred_rels.shape)
-            print(pred_rels)
 
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
