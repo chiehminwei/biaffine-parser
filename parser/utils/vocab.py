@@ -111,12 +111,14 @@ class Vocab(object):
                     continue
                 if word == '``':
                     word = '"'
-                    print(self.tokenizer.tokenize(word))
                 if word == "''":
-                    print(self.tokenizer.tokenize(word))
-                    assert 1==2, 'yeet2'
+                    word = '"'
                 else:
                     tokens = self.tokenizer.tokenize(word)
+                    if '[UNK]' in tokens:
+                        print(word)
+                        print(tokens)
+
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
                 sentence_token_ids.extend(ids)
                 sentence_arc_ids.extend([arc] * len(tokens))
@@ -128,6 +130,7 @@ class Vocab(object):
             rels_numerical.append(torch.tensor(sentence_rel_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
             attention_mask.append(torch.ByteTensor(attentions))
+        assert 1 == 2, 'yeet'
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
 
