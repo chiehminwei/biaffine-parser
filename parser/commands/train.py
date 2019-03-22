@@ -106,7 +106,7 @@ class Train(object):
                 device = torch.device('cpu')
             state = torch.load(args.file, map_location=device)
             last_epoch = state['last_epoch']
-            network.load(args.file, args.cloud_address)
+            network = network.load(args.file, args.cloud_address)
 
         model = Model(vocab, network)
         model(loaders=(train_loader, dev_loader, test_loader),
