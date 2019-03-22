@@ -71,7 +71,7 @@ class Corpus(object):
 
         return corpus
 
-    def save(self, fname):
+    def save(self, fname, cloud_address):
         with open(fname, 'w') as f:
             f.write(f"{self}\n")
         FNULL = open(os.devnull, 'w')
