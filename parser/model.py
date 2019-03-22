@@ -26,7 +26,8 @@ class Model(object):
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
     def __call__(self, loaders, epochs, patience,
-                 lr, betas, epsilon, weight_decay, annealing, file, last_epoch, cloud_address):
+                 lr, betas, epsilon, weight_decay, annealing, file, last_epoch, cloud_address, gradient_accumulation_steps=1):
+        self.gradient_accumulation_steps = gradient_accumulation_steps
         total_time = timedelta()
         max_e, max_metric = 0, 0.0
         train_loader, dev_loader, test_loader = loaders
@@ -72,9 +73,8 @@ class Model(object):
 
     def train(self, loader):
         self.network.train()
-        for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
-        #for words, attention_mask, token_start_mask, arcs, rels in loader:
-            self.optimizer.zero_grad()
+        for step, (words, attention_mask, token_start_mask, arcs, rels) in enumerate(tqdm(loader)):
+
             s_arc, s_rel = self.network(words, attention_mask)            
             # ignore [CLS]
             token_start_mask[:, 0] = 0
@@ -86,15 +86,15 @@ class Model(object):
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
 
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-            loss.backward()
-            nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
-            self.optimizer.step()
-            self.scheduler.step()
+            if self.gradient_accumulation_steps > 1:
+                loss = loss / self.gradient_accumulation_steps
 
-            pred_arcs, pred_rels = self.decode(s_arc, s_rel)
-            # print('')
-            # print('predict_arcs: ', pred_arcs)
-            # print('gold_arcs: ', gold_arcs)
+            loss.backward()
+
+            if (step + 1) % self.gradient_accumulation_steps == 0:
+                nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
+                self.optimizer.step()
+                self.optimizer.zero_grad()
             
             # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
             # for sentence in words:

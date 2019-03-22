@@ -53,7 +53,7 @@ class Train(object):
         testset = TextDataset(vocab.numericalize(test))
         # set the data loaders
         train_loader = DataLoader(dataset=trainset,
-                                  batch_size=Config.batch_size,
+                                  batch_size=Config.batch_size // Config.gradient_accumulation_steps,
                                   shuffle=True,
                                   collate_fn=collate_fn)
         dev_loader = DataLoader(dataset=devset,
@@ -115,4 +115,5 @@ class Train(object):
               annealing=lambda x: Config.decay ** (x / Config.decay_steps),
               file=args.file,
               last_epoch=last_epoch,
-              cloud_address=args.cloud_address)
+              cloud_address=args.cloud_address,
+              gradient_accumulation_steps=Config.gradient_accumulation_steps)
