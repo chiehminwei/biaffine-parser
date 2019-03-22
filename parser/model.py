@@ -72,7 +72,7 @@ class Model(object):
         i = 0
         #for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
         for words, attention_mask, token_start_mask, arcs, rels in loader:
-            if i > 3: assert 1 == 2
+            if i > 500: assert 1 == 2
             self.optimizer.zero_grad()
             s_arc, s_rel = self.network(words, attention_mask)            
             # ignore [CLS]
@@ -85,10 +85,7 @@ class Model(object):
             for sentence in words:
                 print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
                    
-            print('')     
-            print('s_arc', s_arc)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
-            print('s_arc_masked', s_arc)
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
 
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
