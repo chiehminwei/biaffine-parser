@@ -109,6 +109,7 @@ class BiaffineParser(nn.Module):
             network = cls(state['params'])
             network.load_state_dict(state['state_dict'])
             network.to(device)
+            print('Loaded model from checkpoint')
         else:
             raise IOError('Local checkpoint does not exists. Failed to load model.')
 
