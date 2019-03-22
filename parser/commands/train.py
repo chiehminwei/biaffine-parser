@@ -30,6 +30,7 @@ class Train(object):
 
     def __call__(self, args):
         print("Preprocess the data")
+        
         train = Corpus.load(args.ftrain)
         dev = Corpus.load(args.fdev)
         test = Corpus.load(args.ftest)
