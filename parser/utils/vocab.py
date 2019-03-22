@@ -110,9 +110,13 @@ class Vocab(object):
                     # ids = [0]
                     continue
                 if word == '``':
+                    word = "'"
+                if word == '``':
                     word = '"'
                 if word == "''":
                     word = '"'
+                elif word == "non-``":
+                    word = 'non-"'
                 else:
                     tokens = self.tokenizer.tokenize(word)
                     if '[UNK]' in tokens:
