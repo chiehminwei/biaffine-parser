@@ -122,6 +122,7 @@ class Vocab(object):
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
                     if regex.match(r'\p{P}+$', word):
                         for token_id in ids:
+                            print(type(self.puncts))
                             self.puncts.append(token_id)
 
                     # if '[UNK]' in tokens:
@@ -137,7 +138,7 @@ class Vocab(object):
             rels_numerical.append(torch.tensor(sentence_rel_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
             attention_mask.append(torch.ByteTensor(attentions))
-        self.puncts = set(self.puncts)
+        # self.puncts = set(self.puncts)
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
 
