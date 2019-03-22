@@ -70,8 +70,9 @@ class Model(object):
     def train(self, loader):
         self.network.train()
         i = 0
-        for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
-            if i > 1000: assert 1 == 2
+        #for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
+        for words, attention_mask, token_start_mask, arcs, rels in loader:
+            if i > 3: assert 1 == 2
             self.optimizer.zero_grad()
             s_arc, s_rel = self.network(words, attention_mask)            
             # ignore [CLS]
@@ -80,12 +81,14 @@ class Model(object):
             lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
-            # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
-            # for sentence in words:
-            #     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
-                        
-
+            print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
+            for sentence in words:
+                print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
+                   
+            print('')     
+            print('s_arc', s_arc)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
+            print('s_arc_masked', s_arc)
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
 
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
