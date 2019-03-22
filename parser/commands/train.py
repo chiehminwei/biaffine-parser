@@ -33,21 +33,16 @@ class Train(object):
         train = Corpus.load(args.ftrain)
         dev = Corpus.load(args.fdev)
         test = Corpus.load(args.ftest)
-        # embed = Embedding.load(args.fembed)
-
+        
         if not os.path.isfile(args.vocab):
-          print('Copying vocab from cloud...')
           FNULL = open(os.devnull, 'w')
           subprocess.call(['gsutil', 'cp', args.cloud_address+args.vocab, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         if not os.path.isfile(args.vocab):
-          print('No vocab found. Processing...')
           vocab = Vocab.from_corpus(corpus=train, min_freq=2)
-          # vocab.read_embeddings(embed=embed, unk='unk')
           torch.save(vocab, args.vocab)
           FNULL = open(os.devnull, 'w')
           subprocess.call(['gsutil', 'cp', args.vocab, args.cloud_address+args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         else:
-          print('Vocab found. Restoring...')
           vocab = torch.load(args.vocab)
        
         print(vocab)
