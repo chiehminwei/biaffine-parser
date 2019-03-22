@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from parser.modules import CHAR_LSTM, LSTM, MLP, Biaffine
+from parser.modules import MLP, Biaffine
 from parser.modules.dropout import IndependentDropout, SharedDropout
+from pytorch_pretrained_bert import BertTokenizer, BertModel
 
 import torch
 import torch.nn as nn
-from torch.nn.utils.rnn import (pack_padded_sequence, pad_packed_sequence,
-                                pad_sequence)
-from pytorch_pretrained_bert import BertTokenizer, BertModel
+
 import subprocess
 import os
 
@@ -34,25 +33,19 @@ class BiaffineParser(nn.Module):
 
         # BERT
         self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
-        # the word-lstm layer
-        # self.lstm = LSTM(input_size=params['n_embed']+params['n_char_out'],
-        #                  hidden_size=params['n_lstm_hidden'],
-        #                  num_layers=params['n_lstm_layers'],
-        #                  dropout=params['lstm_dropout'],
-        #                  bidirectional=True)
-        self.lstm_dropout = SharedDropout(p=params['lstm_dropout'])
+        self.bert_dropout = SharedDropout(p=params['bert_dropout'])
 
         # the MLP layers
-        self.mlp_arc_h = MLP(n_in=params['n_lstm_hidden']*2,
+        self.mlp_arc_h = MLP(n_in=params['n_bert_hidden'],
                              n_hidden=params['n_mlp_arc'],
                              dropout=params['mlp_dropout'])
-        self.mlp_arc_d = MLP(n_in=params['n_lstm_hidden']*2,
+        self.mlp_arc_d = MLP(n_in=params['n_bert_hidden'],
                              n_hidden=params['n_mlp_arc'],
                              dropout=params['mlp_dropout'])
-        self.mlp_rel_h = MLP(n_in=params['n_lstm_hidden']*2,
+        self.mlp_rel_h = MLP(n_in=params['n_bert_hidden'],
                              n_hidden=params['n_mlp_rel'],
                              dropout=params['mlp_dropout'])
-        self.mlp_rel_d = MLP(n_in=params['n_lstm_hidden']*2,
+        self.mlp_rel_d = MLP(n_in=params['n_bert_hidden'],
                              n_hidden=params['n_mlp_rel'],
                              dropout=params['mlp_dropout'])
 
@@ -77,17 +70,11 @@ class BiaffineParser(nn.Module):
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
         x = embed
 
-        # lstm dropout
-        x = self.lstm_dropout(x)
+        # bert dropout
+        x = self.bert_dropout(x)
         
-        # sorted_lens, indices = torch.sort(lens, descending=True)
-        # inverse_indices = indices.argsort()
-        # x = pack_padded_sequence(x[indices], sorted_lens, True)
-        # x = self.lstm(x)
-        # x, _ = pad_packed_sequence(x, True)
-        # x = self.lstm_dropout(x)[inverse_indices]
         
-        # apply MLPs to the LSTM output states
+        # apply MLPs to the BERT output states
         arc_h = self.mlp_arc_h(x)
         arc_d = self.mlp_arc_d(x)
         rel_h = self.mlp_rel_h(x)
@@ -110,7 +97,8 @@ class BiaffineParser(nn.Module):
         # Copy from cloud if there's no saved checkpoint
         if not os.path.isfile(fname):
             FNULL = open(os.devnull, 'w')
-            subprocess.call(['gsutil', 'cp', cloud_address+fname, fname], stdout=FNULL, stderr=subprocess.STDOUT)
+            cloud_address = os.path.join(cloud_address, fname)
+            subprocess.call(['gsutil', 'cp', cloud_address, fname], stdout=FNULL, stderr=subprocess.STDOUT)
         # Proceed only if either [1] copy success [2] local file already exists
         if os.path.isfile(fname):
             if torch.cuda.is_available():
@@ -136,4 +124,5 @@ class BiaffineParser(nn.Module):
         torch.save(state, fname)
         # Save a copy to cloud as well
         FNULL = open(os.devnull, 'w')
-        subprocess.call(['gsutil', 'cp', fname, cloud_address+fname], stdout=FNULL, stderr=subprocess.STDOUT)
+        cloud_address = os.path.join(cloud_address, fname)
+        subprocess.call(['gsutil', 'cp', fname, cloud_address], stdout=FNULL, stderr=subprocess.STDOUT)

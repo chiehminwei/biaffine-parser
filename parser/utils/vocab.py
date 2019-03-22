@@ -10,14 +10,12 @@ import numpy as np
 
 class Vocab(object):
     PAD = '<PAD>'
-    UNK = '<UNK>'
 
     def __init__(self, words, chars, rels):
         self.pad_index = 0
-        self.unk_index = 1
-
-        self.words = [self.PAD, self.UNK] + sorted(words)
-        self.chars = [self.PAD, self.UNK] + sorted(chars)
+        
+        self.words = [self.PAD] + sorted(words)
+        self.chars = [self.PAD] + sorted(chars)
         self.rels = sorted(rels)
 
         self.word_dict = {word: i for i, word in enumerate(self.words)}
@@ -25,9 +23,8 @@ class Vocab(object):
         self.rel_dict = {rel: i for i, rel in enumerate(self.rels)}
 
         # ids of punctuation that appear in words
-        self.puncts = sorted(i for word, i in self.word_dict.items()
-                             if regex.match(r'\p{P}+$', word))
-        self.puncts = set(self.puncts)
+        self.puncts = set(sorted(i for word, i in self.word_dict.items()
+                             if regex.match(r'\p{P}+$', word)))
         
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
@@ -45,19 +42,6 @@ class Vocab(object):
 
         return info
 
-    def word2id(self, sequence):
-        return torch.tensor([self.word_dict.get(word.lower(), self.unk_index)
-                             for word in sequence])
-
-    def char2id(self, sequence, max_length=20):
-        char_ids = torch.zeros(len(sequence), max_length, dtype=torch.long)
-        for i, word in enumerate(sequence):
-            ids = torch.tensor([self.char_dict.get(c, self.unk_index)
-                                for c in word[:max_length]])
-            char_ids[i, :len(ids)] = ids
-
-        return char_ids
-
     def rel2id(self, sequence):
         return torch.tensor([self.rel_dict.get(rel, 0)
                              for rel in sequence])
@@ -65,29 +49,13 @@ class Vocab(object):
     def id2rel(self, ids):
         return [self.rels[i] for i in ids]
 
-    def read_embeddings(self, embed, unk=None):
-        words = embed.words
-        # if the UNK token has existed in pretrained vocab,
-        # then replace it with a self-defined one
-        if unk in embed:
-            words[words.index(unk)] = self.UNK
-
-        self.extend(words)
-        self.embeddings = torch.zeros(self.n_words, embed.dim)
-
-        for i, word in enumerate(self.words):
-            if word in embed:
-                self.embeddings[i] = embed[word]
-        self.embeddings /= torch.std(self.embeddings)
-
     def extend(self, words):
         self.words += sorted(set(words).difference(self.word_dict))
         self.chars += sorted(set(''.join(words)).difference(self.char_dict))
         self.word_dict = {w: i for i, w in enumerate(self.words)}
         self.char_dict = {c: i for i, c in enumerate(self.chars)}
-        self.puncts = sorted(set(i for word, i in self.word_dict.items()
+        self.puncts = set(sorted(i for word, i in self.word_dict.items()
                              if regex.match(r'\p{P}+$', word)))
-        self.puncts = set(self.puncts)
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
 
@@ -105,31 +73,32 @@ class Vocab(object):
             attentions = []
             words = ['[CLS]'] + words + ['[SEP]']
             arcs = [0] + arcs + [0]
-            rels = ['PAD'] + rels + ['PAD']
+            rels = ['<ROOT>'] + rels + ['<ROOT>']
             for word, arc, rel in zip(words, arcs, rels):
                 if word == '<ROOT>':
-                    # tokens = ['<ROOT>']
-                    # ids = [0]
                     continue
-                if word == '`':
-                    word = "'"
-                if word == '``':
-                    word = '"'
-                if word == "''":
-                    word = '"'
-                elif word == "non-``":
-                    word = 'non-"'
                 else:
+                    if word == '`':
+                        word = "'"
+                    if word == '``':
+                        word = '"'
+                    if word == "''":
+                        word = '"'
+                    if word == "non-``":
+                        word = 'non-"'
+                    word = word.replace("`", "'")
+
                     tokens = self.tokenizer.tokenize(word)
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
                     if regex.match(r'\p{P}+$', word):
                         for token_id in ids:
-                            # print(type(self.puncts))
                             self.puncts.add(token_id)
 
-                    # if '[UNK]' in tokens:
-                    #     print(word)
-                    #     print(tokens)
+                    if '[UNK]' in tokens:
+                        print(word)
+                        print(tokens)
+                        raise RuntimeError('Illegal character found in corpus.')
+
                 sentence_token_ids.extend(ids)
                 sentence_arc_ids.extend([arc] * len(tokens))
                 sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
@@ -140,17 +109,9 @@ class Vocab(object):
             rels_numerical.append(torch.tensor(sentence_rel_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
             attention_mask.append(torch.ByteTensor(attentions))
-        # self.puncts = set(self.puncts)
+        
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
-
-    def yeet(self, corpus):
-        words = [self.word2id(seq) for seq in corpus.words]
-        chars = [self.char2id(seq) for seq in corpus.words]
-        arcs = [torch.tensor(seq) for seq in corpus.heads]
-        rels = [self.rel2id(seq) for seq in corpus.rels]
-
-        return words, chars, arcs, rels
 
     @classmethod
     def from_corpus(cls, corpus, min_freq=1):

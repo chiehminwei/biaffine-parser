@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from parser import BiaffineParser, Model
-from parser.utils import Corpus, Embedding, TextDataset, Vocab, collate_fn
+from parser.utils import Corpus, TextDataset, Vocab, collate_fn
 
 import torch
 from torch.utils.data import DataLoader
 
 from config import Config
+
 import os
 import subprocess
 
@@ -22,8 +23,6 @@ class Train(object):
                                help='path to dev file')
         subparser.add_argument('--ftest', default='data/test.conllx',
                                help='path to test file')
-        subparser.add_argument('--fembed', default='data/glove.6B.100d.txt',
-                               help='path to pretrained embedding file')
         subparser.set_defaults(func=self)
 
         return subparser
@@ -36,12 +35,14 @@ class Train(object):
         
         if not os.path.isfile(args.vocab):
           FNULL = open(os.devnull, 'w')
-          subprocess.call(['gsutil', 'cp', args.cloud_address+args.vocab, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
+          cloud_address = os.path.join(args.cloud_address, args.vocab)
+          subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         if not os.path.isfile(args.vocab):
           vocab = Vocab.from_corpus(corpus=train, min_freq=2)
           torch.save(vocab, args.vocab)
           FNULL = open(os.devnull, 'w')
-          subprocess.call(['gsutil', 'cp', args.vocab, args.cloud_address+args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
+          cloud_address = os.path.join(args.cloud_address, args.vocab)
+          subprocess.call(['gsutil', 'cp', args.vocab, cloud_address], stdout=FNULL, stderr=subprocess.STDOUT)
         else:
           vocab = torch.load(args.vocab)
        
@@ -69,12 +70,10 @@ class Train(object):
         print("Create the model")
         params = {
             'n_words': vocab.n_train_words,
-            'n_embed': Config.n_embed,
             'n_chars': vocab.n_chars,
             'embed_dropout': Config.embed_dropout,
-            'n_lstm_hidden': Config.n_lstm_hidden,
-            'n_lstm_layers': Config.n_lstm_layers,
-            'lstm_dropout': Config.lstm_dropout,
+            'n_bert_hidden': Config.n_bert_hidden,
+            'bert_dropout': Config.ber_dropout,
             'n_mlp_arc': Config.n_mlp_arc,
             'n_mlp_rel': Config.n_mlp_rel,
             'mlp_dropout': Config.mlp_dropout,
@@ -93,7 +92,8 @@ class Train(object):
         # Start training from checkpoint if one exists
         if not os.path.isfile(args.file):
           FNULL = open(os.devnull, 'w')
-          subprocess.call(['gsutil', 'cp', args.cloud_address+args.file, args.file], stdout=FNULL, stderr=subprocess.STDOUT)
+          cloud_address = os.path.join(args.cloud_address, args.file)
+          subprocess.call(['gsutil', 'cp', cloud_address, args.file], stdout=FNULL, stderr=subprocess.STDOUT)
         if os.path.isfile(args.file):
           if torch.cuda.is_available():
             device = torch.device('cuda')

@@ -4,13 +4,8 @@
 class Config(object):
 
     # [Network]
-    n_embed = 100
-    n_char_embed = 50
-    n_char_out = 100
-    embed_dropout = 0.33
-    n_lstm_hidden = 384
-    n_lstm_layers = 3
-    lstm_dropout = 0.33
+    n_bert_hidden = 384
+    bert_dropout = 0.33
     n_mlp_arc = 500
     n_mlp_rel = 100
     mlp_dropout = 0.33
@@ -26,7 +21,6 @@ class Config(object):
 
     # [Run]
     batch_size = 32
-    #batch_size = 200
     epochs = 1000
     patience = 100
     gradient_accumulation_steps = 2

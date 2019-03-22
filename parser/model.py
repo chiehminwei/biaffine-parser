@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime, timedelta
 from parser.metric import AttachmentMethod
 from parser.parser import BiaffineParser
 
@@ -8,11 +7,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from pytorch_pretrained_bert import BertAdam
+# from pytorch_pretrained_bert import BertTokenizer
+
+from datetime import datetime, timedelta
 from tqdm import tqdm
 
-from pytorch_pretrained_bert import BertTokenizer
-
-from parser.utils import Corpus, TextDataset, collate_fn
 
 
 class Model(object):
@@ -23,7 +22,7 @@ class Model(object):
         self.vocab = vocab
         self.network = network
         self.criterion = nn.CrossEntropyLoss()
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
+        # self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
     def __call__(self, loaders, epochs, patience,
                  lr, betas, epsilon, weight_decay, annealing, file, last_epoch, cloud_address, gradient_accumulation_steps=1):
