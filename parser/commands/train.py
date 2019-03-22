@@ -89,7 +89,7 @@ class Train(object):
         network = BiaffineParser(params)
         if torch.cuda.is_available():
             network = network.cuda()
-        print(f"{network}\n")
+        # print(f"{network}\n")
 
         last_epoch = 0
         # Start training from checkpoint if one exists
