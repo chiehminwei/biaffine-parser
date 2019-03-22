@@ -66,7 +66,8 @@ class Corpus(object):
             if line[0] == '#':
                 start += 1
             if len(line) <= 1:
-                sentence = Sentence(*zip(*[l.split() for l in lines[start:i]]))
+                sentence = Sentence(*zip(*[l.split() if "." not in l.split('\t')[0] 
+                                for l in lines[start:i]]))
                 sentences.append(sentence)
                 start = i + 1
         corpus = cls(sentences)
