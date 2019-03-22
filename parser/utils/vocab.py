@@ -109,7 +109,7 @@ class Vocab(object):
                     # tokens = ['<ROOT>']
                     # ids = [0]
                     continue
-                if word == '``':
+                if word == '`':
                     word = "'"
                 if word == '``':
                     word = '"'
