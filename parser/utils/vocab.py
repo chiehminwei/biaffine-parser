@@ -109,6 +109,10 @@ class Vocab(object):
                     # tokens = ['<ROOT>']
                     # ids = [0]
                     continue
+                if word == '``':
+                    assert('yeet')
+                if word == "''":
+                    assert('yeet2')
                 else:
                     tokens = self.tokenizer.tokenize(word)
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
