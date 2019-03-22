@@ -77,7 +77,7 @@ class Train(object):
             'n_chars': vocab.n_chars,
             'embed_dropout': Config.embed_dropout,
             'n_bert_hidden': Config.n_bert_hidden,
-            'bert_dropout': Config.ber_dropout,
+            'bert_dropout': Config.bert_dropout,
             'n_mlp_arc': Config.n_mlp_arc,
             'n_mlp_rel': Config.n_mlp_rel,
             'mlp_dropout': Config.mlp_dropout,
