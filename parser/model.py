@@ -71,7 +71,7 @@ class Model(object):
         self.network.train()
         i = 0
         for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
-            if i > 3: assert 1 == 2
+            if i > 1000: assert 1 == 2
             self.optimizer.zero_grad()
             s_arc, s_rel = self.network(words, attention_mask)            
             # ignore [CLS]
@@ -95,8 +95,9 @@ class Model(object):
             self.scheduler.step()
 
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
-            print(pred_arcs)
-            print(gold_arcs)
+            print('')
+            print('predict_arcs: ', pred_arcs)
+            # print('gold_arcs: ', gold_arcs)
             i += 1
 
  
