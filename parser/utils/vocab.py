@@ -25,9 +25,8 @@ class Vocab(object):
         self.rel_dict = {rel: i for i, rel in enumerate(self.rels)}
 
         # ids of punctuation that appear in words
-        self.puncts = set()
-        # self.puncts = sorted(i for word, i in self.word_dict.items()
-        #                      if regex.match(r'\p{P}+$', word))
+        self.puncts = sorted(i for word, i in self.word_dict.items()
+                             if regex.match(r'\p{P}+$', word))
 
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
@@ -85,9 +84,8 @@ class Vocab(object):
         self.chars += sorted(set(''.join(words)).difference(self.char_dict))
         self.word_dict = {w: i for i, w in enumerate(self.words)}
         self.char_dict = {c: i for i, c in enumerate(self.chars)}
-        # self.puncts = sorted(i for word, i in self.word_dict.items()
-        #                      if regex.match(r'\p{P}+$', word))
-        self.puncts = set()
+        self.puncts = sorted(i for word, i in self.word_dict.items()
+                             if regex.match(r'\p{P}+$', word))
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
 
@@ -124,7 +122,7 @@ class Vocab(object):
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
                     if regex.match(r'\p{P}+$', word):
                         for token_id in ids:
-                            self.puncts.add(token_id)
+                            self.puncts.append(token_id)
 
                     # if '[UNK]' in tokens:
                     #     print(word)
@@ -139,6 +137,7 @@ class Vocab(object):
             rels_numerical.append(torch.tensor(sentence_rel_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
             attention_mask.append(torch.ByteTensor(attentions))
+        self.puncts = set(self.puncts)
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
 
