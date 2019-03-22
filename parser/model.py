@@ -73,7 +73,7 @@ class Model(object):
     def train(self, loader):
         self.network.train()
         
-        corpus = Corpus.load('data/train.conll')
+        corpus = Corpus.load('data/train.conllx')
         print("Predict the dataset")
         corpus.heads, corpus.rels = self.predict(loader)
 
