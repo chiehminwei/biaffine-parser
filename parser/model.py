@@ -37,8 +37,8 @@ class Model(object):
                                   max_grad_norm=5.0)
         # self.optimizer = optim.Adam(params=self.network.parameters(),
         #                             lr=lr, betas=betas, eps=epsilon)
-        self.scheduler = optim.lr_scheduler.LambdaLR(optimizer=self.optimizer,
-                                                     lr_lambda=annealing)
+        # self.scheduler = optim.lr_scheduler.LambdaLR(optimizer=self.optimizer,
+        #                                              lr_lambda=annealing)
         print('***Started training at {}***'.format(datetime.now()))
         for epoch in range(last_epoch + 1, epochs + 1):
             start = datetime.now()
@@ -94,7 +94,9 @@ class Model(object):
             if (step + 1) % self.gradient_accumulation_steps == 0:
                 nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
                 self.optimizer.step()
+                # self.scheduler.step()
                 self.optimizer.zero_grad()
+
             
             # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
             # for sentence in words:
