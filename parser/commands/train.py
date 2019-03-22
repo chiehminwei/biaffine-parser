@@ -82,8 +82,7 @@ class Train(object):
             'n_mlp_rel': Config.n_mlp_rel,
             'mlp_dropout': Config.mlp_dropout,
             'n_rels': vocab.n_rels,
-            'pad_index': vocab.pad_index,
-            'unk_index': vocab.unk_index
+            'pad_index': vocab.pad_index
         }
         for k, v in params.items():
             print(f"  {k}: {v}")
