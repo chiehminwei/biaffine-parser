@@ -74,10 +74,12 @@ class Model(object):
             if i > 3: assert 1 == 2
             self.optimizer.zero_grad()
             s_arc, s_rel = self.network(words, attention_mask)
-            print(words)
+            for sentence in words:
+                print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
             print(s_arc)
             print(s_arc.shape)
-            print(words[token_start_mask])
+            for sentence in words[token_start_mask]:
+                print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
 
             # ignore [CLS]
             token_start_mask[:, 0] = 0
