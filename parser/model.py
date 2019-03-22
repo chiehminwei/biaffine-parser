@@ -108,7 +108,10 @@ class Model(object):
         self.network.eval()
 
         loss, metric = 0, AttachmentMethod()
+        i = 0
         for words, attention_mask, token_start_mask, arcs, rels in loader:
+            if i > 10: assert 1==2, 'eeeet'
+            i += 1
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP] 
@@ -117,7 +120,10 @@ class Model(object):
 
             # ignore all punctuation if specified
             if not include_punct:
+                print(self.voca.puncts)
                 puncts = words.new_tensor(self.vocab.puncts)
+                print(puncts)
+                print(words.unsqueeze(-1).ne(puncts).all(-1))
                 token_start_mask &= words.unsqueeze(-1).ne(puncts).all(-1)
 
             print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
