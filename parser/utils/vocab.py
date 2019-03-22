@@ -25,8 +25,9 @@ class Vocab(object):
         self.rel_dict = {rel: i for i, rel in enumerate(self.rels)}
 
         # ids of punctuation that appear in words
-        self.puncts = sorted(i for word, i in self.word_dict.items()
-                             if regex.match(r'\p{P}+$', word))
+        self.puncts = []
+        # self.puncts = sorted(i for word, i in self.word_dict.items()
+        #                      if regex.match(r'\p{P}+$', word))
 
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
@@ -119,11 +120,14 @@ class Vocab(object):
                     word = 'non-"'
                 else:
                     tokens = self.tokenizer.tokenize(word)
-                    if '[UNK]' in tokens:
-                        print(word)
-                        print(tokens)
-
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
+                    if regex.match(r'\p{P}+$', word):
+                        for token_id in ids:
+                            self.puncts.append(token_id)
+
+                    # if '[UNK]' in tokens:
+                    #     print(word)
+                    #     print(tokens)
                 sentence_token_ids.extend(ids)
                 sentence_arc_ids.extend([arc] * len(tokens))
                 sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
