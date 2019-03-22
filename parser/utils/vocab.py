@@ -112,6 +112,7 @@ class Vocab(object):
                 if word == '``':
                     word = '"'
                     print(self.tokenizer.tokenize(word))
+                    assert 1==2, 'yeet'
                 if word == "''":
                     print(self.tokenizer.tokenize(word))
                     assert 1==2, 'yeet2'
