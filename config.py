@@ -24,4 +24,3 @@ class Config(object):
     epochs = 1000
     patience = 100
     gradient_accumulation_steps = 2
-    

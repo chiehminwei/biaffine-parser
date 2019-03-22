@@ -13,7 +13,6 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 
 
-
 class Model(object):
 
     def __init__(self, vocab, network):
@@ -25,7 +24,7 @@ class Model(object):
         # self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
     def __call__(self, loaders, epochs, patience,
-                 lr, betas, epsilon, weight_decay, annealing, file, 
+                 lr, betas, epsilon, weight_decay, annealing, file,
                  last_epoch, cloud_address, gradient_accumulation_steps=1):
 
         self.gradient_accumulation_steps = gradient_accumulation_steps
@@ -101,7 +100,7 @@ class Model(object):
             # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
             # for sentence in words:
             #     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
- 
+
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
         self.network.eval()
@@ -112,7 +111,7 @@ class Model(object):
             i += 1
             # ignore [CLS]
             token_start_mask[:, 0] = 0
-            # ignore [SEP] 
+            # ignore [SEP]
             lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 

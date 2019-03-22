@@ -37,14 +37,14 @@ class Train(object):
         if not os.path.isfile(args.vocab):
             FNULL = open(os.devnull, 'w')
             cloud_address = os.path.join(args.cloud_address, args.vocab)
-            subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], 
+            subprocess.call(['gsutil', 'cp', cloud_address, args.vocab],
                             stdout=FNULL, stderr=subprocess.STDOUT)
         if not os.path.isfile(args.vocab):
             vocab = Vocab.from_corpus(corpus=train, min_freq=2)
             torch.save(vocab, args.vocab)
             FNULL = open(os.devnull, 'w')
             cloud_address = os.path.join(args.cloud_address, args.vocab)
-            subprocess.call(['gsutil', 'cp', args.vocab, cloud_address], 
+            subprocess.call(['gsutil', 'cp', args.vocab, cloud_address],
                             stdout=FNULL, stderr=subprocess.STDOUT)
         else:
             vocab = torch.load(args.vocab)
@@ -99,7 +99,7 @@ class Train(object):
             subprocess.call(['gsutil', 'cp', cloud_address, args.file], stdout=FNULL, stderr=subprocess.STDOUT)
         if os.path.isfile(args.file):
             if torch.cuda.is_available():
-              device = torch.device('cuda')
+                device = torch.device('cuda')
             else:
                 device = torch.device('cpu')
             state = torch.load(args.file, map_location=device)

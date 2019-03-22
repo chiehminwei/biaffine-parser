@@ -13,3 +13,6 @@ __pycache__
 
 # ignore vscode
 .vscode
+
+# ignore checklen
+checklen.py

@@ -14,7 +14,7 @@ class Vocab(object):
 
     def __init__(self, words, chars, rels):
         self.pad_index = 0
-        
+
         self.words = [self.PAD] + sorted(words)
         self.chars = [self.PAD] + sorted(chars)
         self.rels = sorted(rels)
@@ -25,7 +25,7 @@ class Vocab(object):
 
         # ids of punctuation that appear in words
         self.puncts = set(sorted(i for word, i in self.word_dict.items()
-                                    if regex.match(r'\p{P}+$', word)))
+                                if regex.match(r'\p{P}+$', word)))
 
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
@@ -56,7 +56,7 @@ class Vocab(object):
         self.word_dict = {w: i for i, w in enumerate(self.words)}
         self.char_dict = {c: i for i, c in enumerate(self.chars)}
         self.puncts = set(sorted(i for word, i in self.word_dict.items()
-                                        if regex.match(r'\p{P}+$', word)))
+                                if regex.match(r'\p{P}+$', word)))
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
 

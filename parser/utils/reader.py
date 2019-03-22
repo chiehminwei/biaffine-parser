@@ -78,5 +78,5 @@ class Corpus(object):
             f.write(f"{self}\n")
         FNULL = open(os.devnull, 'w')
         cloud_address = os.path.join(cloud_address, fname)
-        subprocess.call(['gsutil', 'cp', fname, cloud_address], 
+        subprocess.call(['gsutil', 'cp', fname, cloud_address],
                         stdout=FNULL, stderr=subprocess.STDOUT)
