@@ -123,7 +123,7 @@ class Vocab(object):
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
                     if regex.match(r'\p{P}+$', word):
                         for token_id in ids:
-                            self.puncts.append(token_id)
+                            self.puncts.add(token_id)
 
                     # if '[UNK]' in tokens:
                     #     print(word)
