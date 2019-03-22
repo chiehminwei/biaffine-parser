@@ -25,7 +25,7 @@ class Vocab(object):
         self.rel_dict = {rel: i for i, rel in enumerate(self.rels)}
 
         # ids of punctuation that appear in words
-        self.puncts = []
+        self.puncts = set()
         # self.puncts = sorted(i for word, i in self.word_dict.items()
         #                      if regex.match(r'\p{P}+$', word))
 
