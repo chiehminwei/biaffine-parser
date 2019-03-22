@@ -17,4 +17,4 @@ install:
   - conda install --quiet pycodestyle
 
 script:
-  - pycodestyle .
+  - pycodestyle --max-line-length=101 .
