@@ -78,8 +78,8 @@ class Model(object):
                 print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
             print(s_arc)
             print(s_arc.shape)
-            for sentence in words[token_start_mask]:
-                print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
+            
+            print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
 
             # ignore [CLS]
             token_start_mask[:, 0] = 0
