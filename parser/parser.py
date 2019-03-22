@@ -60,8 +60,7 @@ class BiaffineParser(nn.Module):
                                  bias_x=True,
                                  bias_y=True)
         self.pad_index = params['pad_index']
-        self.unk_index = params['unk_index']
-
+        
     def forward(self, words, mask):
         # get the mask and lengths of given batch
         lens = words.ne(self.pad_index).sum(dim=1)
