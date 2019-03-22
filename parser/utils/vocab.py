@@ -134,7 +134,6 @@ class Vocab(object):
             rels_numerical.append(torch.tensor(sentence_rel_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
             attention_mask.append(torch.ByteTensor(attentions))
-        assert 1 == 2, 'yeet'
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
 
