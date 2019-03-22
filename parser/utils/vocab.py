@@ -28,8 +28,7 @@ class Vocab(object):
         self.puncts = sorted(i for word, i in self.word_dict.items()
                              if regex.match(r'\p{P}+$', word))
         self.puncts = set(self.puncts)
-        print(type(self.puncts))
-
+        
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
         self.n_rels = len(self.rels)
@@ -89,7 +88,6 @@ class Vocab(object):
         self.puncts = sorted(set(i for word, i in self.word_dict.items()
                              if regex.match(r'\p{P}+$', word)))
         self.puncts = set(self.puncts)
-        print(type(self.puncts))
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
 
