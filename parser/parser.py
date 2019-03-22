@@ -30,14 +30,6 @@ class BiaffineParser(nn.Module):
         super(BiaffineParser, self).__init__()
 
         self.params = params
-        # # the embedding layer
-        # self.pretrained = nn.Embedding.from_pretrained(embeddings)
-        # self.embed = nn.Embedding(num_embeddings=params['n_words'],
-        #                           embedding_dim=params['n_embed'])
-        # # the char-lstm layer
-        # self.char_lstm = CHAR_LSTM(n_chars=params['n_chars'],
-        #                            n_embed=params['n_char_embed'],
-        #                            n_out=params['n_char_out'])
         self.embed_dropout = IndependentDropout(p=params['embed_dropout'])
 
         # BERT
@@ -75,22 +67,13 @@ class BiaffineParser(nn.Module):
         self.pad_index = params['pad_index']
         self.unk_index = params['unk_index']
 
-        # self.reset_parameters()
-
-    # def reset_parameters(self):
-    #     nn.init.zeros_(self.embed.weight)
-
     def forward(self, words, mask):
-        # run words through bert
-
         # get the mask and lengths of given batch
         lens = words.ne(self.pad_index).sum(dim=1)
-        # mask = words.ne(self.pad_index)
-        # lens = mask.sum(dim=1)
         
-        # get outputs from embedding layers
+        # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
-        embed, char_embed = self.embed_dropout(embed, embed)
+        # embed, char_embed = self.embed_dropout(embed, embed)
         x = embed
 
         #print('attention_mask', mask.shape)
@@ -108,7 +91,6 @@ class BiaffineParser(nn.Module):
         # embed, char_embed = self.embed_dropout(embed, char_embed)
         # # concatenate the word and char representations
         # x = torch.cat((embed, char_embed), dim=-1)
-        
 
         # sorted_lens, indices = torch.sort(lens, descending=True)
         # inverse_indices = indices.argsort()
@@ -119,25 +101,29 @@ class BiaffineParser(nn.Module):
         
         # apply MLPs to the LSTM output states
         arc_h = self.mlp_arc_h(x)
+        arc_d = self.mlp_arc_d(x)
+        rel_h = self.mlp_rel_h(x)
+        rel_d = self.mlp_rel_d(x)
         #print('arch_h', arc_h.shape)
         #print(arc_h[0, :10])
-        arc_d = self.mlp_arc_d(x)
+        
         #print('arc_d', arc_d.shape)
         #print(arc_d[0, :10])
-        rel_h = self.mlp_rel_h(x)
+        
         #print('rel_h', rel_h.shape)
         #print(rel_h[0, :10])
-        rel_d = self.mlp_rel_d(x)
+        
         #print('rel_d', rel_d.shape)
         #print(rel_d[0, :10])
 
         # get arc and rel scores from the bilinear attention
         # [batch_size, seq_len, seq_len]
         s_arc = self.arc_attn(arc_d, arc_h)
-        #print('s_arc', s_arc.shape)
-        #print(s_arc[0, :10])
         # [batch_size, seq_len, seq_len, n_rels]
         s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
+        #print('s_arc', s_arc.shape)
+        #print(s_arc[0, :10])
+        
         #print('s_rel', s_rel.shape)
         #print(s_rel[0, :10])
         # set the scores that exceed the length of each sentence to -inf
