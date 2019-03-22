@@ -120,7 +120,7 @@ class Model(object):
 
             # ignore all punctuation if specified
             if not include_punct:
-                print(self.voca.puncts)
+                print(self.vocab.puncts)
                 puncts = words.new_tensor(self.vocab.puncts)
                 print(puncts)
                 print(words.unsqueeze(-1).ne(puncts).all(-1))
