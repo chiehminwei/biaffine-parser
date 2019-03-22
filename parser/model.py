@@ -146,6 +146,7 @@ class Model(object):
             lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
+
             s_arc, s_rel = self.network(words, attention_mask)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
@@ -155,6 +156,7 @@ class Model(object):
             print(pred_arcs)
             print(pred_rels)
 
+            lens = lens.tolist()
             all_arcs.extend(torch.split(pred_arcs, lens))
             all_rels.extend(torch.split(pred_rels, lens))
         all_arcs = [seq.tolist() for seq in all_arcs]
