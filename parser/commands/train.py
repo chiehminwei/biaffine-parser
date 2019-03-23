@@ -52,7 +52,7 @@ class Train(object):
         print(vocab)
 
         print("Load the dataset")
-        num_workers = 4
+        num_workers = args.threads
         trainset = TextDataset(vocab.numericalize(train))
         devset = TextDataset(vocab.numericalize(dev))
         testset = TextDataset(vocab.numericalize(test))
