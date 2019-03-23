@@ -6,7 +6,6 @@ from parser.commands import Evaluate, Predict, Train
 
 import torch
 import logging
-import multiprocessing
 
 if __name__ == '__main__':
     # logging.basicConfig(level=logging.INFO)
@@ -43,7 +42,7 @@ if __name__ == '__main__':
     # print(f"Set the device with ID {args.device} visible")
     
     # torch.set_num_threads(args.num_threads)
-    torch.set_num_threads(multiprocessing.cpu_count())
+    torch.set_num_threads(6)
     torch.manual_seed(args.seed)
     n_gpu = torch.cuda.device_count()
     if n_gpu > 0:
