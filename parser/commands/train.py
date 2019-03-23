@@ -90,6 +90,7 @@ class Train(object):
         if torch.cuda.is_available():
             network = network.cuda()
         if torch.cuda.device_count() > 1:
+            print('Using {} GPUs to train'.format(orch.cuda.device_count()))
             network = torch.nn.DataParallel(network)
         # print(f"{network}\n")
 
