@@ -10,7 +10,7 @@ from config import Config
 
 import os
 import subprocess
-
+import multiprocessing
 
 class Train(object):
 
@@ -53,7 +53,7 @@ class Train(object):
         print(vocab)
 
         print("Load the dataset")
-        num_workers = args.num_threads
+        num_workers = multiprocessing.cpu_count()
         trainset = TextDataset(vocab.numericalize(train))
         devset = TextDataset(vocab.numericalize(dev))
         testset = TextDataset(vocab.numericalize(test))
