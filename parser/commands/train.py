@@ -94,7 +94,7 @@ class Train(object):
             network = network.cuda()
         if torch.cuda.device_count() > 1:
             print('Using {} GPUs to train'.format(torch.cuda.device_count()))
-            network = torch.nn.DataParallel(network)
+            # network = torch.nn.DataParallel(network)
         # print(f"{network}\n")
 
         last_epoch = 0
