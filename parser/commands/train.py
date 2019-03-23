@@ -53,6 +53,7 @@ class Train(object):
         print(vocab)
 
         print("Load the dataset")
+        num_workers = args.num_threads
         trainset = TextDataset(vocab.numericalize(train))
         devset = TextDataset(vocab.numericalize(dev))
         testset = TextDataset(vocab.numericalize(test))
@@ -60,13 +61,16 @@ class Train(object):
         train_loader = DataLoader(dataset=trainset,
                                   batch_size=Config.batch_size // Config.gradient_accumulation_steps,
                                   shuffle=True,
-                                  collate_fn=collate_fn)
+                                  collate_fn=collate_fn,
+                                  num_workers=num_workers)
         dev_loader = DataLoader(dataset=devset,
                                 batch_size=Config.batch_size,
-                                collate_fn=collate_fn)
+                                collate_fn=collate_fn,
+                                num_workers=num_workers)
         test_loader = DataLoader(dataset=testset,
                                  batch_size=Config.batch_size,
-                                 collate_fn=collate_fn)
+                                 collate_fn=collate_fn,
+                                 num_workers=num_workers)
         print(f"  size of trainset: {len(trainset)}")
         print(f"  size of devset: {len(devset)}")
         print(f"  size of testset: {len(testset)}")
