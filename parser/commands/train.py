@@ -112,7 +112,7 @@ class Train(object):
             network = network.load(args.file, args.cloud_address)
 
         train_batch_size = batch_size=Config.batch_size // Config.gradient_accumulation_steps
-        inputs = (torch.zeros([train_batch_size, 150], dtype=torch.int32), torch.zeros([train_batch_size, 150], dtype=torch.int32))
+        inputs = (torch.zeros([train_batch_size, 150], dtype=torch.long), torch.zeros([train_batch_size, 150], dtype=torch.long))
         network = xm.XlaModel(network, inputs)
 
         model = Model(vocab, network)
