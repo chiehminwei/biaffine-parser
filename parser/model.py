@@ -62,7 +62,7 @@ class Model(object):
         self.network.train()
         i = 0
         for words, tags, arcs, rels in loader:
-            if i >= 1: assert 1==2
+            # if i >= 1: assert 1==2
             self.optimizer.zero_grad()
 
             mask = words.ne(self.vocab.pad_index)
