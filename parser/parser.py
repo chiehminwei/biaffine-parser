@@ -85,8 +85,8 @@ class BiaffineParser(nn.Module):
         s_arc = self.arc_attn(arc_d, arc_h)
         # [batch_size, seq_len, seq_len, n_rels]
         # s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
-        s_rel = self.rel_attn(rel_d, rel_h).transpose(1, 2).transpose(2, 3)
-
+        s_rel = self.rel_attn(rel_d, rel_h)
+        
         # set the scores that exceed the length of each sentence to -inf
         len_mask = length_to_mask(lens, max_len=words.shape[-1], dtype=torch.uint8)
         s_arc.masked_fill((1 - len_mask).unsqueeze(1), float('-inf'))

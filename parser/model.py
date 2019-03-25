@@ -85,7 +85,7 @@ class Model(object):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
 
-            
+
             # TPU cannot truncate
             # if words.size()[0] != batch_size:
             #     break
@@ -174,6 +174,7 @@ class Model(object):
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             s_arc, s_rel = self.network(words, attention_mask)
+            s_rel = s_rel.permute(0, 2, 3, 1)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
 
