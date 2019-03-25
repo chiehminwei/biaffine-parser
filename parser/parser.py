@@ -17,7 +17,8 @@ def length_to_mask(length, max_len=None, dtype=None):
     If max_len is None, then max of length will be used.
     """
     assert len(length.shape) == 1, 'Length shape should be 1 dimensional.'
-    max_len = max_len or length.max().item()
+    if not max_len:
+        max_len = length.max().item()
     mask = torch.arange(max_len, device=length.device,
                         dtype=length.dtype).expand(len(length), max_len) < length.unsqueeze(1)
     if dtype is not None:
@@ -88,7 +89,8 @@ class BiaffineParser(nn.Module):
         s_rel = self.rel_attn(rel_d, rel_h)
         
         # set the scores that exceed the length of each sentence to -inf
-        len_mask = length_to_mask(lens, max_len=words.shape[-1], dtype=torch.uint8)
+        # len_mask = length_to_mask(lens, max_len=words.shape[-1], dtype=torch.uint8)
+        len_mask = length_to_mask(lens, max_len=150, dtype=torch.uint8)
         s_arc.masked_fill((1 - len_mask).unsqueeze(1), float('-inf'))
 
         return s_arc, s_rel
