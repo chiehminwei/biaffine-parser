@@ -11,6 +11,9 @@ from config import Config
 import os
 import subprocess
 
+import torch_xla_py.xla_model as xm
+
+
 class Train(object):
 
     def add_subparser(self, name, parser):
