@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 
 from config import Config
 
+import torch_xla_py.xla_model as xm
 
 class Train(object):
 
@@ -80,6 +81,9 @@ class Train(object):
         if torch.cuda.is_available():
             network = network.cuda()
         print(f"{network}\n")
+        
+        inputs = (torch.zeros([Config.batch_size, 150], dtype=torch.long), torch.zeros([Config.batch_size, 150], dtype=torch.long))
+        network = xm.XlaModel(network, inputs)
 
         model = Model(vocab, network)
         model(loaders=(train_loader, dev_loader, test_loader),
