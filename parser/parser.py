@@ -88,7 +88,7 @@ class BiaffineParser(nn.Module):
 
         # set the scores that exceed the length of each sentence to -inf
         len_mask = length_to_mask(lens, max_len=words.shape[-1], dtype=torch.uint8)
-        s_arc.masked_fill_((1 - len_mask).unsqueeze(1), float('-inf'))
+        s_arc.masked_fill((1 - len_mask).unsqueeze(1), float('-inf'))
 
         return s_arc, s_rel
 
