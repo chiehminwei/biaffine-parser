@@ -85,9 +85,10 @@ class Model(object):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
 
+            
             # TPU cannot truncate
-            if words.size()[0] != batch_size:
-                break
+            # if words.size()[0] != batch_size:
+            #     break
 
             # TPU outputs a tuple
             y = self.network(words, attention_mask)
@@ -132,8 +133,8 @@ class Model(object):
             words, attention_mask, token_start_mask, arcs, rels = batch
 
             # TPU cannot truncate
-            if words.size()[0] != batch_size:
-                break
+            # if words.size()[0] != batch_size:
+            #     break
 
             # ignore [CLS]
             token_start_mask[:, 0] = 0
