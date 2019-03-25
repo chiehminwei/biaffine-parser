@@ -76,12 +76,12 @@ class BiaffineParser(nn.Module):
         # concatenate the word and tag representations
         x = torch.cat((embed, tag_embed), dim=-1)
 
-        print('words', words.shape)
-        print(words)
-        print('attention_mask', mask.shape)
-        print(mask)
-        print('embedding', x.shape)
-        print(x[:, -10:])
+        # print('words', words.shape)
+        # print(words)
+        # print('attention_mask', mask.shape)
+        # print(mask)
+        # print('embedding', x.shape)
+        # print(x[:, -10:])
 
         sorted_lens, indices = torch.sort(lens, descending=True)
         inverse_indices = indices.argsort()
@@ -90,8 +90,8 @@ class BiaffineParser(nn.Module):
         x, _ = pad_packed_sequence(x, True)
         x = self.lstm_dropout(x)[inverse_indices]
 
-        print('after lstm', x.shape)
-        print(x[0, :10])
+        # print('after lstm', x.shape)
+        # print(x[0, :10])
 
         # apply MLPs to the LSTM output states
         arc_h = self.mlp_arc_h(x)
@@ -99,14 +99,14 @@ class BiaffineParser(nn.Module):
         rel_h = self.mlp_rel_h(x)
         rel_d = self.mlp_rel_d(x)
 
-        print('arc_h', arc_h.shape)
-        print(x[0, :10])
-        print('arc_d', arc_d.shape)
-        print(x[0, :10])
-        print('rel_h', rel_h.shape)
-        print(x[0, :10])
-        print('rel_d', rel_d.shape)
-        print(x[0, :10])
+        # print('arc_h', arc_h.shape)
+        # print(x[0, :10])
+        # print('arc_d', arc_d.shape)
+        # print(x[0, :10])
+        # print('rel_h', rel_h.shape)
+        # print(x[0, :10])
+        # print('rel_d', rel_d.shape)
+        # print(x[0, :10])
 
         # get arc and rel scores from the bilinear attention
         # [batch_size, seq_len, seq_len]
@@ -116,11 +116,11 @@ class BiaffineParser(nn.Module):
         # set the scores that exceed the length of each sentence to -inf
         s_arc.masked_fill_((1 - mask).unsqueeze(1), float('-inf'))
 
-        print('s_arc', s_arc.shape)
-        print(s_arc[0, :10])
+        # print('s_arc', s_arc.shape)
+        # print(s_arc[0, :10])
 
-        print('s_rel', s_rel.shape)
-        print(s_rel[0, :10])
+        # print('s_rel', s_rel.shape)
+        # print(s_rel[0, :10])
 
         return s_arc, s_rel
 
