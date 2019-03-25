@@ -12,6 +12,10 @@ from pytorch_pretrained_bert import BertAdam
 from datetime import datetime, timedelta
 from tqdm import tqdm
 
+import torch_xla
+import torch_xla_py.utils as xu
+import torch_xla_py.xla_model as xm
+
 
 class Model(object):
 
@@ -81,7 +85,16 @@ class Model(object):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
 
-            s_arc, s_rel = self.network(words, attention_mask)
+            # TPU cannot truncate
+            if words.size()[0] != batch_size:
+                break
+
+            # TPU outputs a tuple
+            y = self.network(words, attention_mask)
+            s_arc, s_rel = y[0]
+            s_arc.requires_grad = True
+            s_rel.requires_grad = True
+
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
@@ -96,6 +109,8 @@ class Model(object):
                 loss = loss / self.gradient_accumulation_steps
 
             loss.backward()
+            self.network.backward(y)
+
 
             if (step + 1) % self.gradient_accumulation_steps == 0:
                 nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
@@ -116,6 +131,10 @@ class Model(object):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
 
+            # TPU cannot truncate
+            if words.size()[0] != batch_size:
+                break
+
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
@@ -127,7 +146,10 @@ class Model(object):
                 puncts = words.new_tensor([punct for punct in self.vocab.puncts])
                 token_start_mask &= words.unsqueeze(-1).ne(puncts).all(-1)
 
-            s_arc, s_rel = self.network(words, attention_mask)
+            # TPU outputs a tuple
+            y = self.network(words, attention_mask)
+            s_arc, s_rel = y[0]
+            
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
