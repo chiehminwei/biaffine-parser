@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import torch
+import torch.nn as nn
+
 from parser.modules import MLP, Biaffine
 from parser.modules.dropout import IndependentDropout, SharedDropout
 from pytorch_pretrained_bert import BertTokenizer, BertModel
-
-import torch
-import torch.nn as nn
 
 import subprocess
 import os
