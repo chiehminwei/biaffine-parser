@@ -39,6 +39,11 @@ class Corpus(object):
 
     @property
     def heads(self):
+        for i, sentence in enumerate(self.sentences):
+            if sentence.HEAD == '_':
+                print(i)
+                print(sentence)
+
         return [[0] + list(map(int, sentence.HEAD))
                 for sentence in self.sentences]
 
