@@ -48,8 +48,8 @@ class Corpus(object):
                 try:
                     a = int(sentence.HEAD)
                 except:
+                    print(sentence.HEAD)
                     print(sentence)
-                    assert 1 == 2
 
 
     @property
