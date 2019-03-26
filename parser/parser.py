@@ -31,7 +31,8 @@ class BiaffineParser(nn.Module):
         super(BiaffineParser, self).__init__()
 
         self.params = params
-        self.embed_dropout = IndependentDropout(p=params['embed_dropout'])
+        self.embed_dropout = nn.Dropout(p=params['embed_dropout'])
+        # self.embed_dropout = IndependentDropout(p=params['embed_dropout'])
 
         # BERT
         self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
@@ -65,8 +66,8 @@ class BiaffineParser(nn.Module):
         # get the mask and lengths of given batch
         lens = words.ne(self.pad_index).sum(dim=1)
         # word dropout
-        # words, yeet = self.embed_dropout(words, words)
-
+        words = self.embed_dropout(words)
+        
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
         x = embed
