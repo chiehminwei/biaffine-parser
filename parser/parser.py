@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from parser.modules import MLP, Biaffine
-from parser.modules.dropout import IndependentDropout, SharedDropout
+from parser.modules.dropout import SharedDropout
 from pytorch_pretrained_bert import BertTokenizer, BertModel
 
 import torch
@@ -30,15 +30,10 @@ class BiaffineParser(nn.Module):
     def __init__(self, params):
         super(BiaffineParser, self).__init__()
 
-        if torch.cuda.is_available():
-            self.device = torch.device('cuda')
-        else:
-            self.device = torch.device('cpu')
-
         self.params = params
-        self.embed_dropout = nn.Dropout(p=params['embed_dropout'])
-        # self.embed_dropout = IndependentDropout(p=params['embed_dropout'])
-
+        self.word_dropout = nn.Dropout(p=params['word_dropout'])
+        self.word_dropout_p = params['word_dropout']
+        
         # BERT
         self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
         self.bert_dropout = SharedDropout(p=params['bert_dropout'])
@@ -70,8 +65,11 @@ class BiaffineParser(nn.Module):
     def forward(self, words, mask):
         # get the mask and lengths of given batch
         lens = words.ne(self.pad_index).sum(dim=1)
+
         # word dropout
-        words = self.embed_dropout(words.type('torch.DoubleTensor')).type('torch.LongTensor').to(self.device)
+        if self.training:
+            x_ = self.word_dropout(inputs.float())
+            words = x_.mul(1-self.word_dropout_p).long()  
         
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)

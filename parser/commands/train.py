@@ -74,7 +74,7 @@ class Train(object):
         params = {
             'n_words': vocab.n_train_words,
             'n_chars': vocab.n_chars,
-            'embed_dropout': Config.embed_dropout,
+            'word_dropout': Config.word_dropout,
             'n_bert_hidden': Config.n_bert_hidden,
             'bert_dropout': Config.bert_dropout,
             'n_mlp_arc': Config.n_mlp_arc,
