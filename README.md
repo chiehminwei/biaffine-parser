@@ -24,6 +24,16 @@ pytorch == 1.0.0
 
 ## Datasets
 
+|                   |   train |   dev |   test |
+|-------------------|---------|-------|--------|
+| UD_English-ESL    |    4124 |   500 |    500 |
+| UD_English-EWT    |   12543 |  2002 |   2077 |
+| UD_English-GUM    |    2914 |   707 |    778 |
+| UD_English-LinES  |    2738 |   912 |    914 |
+| UD_English-PUD    |         |       |   1000 |
+| UD_English-ParTUT |    1781 |   156 |    153 |
+
+
 |                       Corpus  | # Tree|  
 |-------------------------------|-------|
 | UD_Afrikaans-AfriBooms        |  1934 |
