@@ -39,29 +39,18 @@ class Corpus(object):
 
     @property
     def heads(self):
-        flag = False
-        for s in self.sentences:
+        # flag = False
+        # for s in self.sentences:
             
-            if '_' in s.HEAD:
-                print(s.ID)
-                flag = True
-                # print(s)
-        if flag:
-            assert 1 == 2
+        #     if '_' in s.HEAD:
+        #         print(s.ID)
+        #         flag = True
+        #         # print(s)
+        # if flag:
+        #     assert 1 == 2
 
-        a = [list(map(int, sentence.HEAD)) for sentence in self.sentences]
         return [[0] + list(map(int, sentence.HEAD))
                 for sentence in self.sentences]
-        # # except:
-        # for i, sentence in enumerate(self.sentences):
-        #     try:
-        #         a = map(int, sentence.HEAD)
-        #     except:
-        #         print(i)
-        #         print(sentence)
-        # return None
-                    # print(sentence)
-
 
     @property
     def rels(self):
