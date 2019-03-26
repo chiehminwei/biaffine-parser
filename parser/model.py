@@ -62,7 +62,10 @@ class Model(object):
 
             # save the model if it is the best so far
             if dev_metric > max_metric:
-                self.network.save(file, epoch, cloud_address)
+                if not torch.cuda.device_count() > 1:
+                    self.network.save(file, epoch, cloud_address)
+                else:
+                    self.network.module.save(file, epoch, cloud_address)
                 max_e, max_metric = epoch, dev_metric
             elif epoch - max_e >= patience:
                 break
