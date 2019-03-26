@@ -107,7 +107,11 @@ class BiaffineParser(nn.Module):
             subprocess.call(['gsutil', 'cp', cloud_address, fname], stdout=FNULL, stderr=subprocess.STDOUT)
         # Proceed only if either [1] copy success [2] local file already exists
         if os.path.isfile(fname):
-            state = torch.load(fname, map_location=self.device)
+            if torch.cuda.is_available():
+                device = torch.device('cuda')
+            else:
+                device = torch.device('cpu')
+            state = torch.load(fname, map_location=device)
             network = cls(state['params'])
             network.load_state_dict(state['state_dict'])
             network.to(device)
