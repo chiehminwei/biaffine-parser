@@ -88,9 +88,6 @@ class Train(object):
         network = BiaffineParser(params)
         if torch.cuda.is_available():
             network = network.cuda()
-        if torch.cuda.device_count() > 1:
-            print('Using {} GPUs to train'.format(torch.cuda.device_count()))
-            network = torch.nn.DataParallel(network)
         # print(f"{network}\n")
 
         last_epoch = 0
@@ -107,6 +104,10 @@ class Train(object):
             state = torch.load(args.file, map_location=device)
             last_epoch = state['last_epoch']
             network = network.load(args.file, args.cloud_address)
+
+        if torch.cuda.device_count() > 1:
+            print('Using {} GPUs to train'.format(torch.cuda.device_count()))
+            network = torch.nn.DataParallel(network)
 
         model = Model(vocab, network)
         model(loaders=(train_loader, dev_loader, test_loader),
