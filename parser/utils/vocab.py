@@ -96,6 +96,7 @@ class Vocab(object):
                     word = word.replace("’", "'")
                     word = word.replace("‘", "'")
                     word = word.replace("'", "'")
+                    word = word.replace("´", "'")
 
                     word = word.replace("…", "...")
 
