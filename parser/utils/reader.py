@@ -45,10 +45,11 @@ class Corpus(object):
                     for sentence in self.sentences]
         except:
             for i, sentence in enumerate(self.sentences):
-                if sentence.HEAD == '_':
-                    print(i)
+                try:
+                    a = int(sentence.HEAD)
+                except:
                     print(sentence)
-            assert 1 == 2
+                    assert 1 == 2
 
 
     @property
