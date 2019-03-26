@@ -48,7 +48,8 @@ class Corpus(object):
             try:
                 a = map(int, sentence.HEAD)
             except:
-                print(sentence.HEAD)
+                print(i)
+                print(sentence)
         return None
                     # print(sentence)
 
