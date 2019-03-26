@@ -90,7 +90,11 @@ class Vocab(object):
                         word = 'non-"'
                     word = word.replace("`", "'")
                     word = word.replace('“', '"')
+                    word = word.replace('”', '"')
                     word = word.replace("’", "'")
+                    word = word.replace("…", "...")
+                    word = word.replace("–", "-")
+                    
 
                     tokens = self.tokenizer.tokenize(word)
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
