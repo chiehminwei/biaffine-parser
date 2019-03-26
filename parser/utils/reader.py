@@ -49,7 +49,7 @@ class Corpus(object):
                     a = int(sentence.HEAD)
                 except:
                     print(sentence.HEAD)
-                    print(sentence)
+                    # print(sentence)
 
 
     @property
