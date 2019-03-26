@@ -128,7 +128,7 @@ class Vocab(object):
             attention_mask.append(torch.ByteTensor(attentions))
 
         if flag: 
-            print('The following characters are unknown to BERT:')
+            print('WARNING: The following characters are unknown to BERT:')
             print(offending_set)
             # raise RuntimeError('Illegal character found in corpus.')
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
