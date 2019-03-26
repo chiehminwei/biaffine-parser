@@ -66,7 +66,7 @@ class BiaffineParser(nn.Module):
         # get the mask and lengths of given batch
         lens = words.ne(self.pad_index).sum(dim=1)
         # word dropout
-        words = self.embed_dropout(words)
+        words = self.embed_dropout(words.type('torch.DoubleTensor')).type('torch.LongTensor')
         
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
