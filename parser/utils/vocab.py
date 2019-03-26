@@ -66,6 +66,7 @@ class Vocab(object):
         rels_numerical = []
         token_start_mask = []
         attention_mask = []
+        flag = False
         for words, arcs, rels in zip(corpus.words, corpus.heads, corpus.rels):
             sentence_token_ids = []
             sentence_arc_ids = []
@@ -98,7 +99,8 @@ class Vocab(object):
                     if '[UNK]' in tokens:
                         print(word)
                         print(tokens)
-                        raise RuntimeError('Illegal character found in corpus.')
+                        flag = True
+                        # raise RuntimeError('Illegal character found in corpus.')
 
                 sentence_token_ids.extend(ids)
                 sentence_arc_ids.extend([arc] * len(tokens))
@@ -111,6 +113,7 @@ class Vocab(object):
             token_start_mask.append(torch.ByteTensor(token_starts))
             attention_mask.append(torch.ByteTensor(attentions))
 
+        if flag: raise RuntimeError('Illegal character found in corpus.')
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
     @classmethod
