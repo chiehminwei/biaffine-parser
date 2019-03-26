@@ -68,7 +68,7 @@ class BiaffineParser(nn.Module):
 
         # word dropout
         if self.training:
-            x_ = self.word_dropout(inputs.float())
+            x_ = self.word_dropout(words.float())
             words = x_.mul(1-self.word_dropout_p).long()  
         
         # get outputs from bert
