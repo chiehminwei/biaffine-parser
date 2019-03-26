@@ -89,12 +89,18 @@ class Vocab(object):
                         word = '"'
                     if word == "non-``":
                         word = 'non-"'
-                    word = word.replace("`", "'")
                     word = word.replace('“', '"')
                     word = word.replace('”', '"')
+
+                    word = word.replace("`", "'")
                     word = word.replace("’", "'")
+                    word = word.replace("‘", "'")
+                    word = word.replace("'", "'")
+
                     word = word.replace("…", "...")
+
                     word = word.replace("–", "-")
+                    word = word.replace('—', '-')
 
 
                     tokens = self.tokenizer.tokenize(word)
