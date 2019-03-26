@@ -30,6 +30,11 @@ class BiaffineParser(nn.Module):
     def __init__(self, params):
         super(BiaffineParser, self).__init__()
 
+        if torch.cuda.is_available():
+            self.device = torch.device('cuda')
+        else:
+            self.device = torch.device('cpu')
+
         self.params = params
         self.embed_dropout = nn.Dropout(p=params['embed_dropout'])
         # self.embed_dropout = IndependentDropout(p=params['embed_dropout'])
@@ -102,11 +107,7 @@ class BiaffineParser(nn.Module):
             subprocess.call(['gsutil', 'cp', cloud_address, fname], stdout=FNULL, stderr=subprocess.STDOUT)
         # Proceed only if either [1] copy success [2] local file already exists
         if os.path.isfile(fname):
-            if torch.cuda.is_available():
-                device = torch.device('cuda')
-            else:
-                device = torch.device('cpu')
-            state = torch.load(fname, map_location=device)
+            state = torch.load(fname, map_location=self.device)
             network = cls(state['params'])
             network.load_state_dict(state['state_dict'])
             network.to(device)
