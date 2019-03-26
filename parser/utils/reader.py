@@ -46,7 +46,7 @@ class Corpus(object):
         except:
             for i, sentence in enumerate(self.sentences):
                 try:
-                    a = int(sentence.HEAD)
+                    a = map(int, sentence.HEAD)
                 except:
                     print(sentence.HEAD)
                     # print(sentence)
