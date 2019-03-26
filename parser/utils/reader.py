@@ -39,7 +39,8 @@ class Corpus(object):
 
     @property
     def heads(self):
-        
+        a = [list(map(int, sentence.HEAD))
+                for sentence in self.sentences]
         return [[0] + list(map(int, sentence.HEAD))
                 for sentence in self.sentences]
         # # except:
