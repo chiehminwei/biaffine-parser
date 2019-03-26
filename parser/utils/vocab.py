@@ -111,7 +111,9 @@ class Vocab(object):
 
                     if '[UNK]' in tokens:
                         for offending_char in word:
-                            offending_set.add(offending_char)
+                            token = self.tokenizer.tokenize(offending_char)
+                            if token == '[UNK]':
+                                offending_set.add(offending_char)
                         flag = True
                         
                 sentence_token_ids.extend(ids)
