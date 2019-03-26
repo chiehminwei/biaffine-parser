@@ -40,15 +40,16 @@ class Corpus(object):
     @property
     def heads(self):
         
-        try:
-            return [[0] + list(map(int, sentence.HEAD))
-                    for sentence in self.sentences]
-        except:
-            for i, sentence in enumerate(self.sentences):
-                try:
-                    a = map(int, sentence.HEAD)
-                except:
-                    print(sentence.HEAD)
+        # try:
+        #     return [[0] + list(map(int, sentence.HEAD))
+        #             for sentence in self.sentences]
+        # except:
+        for i, sentence in enumerate(self.sentences):
+            try:
+                a = map(int, sentence.HEAD)
+            except:
+                print(sentence.HEAD)
+        return None
                     # print(sentence)
 
 
