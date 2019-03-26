@@ -112,10 +112,8 @@ class Vocab(object):
                     if '[UNK]' in tokens:
                         for offending_char in word:
                             offending_set.add(offending_char)
-                        # print(tokens)
                         flag = True
-                        # raise RuntimeError('Illegal character found in corpus.')
-
+                        
                 sentence_token_ids.extend(ids)
                 sentence_arc_ids.extend([arc] * len(tokens))
                 sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
@@ -128,8 +126,9 @@ class Vocab(object):
             attention_mask.append(torch.ByteTensor(attentions))
 
         if flag: 
+            print('The following characters are unknown to BERT:')
             print(offending_set)
-            raise RuntimeError('Illegal character found in corpus.')
+            # raise RuntimeError('Illegal character found in corpus.')
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
     @classmethod
