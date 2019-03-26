@@ -43,7 +43,7 @@ class Corpus(object):
         for s in self.sentences:
             
             if '_' in s.HEAD:
-                print(s.HEAD)
+                print(s.ID)
                 flag = True
                 # print(s)
         if flag:
