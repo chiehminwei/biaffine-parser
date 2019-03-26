@@ -46,8 +46,8 @@ class Corpus(object):
                 print(s.HEAD)
                 flag = True
                 # print(s)
-            if flag:
-                assert 1 == 2
+        if flag:
+            assert 1 == 2
 
         a = [list(map(int, sentence.HEAD)) for sentence in self.sentences]
         return [[0] + list(map(int, sentence.HEAD))
