@@ -39,9 +39,14 @@ class Corpus(object):
 
     @property
     def heads(self):
+        flag = False
         for s in self.sentences:
+            
             if '_' in s.HEAD:
-                print(s)
+                print(s.HEAD)
+                flag = True
+                # print(s)
+            if flag:
                 assert 1 == 2
 
         a = [list(map(int, sentence.HEAD)) for sentence in self.sentences]
