@@ -89,6 +89,8 @@ class Vocab(object):
                     if word == "non-``":
                         word = 'non-"'
                     word = word.replace("`", "'")
+                    word = word.replace('“', '"')
+                    word = word.replace("’", "'")
 
                     tokens = self.tokenizer.tokenize(word)
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
@@ -98,7 +100,7 @@ class Vocab(object):
 
                     if '[UNK]' in tokens:
                         print(word)
-                        print(tokens)
+                        # print(tokens)
                         flag = True
                         # raise RuntimeError('Illegal character found in corpus.')
 
