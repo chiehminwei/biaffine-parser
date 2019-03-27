@@ -177,7 +177,10 @@ class Model(object):
         return loss
 
     def decode(self, s_arc, s_rel):
-        pred_arcs = s_arc.argmax(dim=-1)
-        pred_rels = s_rel[torch.arange(len(s_rel)), pred_arcs].argmax(dim=-1)
-
+        try:
+            pred_arcs = s_arc.argmax(dim=-1)
+            pred_rels = s_rel[torch.arange(len(s_rel)), pred_arcs].argmax(dim=-1)
+        except:
+            print(s_arc)
+            
         return pred_arcs, pred_rels
