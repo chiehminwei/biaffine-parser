@@ -47,7 +47,7 @@ class Model(object):
         for epoch in range(last_epoch + 1, epochs + 1):
             start = datetime.now()
             # train one epoch and update the parameters
-            self.train(train_loader)
+            # self.train(train_loader)
 
             print(f"Epoch {epoch} / {epochs}:")
             loss, train_metric = self.evaluate(train_loader)
