@@ -115,7 +115,7 @@ class Model(object):
         self.network.eval()
 
         loss, metric = 0, AttachmentMethod()
-        for batch in loader:
+        for i, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
 
@@ -136,7 +136,10 @@ class Model(object):
             try:
                 pred_arcs, pred_rels = self.decode(s_arc, s_rel)
             except:
-                print(self.tokenizer.convert_ids_to_tokens(words[attention_mask].detach().to(torch.device("cpu")).numpy()))
+                print(i)
+                print(words.size()[0])
+                for sentence in words:
+                    print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
 
             loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
