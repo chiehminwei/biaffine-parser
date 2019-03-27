@@ -133,13 +133,13 @@ class Model(object):
             s_arc, s_rel = self.network(words, attention_mask)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
-            try:
-                pred_arcs, pred_rels = self.decode(s_arc, s_rel)
-            except:
-                print(i)
-                print(words.size()[0])
-                for sentence in words:
-                    print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
+            # try:
+            pred_arcs, pred_rels = self.decode(s_arc, s_rel)
+            # except:
+            #     print(i)
+            #     print(words.size()[0])
+            #     for sentence in words:
+            #         print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
 
             loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
