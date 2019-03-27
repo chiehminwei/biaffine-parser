@@ -67,9 +67,9 @@ class BiaffineParser(nn.Module):
         lens = words.ne(self.pad_index).sum(dim=1)
 
         # word dropout
-        if self.training:
-            x_ = self.word_dropout(words.float())
-            words = x_.mul(1-self.word_dropout_p).long()  
+        # if self.training:
+        #     x_ = self.word_dropout(words.float())
+        #     words = x_.mul(1-self.word_dropout_p).long()  
         
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
@@ -122,7 +122,6 @@ class BiaffineParser(nn.Module):
     def save(self, fname, epoch, cloud_address):
         state = {
             'params': self.params,
-            # 'embeddings': self.pretrained.weight,
             'state_dict': self.state_dict(),
             'last_epoch': epoch,
         }
