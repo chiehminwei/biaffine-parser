@@ -78,7 +78,7 @@ class Corpus(object):
             if len(line) <= 1:
                 sentence = Sentence(*zip(*[l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
                 if len([l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]) == 0:
-                    asset 1 == 2 
+                    assert 1 == 2 
                 sentences.append(sentence)
                 start = i + 1
         corpus = cls(sentences)
