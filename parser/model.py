@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from pytorch_pretrained_bert import BertAdam
-# from pytorch_pretrained_bert import BertTokenizer
+from pytorch_pretrained_bert import BertTokenizer
 
 from datetime import datetime, timedelta
 from tqdm import tqdm
@@ -25,7 +25,7 @@ class Model(object):
             self.device = torch.device('cuda')
         else:
             self.device = torch.device('cpu')
-        # self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
     def __call__(self, loaders, epochs, patience,
                  lr, betas, epsilon, weight_decay, annealing, file,
@@ -133,7 +133,10 @@ class Model(object):
             s_arc, s_rel = self.network(words, attention_mask)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
-            pred_arcs, pred_rels = self.decode(s_arc, s_rel)
+            try:
+                pred_arcs, pred_rels = self.decode(s_arc, s_rel)
+            except:
+                print(self.tokenizer.convert_ids_to_tokens(words[attention_mask].detach().to(torch.device("cpu")).numpy()))
 
             loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
@@ -177,10 +180,7 @@ class Model(object):
         return loss
 
     def decode(self, s_arc, s_rel):
-        try:
-            pred_arcs = s_arc.argmax(dim=-1)
-            pred_rels = s_rel[torch.arange(len(s_rel)), pred_arcs].argmax(dim=-1)
-        except:
-            print(s_arc)
-            
+        pred_arcs = s_arc.argmax(dim=-1)
+        pred_rels = s_rel[torch.arange(len(s_rel)), pred_arcs].argmax(dim=-1)
+
         return pred_arcs, pred_rels
