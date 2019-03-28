@@ -209,9 +209,10 @@ class Model(object):
                 print(yeet.shape)
                 all_embeddings.append(yeet.tolist())
         print('Finally')
-        print(all_embeddings)
-        print(np.array(all_embeddings).shape)
-        print(np.array(all_embeddings))
+        print(len(all_embeddings))
+        print(len(all_embeddings[0]))
+        print(len(all_embeddings[1]))
+        print(len(all_embeddings[0][0]))
         return all_embeddings
 
     @torch.no_grad()
