@@ -51,11 +51,6 @@ class Model(object):
             # self.train(train_loader)
             embeddings = np.array(self.get_embeddings(train_loader))
             s_arc, s_rel = self.get_matrix(train_loader)
-            s_arc = np.array(s_arc)
-            s_rel = np.array(s_rel)
-            print(embeddings.shape)
-            print(s_arc.shape)
-            print(s_rel.shape)
             assert 1 == 2
 
             print(f"Epoch {epoch} / {epochs}:")
@@ -227,16 +222,15 @@ class Model(object):
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
             print('s_arc splitting:')
-            for yeet in torch.split(s_arc, lens):
+            for i, yeet in enumerate(torch.split(s_arc, lens)):
                 print(yeet.shape)
-                all_arcs.append(yeet.tolist())
+                all_arcs.append(yeet[:,:lens[i],:].tolist())
 
             print('s_rel splitting:')
             for yeet in torch.split(s_rel, lens):
                 print(yeet.shape)
                 all_rels.append(yeet.tolist())            
 
-        # to numpy
         return all_arcs, all_rels
 
     def get_loss(self, s_arc, s_rel, gold_arcs, gold_rels):
