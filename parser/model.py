@@ -50,9 +50,12 @@ class Model(object):
             # train one epoch and update the parameters
             # self.train(train_loader)
             embeddings = np.array(self.get_embeddings(train_loader))
-            matrix = np.array(self.get_matrix(train_loader))
+            s_arc, s_rel = self.get_matrix(train_loader)
+            s_arc = np.array(s_arc)
+            s_rel = np.array(s_rel)
             print(embeddings.shape)
-            print(matrix.shape)
+            print(s_arc.shape)
+            print(s_rel.shape)
             assert 1 == 2
 
             print(f"Epoch {epoch} / {epochs}:")
@@ -192,6 +195,8 @@ class Model(object):
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             embed = self.network.get_embeddings(words, attention_mask)
+            print('Original network embedding shape')
+            print(embed.shape)
             embed = embed[token_start_mask]
 
             # lens for splitting
