@@ -207,7 +207,9 @@ class Model(object):
             all_embeddings.extend(torch.split(embed, lens))
 
             print('Splitting turns embedding into:')
-            print(torch.split(embed, lens).shape)
+
+            for yeet in torch.split(embed, lens):
+                print(yeet.shape)
             
         all_embeddings = [seq.tolist() for seq in all_embeddings]
         
