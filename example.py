@@ -15,6 +15,8 @@ vocab = torch.load(VOCAB_DIR)
 network = BiaffineParser.load(CHECKPOINT_DIR)
 model = Model(vocab, network)
 
+sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
+
 def example(sentences):
 
 	dataset = TextDataset(vocab.numericalize_sentences(sentences))
