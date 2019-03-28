@@ -47,7 +47,12 @@ class Model(object):
         for epoch in range(last_epoch + 1, epochs + 1):
             start = datetime.now()
             # train one epoch and update the parameters
-            self.train(train_loader)
+            # self.train(train_loader)
+            embeddings = self.get_embeddings(train_loader)
+            matrix = self.get_matrix(train_loader)
+            print(embeddings)
+            print(matrix)
+            assert 1 == 2
 
             print(f"Epoch {epoch} / {epochs}:")
             loss, train_metric = self.evaluate(train_loader)
