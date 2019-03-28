@@ -224,7 +224,7 @@ class Model(object):
             print('s_arc splitting:')
             for i, yeet in enumerate(torch.split(s_arc, lens)):
                 print(yeet.shape)
-                all_arcs.append(yeet[:,:lens[i],:].tolist())
+                all_arcs.append(yeet[:,:lens[i]].tolist())
 
             print('s_rel splitting:')
             for yeet in torch.split(s_rel, lens):
