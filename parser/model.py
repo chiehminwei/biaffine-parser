@@ -223,7 +223,7 @@ class Model(object):
             lens = token_start_mask.sum(dim=1).tolist()
             print('s_arc splitting:')
             for i, yeet in enumerate(torch.split(s_arc, lens)):
-                print(yeet.shape)
+                print(yeet[:,:lens[i]].shape)
                 all_arcs.append(yeet[:,:lens[i]].tolist())
 
             print('s_rel splitting:')
