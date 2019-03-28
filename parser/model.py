@@ -204,8 +204,6 @@ class Model(object):
 
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
-            all_embeddings.extend(torch.split(embed, lens))
-
             print('Splitting turns embedding into:')
             for yeet in torch.split(embed, lens):
                 print(yeet.shape)
