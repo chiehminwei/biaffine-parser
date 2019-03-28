@@ -173,6 +173,57 @@ class Model(object):
 
         return all_arcs, all_rels
 
+    @torch.no_grad()
+    def get_embeddings(self, loader):
+        self.network.eval()
+
+        all_embeddings = []
+        for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
+            # ignore [CLS]
+            token_start_mask[:, 0] = 0
+            # ignore [SEP]
+            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+
+            embed = self.network.get_embeddings(words, attention_mask)
+            embed = embed[token_start_mask]
+
+            # lens for splitting
+            lens = token_start_mask.sum(dim=1).tolist()
+            all_embeddings.extend(torch.split(embed, lens))
+            
+        all_embeddings = [seq.tolist() for seq in all_embeddings]
+        
+        # to numpy
+        return all_embeddings
+
+    @torch.no_grad()
+    def get_matrix(self, loader):
+        self.network.eval()
+
+        all_arcs, all_rels = [], []
+        for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
+            # ignore [CLS]
+            token_start_mask[:, 0] = 0
+            # ignore [SEP]
+            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+
+            s_arc, s_rel = self.network(words, attention_mask)
+            s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
+            
+            # lens for splitting
+            lens = token_start_mask.sum(dim=1).tolist()
+
+            all_arcs.extend(torch.split(s_arc, lens))
+            all_rels.extend(torch.split(s_rel, lens))
+
+        all_arcs = [seq.tolist() for seq in all_arcs]
+        all_rels = [seq.tolist()  for seq in all_rels]
+
+        # to numpy
+        return all_arcs, all_rels
+
     def get_loss(self, s_arc, s_rel, gold_arcs, gold_rels):
         s_rel = s_rel[torch.arange(len(s_rel)), gold_arcs]
 

@@ -96,6 +96,12 @@ class BiaffineParser(nn.Module):
 
         return s_arc, s_rel
 
+    def get_embeddings(self, words, mask):
+        # get outputs from bert
+        embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
+        
+        return embed
+
     @classmethod
     def load(cls, fname, cloud_address):
         # Copy from cloud if there's no saved checkpoint
