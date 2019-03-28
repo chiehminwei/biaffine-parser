@@ -134,6 +134,71 @@ class Vocab(object):
             # raise RuntimeError('Illegal character found in corpus.')
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
+    def numericalize_sentences(self, sentences):
+        words_numerical = []
+        token_start_mask = []
+        attention_mask = []
+        flag = False
+        offending_set = set()
+        for sentence in sentences:
+            sentence_token_ids = []
+            token_starts = []
+            attentions = []
+            sentence = ['[CLS]'] + sentence + ['[SEP]']
+            for word in sentence:
+                if word == '<ROOT>':
+                    continue
+                else:
+                    if word == '`':
+                        word = "'"
+                    if word == '``':
+                        word = '"'
+                    if word == "''":
+                        word = '"'
+                    if word == "non-``":
+                        word = 'non-"'
+                    word = word.replace('“', '"')
+                    word = word.replace('”', '"')
+
+                    word = word.replace("`", "'")
+                    word = word.replace("’", "'")
+                    word = word.replace("‘", "'")
+                    word = word.replace("'", "'")
+                    word = word.replace("´", "'")
+
+                    word = word.replace("…", "...")
+
+                    word = word.replace("–", "-")
+                    word = word.replace('—', '-')
+
+
+                    tokens = self.tokenizer.tokenize(word)
+                    ids = self.tokenizer.convert_tokens_to_ids(tokens)
+                    if regex.match(r'\p{P}+$', word):
+                        for token_id in ids:
+                            self.puncts.add(token_id)
+
+                    if '[UNK]' in tokens:
+                        for offending_char in word:
+                            token = self.tokenizer.tokenize(offending_char)
+                            if '[UNK]' in token:
+                                offending_set.add(offending_char)
+                        flag = True
+                        
+                sentence_token_ids.extend(ids)
+                token_starts.extend([1] + [0] * (len(tokens) - 1))
+                attentions.extend([1] * len(tokens))
+                
+            words_numerical.append(torch.tensor(sentence_token_ids))
+            attention_mask.append(torch.ByteTensor(attentions))
+            token_start_mask.append(torch.ByteTensor(token_starts))
+            
+        if flag: 
+            print('WARNING: The following characters are unknown to BERT:')
+            print(offending_set)
+
+        return words_numerical, attention_mask, token_start_mask
+
     @classmethod
     def from_corpus(cls, corpus, min_freq=1):
         words = Counter(word for seq in corpus.words for word in seq)

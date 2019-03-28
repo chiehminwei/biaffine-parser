@@ -102,13 +102,48 @@ class BiaffineParser(nn.Module):
         
         return embed
 
+    def get_everything(self, words, mask):
+        # get the mask and lengths of given batch
+        lens = words.ne(self.pad_index).sum(dim=1)
+
+        # word dropout
+        if self.training:
+            x_ = self.word_dropout(words.float())
+            words = x_.mul(1-self.word_dropout_p).long()  
+        
+        # get outputs from bert
+        embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
+        x = embed
+
+        # bert dropout
+        x = self.bert_dropout(x)
+
+        # apply MLPs to the BERT output states
+        arc_h = self.mlp_arc_h(x)
+        arc_d = self.mlp_arc_d(x)
+        rel_h = self.mlp_rel_h(x)
+        rel_d = self.mlp_rel_d(x)
+
+        # get arc and rel scores from the bilinear attention
+        # [batch_size, seq_len, seq_len]
+        s_arc = self.arc_attn(arc_d, arc_h)
+        # [batch_size, seq_len, seq_len, n_rels]
+        s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
+
+        # set the scores that exceed the length of each sentence to -inf
+        len_mask = length_to_mask(lens, max_len=words.shape[-1], dtype=torch.uint8)
+        s_arc.masked_fill_((1 - len_mask).unsqueeze(1), float('-inf'))
+
+        return s_arc, s_rel, embed
+
     @classmethod
-    def load(cls, fname, cloud_address):
+    def load(cls, fname, cloud_address=None):
         # Copy from cloud if there's no saved checkpoint
         if not os.path.isfile(fname):
-            FNULL = open(os.devnull, 'w')
-            cloud_address = os.path.join(cloud_address, fname)
-            subprocess.call(['gsutil', 'cp', cloud_address, fname], stdout=FNULL, stderr=subprocess.STDOUT)
+            if cloud_address:
+                FNULL = open(os.devnull, 'w')
+                cloud_address = os.path.join(cloud_address, fname)
+                subprocess.call(['gsutil', 'cp', cloud_address, fname], stdout=FNULL, stderr=subprocess.STDOUT)
         # Proceed only if either [1] copy success [2] local file already exists
         if os.path.isfile(fname):
             if torch.cuda.is_available():

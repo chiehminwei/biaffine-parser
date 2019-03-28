@@ -179,7 +179,7 @@ class Model(object):
         self.network.eval()
 
         all_embeddings = []
-        for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
+        for words, attention_mask, token_start_mask in loader:
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
@@ -197,11 +197,39 @@ class Model(object):
         return all_embeddings
 
     @torch.no_grad()
-    def get_matrix(self, loader):
+    def get_everything(self, loader):
+        self.network.eval()
+
+        all_arcs, all_rels, all_embeddings = [], [], []
+        for words, attention_mask, token_start_mask in loader:
+            # ignore [CLS]
+            token_start_mask[:, 0] = 0
+            # ignore [SEP]
+            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+
+            s_arc, s_rel, embed = self.network.get_everything(words, attention_mask)
+            s_arc, s_rel, embed = s_arc[token_start_mask], s_rel[token_start_mask], embed[token_start_mask]
+            
+            # lens for splitting
+            lens = token_start_mask.sum(dim=1).tolist()
+            for i, sentence_arc in enumerate(torch.split(s_arc, lens)):
+                all_arcs.append(sentence_arc[:,:lens[i]].tolist())
+
+            for i, sentence_rel in enumerate(torch.split(s_rel, lens)):
+                all_rels.append(sentence_rel[:,:lens[i]].tolist())    
+
+            for sentence_embed in torch.split(embed, lens):
+                all_embeddings.append(sentence_embed.tolist())        
+
+        return all_arcs, all_rels, all_embeddings
+
+    @torch.no_grad()
+    def get_matrices(self, loader):
         self.network.eval()
 
         all_arcs, all_rels = [], []
-        for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
+        for words, attention_mask, token_start_mask in loader:
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
