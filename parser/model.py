@@ -12,6 +12,7 @@ from pytorch_pretrained_bert import BertTokenizer
 from datetime import datetime, timedelta
 from tqdm import tqdm
 
+import numpy as np
 
 class Model(object):
 
@@ -48,10 +49,10 @@ class Model(object):
             start = datetime.now()
             # train one epoch and update the parameters
             # self.train(train_loader)
-            embeddings = self.get_embeddings(train_loader)
-            matrix = self.get_matrix(train_loader)
-            print(embeddings)
-            print(matrix)
+            embeddings = np.array(self.get_embeddings(train_loader))
+            matrix = np.array(self.get_matrix(train_loader))
+            print(embeddings.shape)
+            print(matrix.shape)
             assert 1 == 2
 
             print(f"Epoch {epoch} / {epochs}:")
