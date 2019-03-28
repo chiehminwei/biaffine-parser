@@ -207,7 +207,7 @@ class Model(object):
             print('Splitting turns embedding into:')
             for yeet in torch.split(embed, lens):
                 print(yeet.shape)
-                all_embeddings.append(yeet.detach().to(torch.device("cpu")).numpy())
+                all_embeddings.append(yeet.tolist())
         print('Finally')
         print(all_embeddings)
         print(np.array(all_embeddings).shape)
