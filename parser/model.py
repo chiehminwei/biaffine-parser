@@ -195,24 +195,13 @@ class Model(object):
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             embed = self.network.get_embeddings(words, attention_mask)
-            print('')
-            print('Original network embedding shape')
-            print(embed.shape)
             embed = embed[token_start_mask]
-            print('Original network after masking embedding shape')
-            print(embed.shape)
-
+            
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
-            print('Splitting turns embedding into:')
             for yeet in torch.split(embed, lens):
-                print(yeet.shape)
                 all_embeddings.append(yeet.tolist())
-        print('Finally')
-        print(len(all_embeddings))
-        print(len(all_embeddings[0]))
-        print(len(all_embeddings[1]))
-        print(len(all_embeddings[0][0]))
+
         return all_embeddings
 
     @torch.no_grad()
@@ -228,16 +217,24 @@ class Model(object):
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             s_arc, s_rel = self.network(words, attention_mask)
+            print('')
+            print('before mask')
+            print(s_arc.shape, s_rel.shape)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
+            print('after mask')
+            print(s_arc.shape, s_rel.shape)
             
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
+            print('s_arc splitting:')
+            for yeet in torch.split(s_arc, lens):
+                print(yeet.shape)
+                all_arcs.append(yeet.tolist())
 
-            all_arcs.extend(torch.split(s_arc, lens))
-            all_rels.extend(torch.split(s_rel, lens))
-
-        all_arcs = [seq.tolist() for seq in all_arcs]
-        all_rels = [seq.tolist()  for seq in all_rels]
+            print('s_rel splitting:')
+            for yeet in torch.split(s_rel, lens):
+                print(yeet.shape)
+                all_rels.append(yeet.tolist())            
 
         # to numpy
         return all_arcs, all_rels
