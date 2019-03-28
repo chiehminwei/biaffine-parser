@@ -48,11 +48,8 @@ class Model(object):
         for epoch in range(last_epoch + 1, epochs + 1):
             start = datetime.now()
             # train one epoch and update the parameters
-            # self.train(train_loader)
-            embeddings = np.array(self.get_embeddings(train_loader))
-            s_arc, s_rel = self.get_matrix(train_loader)
-            assert 1 == 2
-
+            self.train(train_loader)
+            
             print(f"Epoch {epoch} / {epochs}:")
             loss, train_metric = self.evaluate(train_loader)
             print(f"{'train:':<6} Loss: {loss:.4f} {train_metric}")
@@ -194,8 +191,8 @@ class Model(object):
             
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
-            for yeet in torch.split(embed, lens):
-                all_embeddings.append(yeet.tolist())
+            for sentence_embed in torch.split(embed, lens):
+                all_embeddings.append(sentence_embed.tolist())
 
         return all_embeddings
 
@@ -212,24 +209,15 @@ class Model(object):
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             s_arc, s_rel = self.network(words, attention_mask)
-            print('')
-            print('before mask')
-            print(s_arc.shape, s_rel.shape)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
-            print('after mask')
-            print(s_arc.shape, s_rel.shape)
             
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
-            print('s_arc splitting:')
-            for i, yeet in enumerate(torch.split(s_arc, lens)):
-                print(yeet[:,:lens[i]].shape)
-                all_arcs.append(yeet[:,:lens[i]].tolist())
+            for i, sentence_arc in enumerate(torch.split(s_arc, lens)):
+                all_arcs.append(sentence_arc[:,:lens[i]].tolist())
 
-            print('s_rel splitting:')
-            for i, yeet in enumerate(torch.split(s_rel, lens)):
-                print(yeet[:,:lens[i]].shape)
-                all_rels.append(yeet[:,:lens[i]].tolist())            
+            for i, sentence_rel in enumerate(torch.split(s_rel, lens)):
+                all_rels.append(sentence_rel[:,:lens[i]].tolist())            
 
         return all_arcs, all_rels
 
