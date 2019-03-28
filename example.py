@@ -38,6 +38,7 @@ def example(sentences):
 	print(len(s_arc[0]), len(s_rel[0]))
 	print(len(s_arc[1]), len(s_rel[1]))
 	print(len(s_arc[0][0]), len(s_rel[0][0]))
+	print(len(s_arc[0][0]), len(s_rel[0][0][0]))
 
 	print('embeddings')
 	s_arc, s_rel, embeddings = model.get_everything(loader)
