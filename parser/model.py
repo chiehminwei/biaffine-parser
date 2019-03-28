@@ -195,13 +195,19 @@ class Model(object):
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             embed = self.network.get_embeddings(words, attention_mask)
+            print('')
             print('Original network embedding shape')
             print(embed.shape)
             embed = embed[token_start_mask]
+            print('Original network after masking embedding shape')
+            print(embed.shape)
 
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
             all_embeddings.extend(torch.split(embed, lens))
+
+            print('Splitting turns embedding into:')
+            print(torch.split(embed, lens).shape)
             
         all_embeddings = [seq.tolist() for seq in all_embeddings]
         
