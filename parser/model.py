@@ -207,10 +207,11 @@ class Model(object):
             all_embeddings.extend(torch.split(embed, lens))
 
             print('Splitting turns embedding into:')
-
             for yeet in torch.split(embed, lens):
+                print(yeet.shape)
                 all_embeddings.append(yeet)
-            
+        print('Finally')
+        print(np.array(all_embeddings).shape)
         return all_embeddings
 
     @torch.no_grad()
