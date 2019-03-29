@@ -72,6 +72,8 @@ class Corpus(object):
         start, sentences = 0, []
         with open(fname, 'r') as f:
             lines = [line for line in f]
+
+        error_counter = 0
         for i, line in enumerate(lines):
             if line[0] == '#':
                 start += 1
@@ -82,7 +84,9 @@ class Corpus(object):
                     start = i + 1
                 except:
                     print([l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]])
-                    assert 1 == 2
+                    error_counter += 1
+        print(error_counter)
+        assert 1 == 2
         corpus = cls(sentences)
 
         return corpus
