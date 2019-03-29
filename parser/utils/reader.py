@@ -81,7 +81,7 @@ class Corpus(object):
                     sentences.append(sentence)
                     start = i + 1
                 except:
-                    print(zip(*[l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
+                    print([l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]])
                     assert 1 == 2
         corpus = cls(sentences)
 
