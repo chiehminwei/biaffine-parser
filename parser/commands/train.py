@@ -56,16 +56,22 @@ class Train(object):
         print("Load the dataset. {}".format(datetime.now()))
 
         if not os.path.isfile('trainset'):
+            print('Loading trainset from scratch.')
             trainset = TextDataset(vocab.numericalize(train, 'trainset'))
         else:
+            print('Loading trainset from checkpoint.')
             trainset = TextDataset(torch.load('trainset'))
         if not os.path.isfile('devset'):
+            print('Loading devset from scratch.')
             devset = TextDataset(vocab.numericalize(dev, 'devset'))
         else:
+            print('Loading devset from checkpoint.')
             devset = TextDataset(torch.load('devset'))
         if not os.path.isfile('testset'):
+            print('Loading testset from scratch.')
             testset = TextDataset(vocab.numericalize(test, 'testset'))
         else:
+            print('Loading testset from checkpoint.')
             testset = TextDataset(torch.load('testset'))
         
         # set the data loaders
