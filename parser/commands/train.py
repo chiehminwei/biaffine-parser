@@ -25,6 +25,12 @@ class Train(object):
                                help='path to dev file')
         subparser.add_argument('--ftest', default='data/test.conllx',
                                help='path to test file')
+        subparser.add_argument('--ftrain_cache', default='trainset',
+                               help='path to train file cache')
+        subparser.add_argument('--fdev_cache', default='devset',
+                               help='path to dev file cache')
+        subparser.add_argument('--ftest_cache', default='testset',
+                               help='path to test file cache')
         subparser.set_defaults(func=self)
 
         return subparser
@@ -55,24 +61,26 @@ class Train(object):
 
         print("Load the dataset. {}".format(datetime.now()))
 
-        if not os.path.isfile('trainset'):
+        if not os.path.isfile(args.ftrain_cache):
             print('Loading trainset from scratch.')
-            trainset = TextDataset(vocab.numericalize(train, 'trainset'))
+            trainset = TextDataset(vocab.numericalize(train, args.ftrain_cache))
         else:
             print('Loading trainset from checkpoint.')
-            trainset = TextDataset(torch.load('trainset'))
-        if not os.path.isfile('devset'):
+            trainset = TextDataset(torch.load(args.ftrain_cache))
+
+        if not os.path.isfile(args.fdev_cache):
             print('Loading devset from scratch.')
-            devset = TextDataset(vocab.numericalize(dev, 'devset'))
+            devset = TextDataset(vocab.numericalize(dev, args.fdev_cache))
         else:
             print('Loading devset from checkpoint.')
-            devset = TextDataset(torch.load('devset'))
-        if not os.path.isfile('testset'):
+            devset = TextDataset(torch.load(args.fdev_cache))
+
+        if not os.path.isfile(args.ftest_cache):
             print('Loading testset from scratch.')
-            testset = TextDataset(vocab.numericalize(test, 'testset'))
+            testset = TextDataset(vocab.numericalize(test, args.ftest_cache))
         else:
             print('Loading testset from checkpoint.')
-            testset = TextDataset(torch.load('testset'))
+            testset = TextDataset(torch.load(args.ftest_cache))
         
         # set the data loaders
         train_loader = DataLoader(dataset=trainset,
