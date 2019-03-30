@@ -60,7 +60,7 @@ class Vocab(object):
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
 
-    def numericalize(self, corpus):
+    def numericalize(self, corpus, save_name=None):
         words_numerical = []
         arcs_numerical = []
         rels_numerical = []
@@ -132,6 +132,8 @@ class Vocab(object):
             print('WARNING: The following characters are unknown to BERT:')
             print(offending_set)
             # raise RuntimeError('Illegal character found in corpus.')
+        if save_name:
+            torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical), save_name)
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
     def numericalize_sentences(self, sentences):

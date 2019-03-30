@@ -54,9 +54,20 @@ class Train(object):
         print(vocab)
 
         print("Load the dataset. {}".format(datetime.now()))
-        trainset = TextDataset(vocab.numericalize(train))
-        devset = TextDataset(vocab.numericalize(dev))
-        testset = TextDataset(vocab.numericalize(test))
+
+        if not os.path.isfile('trainset'):
+            trainset = TextDataset(vocab.numericalize(train, 'trainset'))
+        else:
+            trainset = TextDataset(torch.load('trainset'))
+        if not os.path.isfile('devset'):
+            devset = TextDataset(vocab.numericalize(dev, 'devset'))
+        else:
+            devset = TextDataset(torch.load('devset'))
+        if not os.path.isfile('testset'):
+            testset = TextDataset(vocab.numericalize(test, 'testset'))
+        else:
+            testset = TextDataset(torch.load('testset'))
+        
         # set the data loaders
         train_loader = DataLoader(dataset=trainset,
                                   batch_size=Config.batch_size // Config.gradient_accumulation_steps,
