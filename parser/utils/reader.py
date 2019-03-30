@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple
+from collections import defaultdict
 
 import torch
 import subprocess
@@ -74,19 +75,20 @@ class Corpus(object):
             lines = [line for line in f]
 
         error_counter = 0
+        error_dic = defaultdict(int)
         for i, line in enumerate(lines):
             if line[0] == '#':
                 start += 1
             if len(line) <= 1:
                 try:
-                    sentence = Sentence(*zip(*[l.split()[:10] for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
+                    sentence = Sentence(*zip(*[l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
                     sentences.append(sentence)
                     start = i + 1
                 except:
-                    print([l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]])
-                    assert 1 == 2
+                    error_dic[len(l.split())] += 1
                     error_counter += 1
         print(error_counter)
+        print(error_dic)
         assert 1 == 2
         corpus = cls(sentences)
 
