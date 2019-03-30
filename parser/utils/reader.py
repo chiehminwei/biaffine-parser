@@ -74,28 +74,14 @@ class Corpus(object):
         with open(fname, 'r') as f:
             lines = [line for line in f]
 
-        error_count = 0
         for i, line in enumerate(lines):
             if line[0] == '#':
                 start += 1
             if len(line) <= 1:
-                try:
-                    sentence = Sentence(*zip(*[l.split('\t') for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
-                    for head in sentence._asdict()['HEAD']:
-                        yeet = int(head)
-                    sentences.append(sentence)
-                except:
-                    error_count += 1
-                    print(sentence._asdict()['FORM'])
-                    print(sentence._asdict()['HEAD'])
-                    # pass
-                    # for l in lines[start:i]:
-                    #     if len(l.split()) != 10:
-                    #         print(l)
+                sentence = Sentence(*zip(*[l.split('\t') for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
+                sentences.append(sentence)
                 start = i + 1
 
-        print(error_count)
-        assert 1 == 2
         corpus = cls(sentences)
 
         return corpus
