@@ -85,8 +85,10 @@ class Corpus(object):
                     sentences.append(sentence)
                     start = i + 1
                 except:
-                    error_dic[len(l.split())] += 1
-                    error_counter += 1
+                    for l in lines[start:i]:
+                        if len(l.split()) != 10:
+                            error_dic[len(l.split())] += 1
+                            error_counter += 1
         print(error_counter)
         print(error_dic)
         assert 1 == 2
