@@ -79,16 +79,18 @@ class Corpus(object):
             if line[0] == '#':
                 start += 1
             if len(line) <= 1:
-                try:
-                    sentence = Sentence(*zip(*[l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
-                    sentences.append(sentence)
-                except:
-                    for l in lines[start:i]:
-                        if len(l.split()) != 10:
-                            print(l)
+                sentence = Sentence(*zip(*[l.split()[:10] for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
+                sentences.append(sentence)
+                
+                # try:
+                #     sentence = Sentence(*zip(*[l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
+                #     sentences.append(sentence)
+                # except:
+                #     for l in lines[start:i]:
+                #         if len(l.split()) != 10:
+                #             print(l)
                 start = i + 1
 
-        assert 1 == 2
         corpus = cls(sentences)
 
         return corpus
