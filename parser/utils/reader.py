@@ -74,7 +74,7 @@ class Corpus(object):
         with open(fname, 'r') as f:
             lines = [line for line in f]
 
-
+        error_count = 0
         for i, line in enumerate(lines):
             if line[0] == '#':
                 start += 1
@@ -85,14 +85,16 @@ class Corpus(object):
                         yeet = int(head)
                     sentences.append(sentence)
                 except:
+                    error_count += 1
                     print(sentence._asdict()['FORM'])
                     print(sentence._asdict()['HEAD'])
-                    pass
+                    # pass
                     # for l in lines[start:i]:
                     #     if len(l.split()) != 10:
                     #         print(l)
                 start = i + 1
 
+        print(error_count)
         assert 1 == 2
         corpus = cls(sentences)
 
