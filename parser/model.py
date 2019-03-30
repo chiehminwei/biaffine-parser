@@ -89,7 +89,7 @@ class Model(object):
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
-            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
@@ -123,7 +123,7 @@ class Model(object):
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
-            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             # ignore all punctuation if specified
@@ -157,7 +157,7 @@ class Model(object):
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
-            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             s_arc, s_rel = self.network(words, attention_mask)
@@ -183,7 +183,7 @@ class Model(object):
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
-            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             embed = self.network.get_embeddings(words, attention_mask)
@@ -205,7 +205,7 @@ class Model(object):
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
-            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             s_arc, s_rel, embed = self.network.get_everything(words, attention_mask)
@@ -233,7 +233,7 @@ class Model(object):
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
-            lens = words.ne(self.vocab.pad_index).sum(dim=1) - 1
+            lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             s_arc, s_rel = self.network(words, attention_mask)

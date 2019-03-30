@@ -64,7 +64,8 @@ class BiaffineParser(nn.Module):
         
     def forward(self, words, mask):
         # get the mask and lengths of given batch
-        lens = words.ne(self.pad_index).sum(dim=1)
+        lens = mask.sum(dim=1)
+        # lens = words.ne(self.pad_index).sum(dim=1)
 
         # word dropout
         if self.training:
@@ -104,8 +105,8 @@ class BiaffineParser(nn.Module):
 
     def get_everything(self, words, mask):
         # get the mask and lengths of given batch
-        lens = words.ne(self.pad_index).sum(dim=1)
-
+        lens = mask.sum(dim=1)
+        
         # word dropout
         if self.training:
             x_ = self.word_dropout(words.float())
