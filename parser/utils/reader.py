@@ -83,12 +83,14 @@ class Corpus(object):
                 try:
                     sentence = Sentence(*zip(*[l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
                     sentences.append(sentence)
-                    start = i + 1
                 except:
                     for l in lines[start:i]:
                         if len(l.split()) != 10:
                             error_dic[len(l.split())] += 1
                             error_counter += 1
+
+                start = i + 1
+                
         print(error_counter)
         print(error_dic)
         assert 1 == 2
