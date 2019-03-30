@@ -87,13 +87,13 @@ class Corpus(object):
                 except:
                     print(sentence._asdict()['FORM'])
                     print(sentence._asdict()['HEAD'])
-                    assert 1 == 2
                     pass
                     # for l in lines[start:i]:
                     #     if len(l.split()) != 10:
                     #         print(l)
                 start = i + 1
 
+        assert 1 == 2
         corpus = cls(sentences)
 
         return corpus
