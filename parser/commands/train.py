@@ -10,6 +10,8 @@ from config import Config
 
 import os
 import subprocess
+from datetime import datetime, timedelta
+
 
 class Train(object):
 
@@ -28,7 +30,7 @@ class Train(object):
         return subparser
 
     def __call__(self, args):
-        print("Preprocess the data")
+        print("Preprocess the data. {}".format(datetime.now()))
         
         train = Corpus.load(args.ftrain)
         dev = Corpus.load(args.fdev)
@@ -51,7 +53,7 @@ class Train(object):
 
         print(vocab)
 
-        print("Load the dataset")
+        print("Load the dataset. {}".format(datetime.now()))
         trainset = TextDataset(vocab.numericalize(train))
         devset = TextDataset(vocab.numericalize(dev))
         testset = TextDataset(vocab.numericalize(test))
@@ -70,7 +72,7 @@ class Train(object):
         print(f"  size of devset: {len(devset)}")
         print(f"  size of testset: {len(testset)}")
 
-        print("Create the model")
+        print("Create the model. {}".format(datetime.now()))
         params = {
             'n_words': vocab.n_train_words,
             'n_chars': vocab.n_chars,
@@ -88,7 +90,7 @@ class Train(object):
         network = BiaffineParser(params)
         if torch.cuda.is_available():
             network = network.cuda()
-        # print(f"{network}\n")
+        print(f"{network}\n")
 
         last_epoch = 0
         # Start training from checkpoint if one exists
