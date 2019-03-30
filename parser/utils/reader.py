@@ -74,11 +74,8 @@ class Corpus(object):
         with open(fname, 'r') as f:
             lines = [line for line in f]
 
-        error_counter = 0
-        error_dic = defaultdict(int)
+
         for i, line in enumerate(lines):
-            if i % 1000 == 0:
-                print(i)
             if line[0] == '#':
                 start += 1
             if len(line) <= 1:
@@ -88,13 +85,9 @@ class Corpus(object):
                 except:
                     for l in lines[start:i]:
                         if len(l.split()) != 10:
-                            error_dic[len(l.split())] += 1
-                            error_counter += 1
-
+                            print(l)
                 start = i + 1
-                
-        print(error_counter)
-        print(error_dic)
+
         assert 1 == 2
         corpus = cls(sentences)
 
