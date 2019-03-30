@@ -81,6 +81,8 @@ class Corpus(object):
             if len(line) <= 1:
                 try:
                     sentence = Sentence(*zip(*[l.split() for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
+                    for head in sentence._asdict()['HEAD']:
+                        yeet = int(head)
                     sentences.append(sentence)
                 except:
                     print(sentence._asdict()['FORM'])
