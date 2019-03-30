@@ -77,6 +77,8 @@ class Corpus(object):
         error_counter = 0
         error_dic = defaultdict(int)
         for i, line in enumerate(lines):
+            if i % 1000 == 0:
+                print(i)
             if line[0] == '#':
                 start += 1
             if len(line) <= 1:
