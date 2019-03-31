@@ -109,7 +109,7 @@ class Train(object):
         train_loader = DataLoader(dataset=trainset,
                                   batch_size=Config.batch_size // Config.gradient_accumulation_steps,
                                   shuffle=(train_sampler is None),
-                                  num_workers=num_workers,
+                                  # num_workers=num_workers,
                                   pin_memory=True,
                                   sampler =train_sampler,
                                   collate_fn=collate_fn)
