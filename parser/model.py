@@ -94,7 +94,8 @@ class Model(object):
 
     def train(self, loader):
         self.network.train()
-        for step, batch in enumerate(tqdm(loader)):
+        # for step, batch in enumerate(tqdm(loader)):
+        for step, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
 
@@ -181,7 +182,8 @@ class Model(object):
         self.network.eval()
 
         all_arcs, all_rels = [], []
-        for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
+        # for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
+        for words, attention_mask, token_start_mask, arcs, rels in loader:
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
