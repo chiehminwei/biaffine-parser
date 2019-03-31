@@ -130,6 +130,9 @@ class Vocab(object):
                 len_token_starts = len(token_starts)
                 len_attentions = len(attentions)
                 if not (len_sentence_token_ids == len_sentence_arc_ids == len_sentence_rel_ids == len_token_starts == len_attentions):
+                    print(words)
+                    print(arcs)
+                    print(rels)
                     print('len_sentence_token_ids: ', len_sentence_token_ids)
                     print('len_sentence_arc_ids', len_sentence_arc_ids)
                     print('len_sentence_rel_ids', len_sentence_rel_ids)
