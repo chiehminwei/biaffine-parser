@@ -15,6 +15,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Create the Biaffine Parser model.'
     )
+    parser.add_argument('--local_rank', '-l', default=0, type=int,
+                         help='local rank for distributed training')
+
     subparsers = parser.add_subparsers(title='Commands')
     subcommands = {
         'evaluate': Evaluate(),
@@ -25,8 +28,6 @@ if __name__ == '__main__':
         subparser = subcommand.add_subparser(name, subparsers)
         # subparser.add_argument('--device', '-d', default='-1',
         #                        help='ID of GPU to use')
-        subparser.add_argument('--local_rank', '-l', default=0, type=int,
-                                help='local rank for distributed training')
         subparser.add_argument('--seed', '-s', default=1, type=int,
                                help='seed for generating random numbers')
         subparser.add_argument('--threads', '-t', default=4, type=int,
