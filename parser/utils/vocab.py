@@ -116,12 +116,28 @@ class Vocab(object):
                             if '[UNK]' in token:
                                 offending_set.add(offending_char)
                         flag = True
-                        
-                sentence_token_ids.extend(ids)
-                sentence_arc_ids.extend([arc] * len(tokens))
-                sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
-                token_starts.extend([1] + [0] * (len(tokens) - 1))
-                attentions.extend([1] * len(tokens))
+                
+                if tokens:        
+                    sentence_token_ids.extend(ids)
+                    sentence_arc_ids.extend([arc] * len(tokens))
+                    sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
+                    token_starts.extend([1] + [0] * (len(tokens) - 1))
+                    attentions.extend([1] * len(tokens))
+
+                len_sentence_token_ids = len(sentence_token_ids)
+                len_sentence_arc_ids = len(sentence_arc_ids)
+                len_sentence_rel_ids = len(sentence_rel_ids)
+                len_token_starts = len(token_starts)
+                len_attentions = len(attentions)
+                if not (len_sentence_token_ids == len_sentence_arc_ids == len_sentence_rel_ids == len_token_starts == len_attentions):
+                    print('len_sentence_token_ids: ', len_sentence_token_ids)
+                    print('len_sentence_arc_ids', len_sentence_arc_ids)
+                    print('len_sentence_rel_ids', len_sentence_rel_ids)
+                    print('len_token_starts', len_token_starts)
+                    print('len_attentions', len_attentions)
+                    assert 1 == 2
+
+
             words_numerical.append(torch.tensor(sentence_token_ids))
             arcs_numerical.append(torch.tensor(sentence_arc_ids))
             rels_numerical.append(torch.tensor(sentence_rel_ids))
