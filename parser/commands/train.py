@@ -38,7 +38,9 @@ class Train(object):
         return subparser
 
     def __call__(self, args):
-        print("Preprocess the data. {}".format(datetime.now()))
+
+        if args.local_rank == 0:
+            print("Preprocess the data. {}".format(datetime.now()))
         
         train = Corpus.load(args.ftrain)
         dev = Corpus.load(args.fdev)
@@ -59,29 +61,36 @@ class Train(object):
         else:
             vocab = torch.load(args.vocab)
 
-        print(vocab)
+        if args.local_rank == 0:
+            print(vocab)
 
-        print("Load the dataset. {}".format(datetime.now()))
+            print("Load the dataset. {}".format(datetime.now()))
 
         if not os.path.isfile(args.ftrain_cache):
-            print('Loading trainset from scratch.')
+            if args.local_rank == 0:
+                print('Loading trainset from scratch.')
             trainset = TextDataset(vocab.numericalize(train, args.ftrain_cache))
         else:
-            print('Loading trainset from checkpoint.')
+            if args.local_rank == 0:
+                print('Loading trainset from checkpoint.')
             trainset = TextDataset(torch.load(args.ftrain_cache))
 
         if not os.path.isfile(args.fdev_cache):
-            print('Loading devset from scratch.')
+            if args.local_rank == 0:
+                print('Loading devset from scratch.')
             devset = TextDataset(vocab.numericalize(dev, args.fdev_cache))
         else:
-            print('Loading devset from checkpoint.')
+            if args.local_rank == 0:
+                print('Loading devset from checkpoint.')
             devset = TextDataset(torch.load(args.fdev_cache))
 
         if not os.path.isfile(args.ftest_cache):
-            print('Loading testset from scratch.')
+            if args.local_rank == 0:
+                print('Loading testset from scratch.')
             testset = TextDataset(vocab.numericalize(test, args.ftest_cache))
         else:
-            print('Loading testset from checkpoint.')
+            if args.local_rank == 0:
+                print('Loading testset from checkpoint.')
             testset = TextDataset(torch.load(args.ftest_cache))
         
         # set the data loaders
@@ -91,7 +100,8 @@ class Train(object):
         num_workers = args.threads
 
         if args.distributed:
-            print('Building distributed samplers.')
+            if args.local_rank == 0:
+                print('Building distributed samplers.')
             train_sampler = DistributedSampler(trainset)
             dev_sampler = DistributedSampler(devset)
             test_sampler = DistributedSampler(testset)
@@ -117,11 +127,13 @@ class Train(object):
                                  pin_memory=True,
                                  sampler=test_sampler,
                                  collate_fn=collate_fn)
-        print(f"  size of trainset: {len(trainset)}")
-        print(f"  size of devset: {len(devset)}")
-        print(f"  size of testset: {len(testset)}")
 
-        print("Create the model. {}".format(datetime.now()))
+        if args.local_rank == 0:
+            print(f"  size of trainset: {len(trainset)}")
+            print(f"  size of devset: {len(devset)}")
+            print(f"  size of testset: {len(testset)}")
+
+            print("Create the model. {}".format(datetime.now()))
         params = {
             'n_words': vocab.n_train_words,
             'n_chars': vocab.n_chars,
@@ -134,12 +146,14 @@ class Train(object):
             'n_rels': vocab.n_rels,
             'pad_index': vocab.pad_index
         }
-        for k, v in params.items():
-            print(f"  {k}: {v}")
+        if args.local_rank == 0:
+            for k, v in params.items():
+                print(f"  {k}: {v}")
         network = BiaffineParser(params)
         if torch.cuda.is_available():
             network = network.cuda()
-        print(f"{network}\n")
+        if args.local_rank == 0:
+            print(f"{network}\n")
 
         last_epoch = 0
         # Start training from checkpoint if one exists
@@ -161,7 +175,8 @@ class Train(object):
         #     network = torch.nn.DataParallel(network)
 
         if args.distributed:
-            print('Using distributed training.')
+            if args.local_rank == 0:
+                print('Using distributed training.')
             network = DistributedDataParallel(network)
 
         # Scale learning rate based on global batch size ????????
