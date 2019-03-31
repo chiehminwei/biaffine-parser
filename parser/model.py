@@ -73,6 +73,7 @@ class Model(object):
             # save the model if it is the best so far
             if args.local_rank == 0:
                 if dev_metric > max_metric:
+                    print('yeet')
                     self.network.save(file, epoch, cloud_address, args.local_rank)
                     # if not torch.cuda.device_count() > 1:
                     #     self.network.save(file, epoch, cloud_address)
