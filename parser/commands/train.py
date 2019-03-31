@@ -5,6 +5,8 @@ from parser.utils import Corpus, TextDataset, Vocab, collate_fn
 
 import torch
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from apex.parallel import DistributedDataParallel
 
 from config import Config
 
@@ -83,15 +85,37 @@ class Train(object):
             testset = TextDataset(torch.load(args.ftest_cache))
         
         # set the data loaders
+        train_sampler = None
+        dev_sampler = None
+        test_sampler = None
+        num_workers = args.threads
+
+        if args.distributed:
+            print('Building distributed samplers.')
+            train_sampler = DistributedSampler(trainset)
+            dev_sampler = DistributedSampler(devset)
+            test_sampler = DistributedSampler(testset)
+
         train_loader = DataLoader(dataset=trainset,
                                   batch_size=Config.batch_size // Config.gradient_accumulation_steps,
-                                  shuffle=True,
+                                  shuffle=(train_sampler is None),
+                                  num_workers=num_workers,
+                                  pin_memory=True,
+                                  sampler =train_sampler,
                                   collate_fn=collate_fn)
         dev_loader = DataLoader(dataset=devset,
                                 batch_size=Config.batch_size,
+                                shuffle=False,
+                                num_workers=num_workers,
+                                pin_memory=True,
+                                sampler=dev_sampler,
                                 collate_fn=collate_fn)
         test_loader = DataLoader(dataset=testset,
                                  batch_size=Config.batch_size,
+                                 shuffle=False,
+                                 num_workers=num_workers,
+                                 pin_memory=True,
+                                 sampler=test_sampler,
                                  collate_fn=collate_fn)
         print(f"  size of trainset: {len(trainset)}")
         print(f"  size of devset: {len(devset)}")
@@ -132,11 +156,19 @@ class Train(object):
             last_epoch = state['last_epoch']
             network = network.load(args.file, args.cloud_address)
 
-        if torch.cuda.device_count() > 1:
-            print('Using {} GPUs to train'.format(torch.cuda.device_count()))
-            network = torch.nn.DataParallel(network)
+        # if torch.cuda.device_count() > 1:
+        #     print('Using {} GPUs to train'.format(torch.cuda.device_count()))
+        #     network = torch.nn.DataParallel(network)
+
+        if args.distributed:
+            print('Using distributed training.')
+            network = DistributedDataParallel(network)
+
+        # Scale learning rate based on global batch size ????????
+        args.lr = args.lr*float(args.batch_size*args.world_size)/256.
 
         model = Model(vocab, network)
+
         model(loaders=(train_loader, dev_loader, test_loader),
               epochs=Config.epochs,
               patience=Config.patience,
@@ -148,4 +180,5 @@ class Train(object):
               file=args.file,
               last_epoch=last_epoch,
               cloud_address=args.cloud_address,
+              args=args,
               gradient_accumulation_steps=Config.gradient_accumulation_steps)

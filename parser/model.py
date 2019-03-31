@@ -30,7 +30,7 @@ class Model(object):
 
     def __call__(self, loaders, epochs, patience,
                  lr, betas, epsilon, weight_decay, annealing, file,
-                 last_epoch, cloud_address, gradient_accumulation_steps=1):
+                 last_epoch, cloud_address, args, gradient_accumulation_steps=1):
 
         self.gradient_accumulation_steps = gradient_accumulation_steps
         total_time = timedelta()
@@ -44,40 +44,53 @@ class Model(object):
         #                             lr=lr, betas=betas, eps=epsilon)
         # self.scheduler = optim.lr_scheduler.LambdaLR(optimizer=self.optimizer,
         #                                              lr_lambda=annealing)
-        print('***Started training at {}***'.format(datetime.now()))
+        if args.local_rank == 0:
+            print('***Started training at {}***'.format(datetime.now()))
+        
         for epoch in range(last_epoch + 1, epochs + 1):
             start = datetime.now()
             # train one epoch and update the parameters
+            if args.distributed:
+                train_loader.sampler.set_epoch(epoch)
             self.train(train_loader)
             
-            print(f"Epoch {epoch} / {epochs}:")
-            loss, train_metric = self.evaluate(train_loader)
-            print(f"{'train:':<6} Loss: {loss:.4f} {train_metric}")
-            loss, dev_metric = self.evaluate(dev_loader)
-            print(f"{'dev:':<6} Loss: {loss:.4f} {dev_metric}")
-            loss, test_metric = self.evaluate(test_loader)
-            print(f"{'test:':<6} Loss: {loss:.4f} {test_metric}")
+            if args.local_rank == 0:
+                print(f"Epoch {epoch} / {epochs}:")
+            train_loss, train_metric = self.evaluate(train_loader)
+            if args.local_rank == 0:
+                print(f"{'train:':<6} Loss: {train_loss:.4f} {train_metric}")
+            dev_loss, dev_metric = self.evaluate(dev_loader)
+            if args.local_rank == 0:
+                print(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")
+            test_loss, test_metric = self.evaluate(test_loader)
+            if args.local_rank == 0:
+                print(f"{'test:':<6} Loss: {test_loss:.4f} {test_metric}")
             t = datetime.now() - start
-            print(f"{t}s elapsed\n")
+            if args.local_rank == 0:
+                print(f"{t}s elapsed\n")
             total_time += t
 
             # save the model if it is the best so far
-            if dev_metric > max_metric:
-                if not torch.cuda.device_count() > 1:
+            if args.local_rank == 0:
+                if dev_metric > max_metric:
                     self.network.save(file, epoch, cloud_address)
-                else:
-                    self.network.module.save(file, epoch, cloud_address)
-                max_e, max_metric = epoch, dev_metric
-            elif epoch - max_e >= patience:
-                break
-        print('***Finished training at {}***'.format(datetime.now()))
+                    # if not torch.cuda.device_count() > 1:
+                    #     self.network.save(file, epoch, cloud_address)
+                    # else:
+                    #     self.network.module.save(file, epoch, cloud_address)
+                    max_e, max_metric = epoch, dev_metric
+                elif epoch - max_e >= patience:
+                    break
+        if args.local_rank == 0:
+            print('***Finished training at {}***'.format(datetime.now()))
         self.network = BiaffineParser.load(file, cloud_address)
         loss, metric = self.evaluate(test_loader)
 
-        print(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
-        print(f"the score of test at epoch {max_e} is {metric.score:.2%}")
-        print(f"mean time of each epoch is {total_time / epoch}s")
-        print(f"{total_time}s elapsed")
+        if args.local_rank == 0:
+            print(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
+            print(f"the score of test at epoch {max_e} is {metric.score:.2%}")
+            print(f"mean time of each epoch is {total_time / epoch}s")
+            print(f"{total_time}s elapsed")
 
     def train(self, loader):
         self.network.train()
@@ -100,14 +113,10 @@ class Model(object):
                 for sentence in words:
                     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
                 
-                print('arcs')
-                print(arcs.shape)
-                print('rels')
-                print(rels.shape)
-                print('s_arc')
-                print(s_arc.shape)
-                print('s_rel')
-                print(s_rel.shape)
+                print('arcs', arcs.shape)
+                print('rels', rels.shape)
+                print('s_arc', s_arc.shape)
+                print('s_rel', s_rel.shape)
                 print('***DEBUGGING PARSER***')
                 s_arc, s_rel = self.network(words, attention_mask, debug=True)
 

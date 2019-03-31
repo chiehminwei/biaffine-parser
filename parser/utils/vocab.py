@@ -138,7 +138,7 @@ class Vocab(object):
                     print('len_sentence_rel_ids', len_sentence_rel_ids)
                     print('len_token_starts', len_token_starts)
                     print('len_attentions', len_attentions)
-                    assert 1 == 2
+                    raise RuntimeError("Lengths don't match up.")
 
 
             words_numerical.append(torch.tensor(sentence_token_ids))
