@@ -98,7 +98,9 @@ class Model(object):
         self.network.train()
         # for step, batch in enumerate(tqdm(loader)):
         print('start iterating')
-        for step, batch in enumerate(loader):
+        # for step, batch in enumerate(loader):
+        step = 0
+        for batch in loader:
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
             print('yeet')
@@ -146,7 +148,7 @@ class Model(object):
                 # self.scheduler.step()
                 self.optimizer.zero_grad()
                 print('yeet7')
-
+            step += 1
             # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
             # for sentence in words:
             #     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
