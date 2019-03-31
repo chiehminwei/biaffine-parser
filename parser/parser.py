@@ -151,7 +151,8 @@ class BiaffineParser(nn.Module):
         return s_arc, s_rel, embed
 
     @classmethod
-    def load(cls, fname, cloud_address=None):
+    def load(cls, fname, cloud_address=None, local_rank=0):
+        print("I'm loading now haha. This is {}".format(local_rank))
         # Copy from cloud if there's no saved checkpoint
         if not os.path.isfile(fname):
             if cloud_address:
@@ -174,13 +175,14 @@ class BiaffineParser(nn.Module):
 
         return network
 
-    def save(self, fname, epoch, cloud_address):
+    def save(self, fname, epoch, cloud_address, local_rank):
         state = {
             'params': self.params,
             'state_dict': self.state_dict(),
             'last_epoch': epoch,
         }
         torch.save(state, fname)
+        print("I'm saving now haha. This is {}".format(local_rank))
         # Save a copy to cloud as well
         FNULL = open(os.devnull, 'w')
         cloud_address = os.path.join(cloud_address, fname)
