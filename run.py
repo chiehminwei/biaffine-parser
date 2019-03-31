@@ -48,7 +48,8 @@ if __name__ == '__main__':
         args.distributed = int(os.environ['WORLD_SIZE']) > 1
 
     if args.distributed:
-        print('Training distributed.')
+        if args.local_rank == 0:
+            print('Training distributed.')
         # FOR DISTRIBUTED:  Set the device according to local_rank.
         torch.cuda.set_device(args.local_rank)
 
@@ -59,15 +60,17 @@ if __name__ == '__main__':
 
     torch.backends.cudnn.benchmark = True
 
-    print(f"Set the max num of threads to {args.threads}")
-    print(f"Set the seed for generating random numbers to {args.local_rank}")
+    if args.local_rank == 0:
+        print(f"Set the max num of threads to {args.threads}")
+        print(f"Set the seed for generating random numbers to {args.local_rank}")
     # print(f"Set the device with ID {args.device} visible")
     
     # torch.set_num_threads(args.threads)
     # torch.manual_seed(args.seed)
     torch.manual_seed(args.local_rank)
     n_gpu = torch.cuda.device_count()
-    print("\nCUDNN VERSION: {}\n".format(torch.backends.cudnn.version()))
+    if args.local_rank == 0:
+        print("\nCUDNN VERSION: {}\n".format(torch.backends.cudnn.version()))
         
     # if n_gpu > 0:
     #     torch.cuda.manual_seed_all(args.seed)
