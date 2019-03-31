@@ -62,19 +62,24 @@ class BiaffineParser(nn.Module):
                                  bias_y=True)
         self.pad_index = params['pad_index']
         
-    def forward(self, words, mask):
+    def forward(self, words, mask, debug=False):
         # get the mask and lengths of given batch
         lens = mask.sum(dim=1)
-        # lens = words.ne(self.pad_index).sum(dim=1)
-
-        # word dropout
-        if self.training:
+        
+        # no word dropout for now
+        if self.training and 1 == 2:
             x_ = self.word_dropout(words.float())
             words = x_.mul(1-self.word_dropout_p).long()  
         
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
         x = embed
+
+        if debug:
+            print('words')
+            print(words.shape)
+            print('bert output')
+            print(x.shape)
 
         # bert dropout
         x = self.bert_dropout(x)
@@ -85,11 +90,27 @@ class BiaffineParser(nn.Module):
         rel_h = self.mlp_rel_h(x)
         rel_d = self.mlp_rel_d(x)
 
+        if debug:
+            print('arc_h')
+            print(arc_h.shape)
+            print('arc_d')
+            print(arc_d.shape)
+            print('rel_h')
+            print(rel_h.shape)
+            print('rel_d')
+            print(rel_d.shape)
+
         # get arc and rel scores from the bilinear attention
         # [batch_size, seq_len, seq_len]
         s_arc = self.arc_attn(arc_d, arc_h)
         # [batch_size, seq_len, seq_len, n_rels]
         s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
+
+        if debug:
+            print('s_arc')
+            print(s_arc.shape)
+            print('s_rel')
+            print(s_rel.shape)
 
         # set the scores that exceed the length of each sentence to -inf
         len_mask = length_to_mask(lens, max_len=words.shape[-1], dtype=torch.uint8)

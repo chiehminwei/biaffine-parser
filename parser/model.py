@@ -92,9 +92,28 @@ class Model(object):
             lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
-            s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
-            gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
+            try:
+                gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
+                s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
 
+            except:
+                for sentence in words:
+                    print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
+                
+                print('arcs')
+                print(arcs.shape)
+                print('rels')
+                print(rels.shape)
+                print('s_arc')
+                print(s_arc.shape)
+                print('s_rel')
+                print(s_rel.shape)
+                print('***DEBUGGING PARSER***')
+                s_arc, s_rel = self.network(words, attention_mask, debug=True)
+
+                assert 1 == 2
+                
+            
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             if self.gradient_accumulation_steps > 1:
                 loss = loss / self.gradient_accumulation_steps
