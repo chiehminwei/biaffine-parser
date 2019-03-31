@@ -52,7 +52,6 @@ class Model(object):
             # train one epoch and update the parameters
             if args.distributed:
                 train_loader.sampler.set_epoch(epoch)
-            print('train for one epoch, local_rank {}'.format(args.local_rank))
             self.train(train_loader)
             
             if args.local_rank == 0:
@@ -74,7 +73,7 @@ class Model(object):
             # save the model if it is the best so far
             if args.local_rank == 0:
                 if dev_metric > max_metric:
-                    print('yeet')
+                    # print('yeet')
                     self.network.save(file, epoch, cloud_address, args.local_rank)
                     # if not torch.cuda.device_count() > 1:
                     #     self.network.save(file, epoch, cloud_address)
@@ -97,13 +96,13 @@ class Model(object):
     def train(self, loader):
         self.network.train()
         # for step, batch in enumerate(tqdm(loader)):
-        print('start iterating')
+        # print('start iterating')
         # for step, batch in enumerate(loader):
         step = 0
         for batch in loader:
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
-            print('yeet')
+            # print('yeet')
 
             s_arc, s_rel = self.network(words, attention_mask)
             # ignore [CLS]
@@ -112,12 +111,12 @@ class Model(object):
             lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
-            print('yeet2')
+            # print('yeet2')
 
             try:
                 gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
                 s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
-                print('yeet3')
+                # print('yeet3')
 
             except:
                 for sentence in words:
@@ -134,20 +133,20 @@ class Model(object):
                 
             
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-            print('yeet4')
+            # print('yeet4')
             if self.gradient_accumulation_steps > 1:
                 loss = loss / self.gradient_accumulation_steps
-            print('yeet5')
+            # print('yeet5')
 
             loss.backward()
-            print('yeet6')
+            # print('yeet6')
 
             if (step + 1) % self.gradient_accumulation_steps == 0:
                 nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
                 self.optimizer.step()
                 # self.scheduler.step()
                 self.optimizer.zero_grad()
-                print('yeet7')
+                # print('yeet7')
             step += 1
             # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
             # for sentence in words:
