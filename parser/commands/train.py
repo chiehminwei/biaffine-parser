@@ -141,7 +141,7 @@ class Train(object):
             print(f"  size of devset: {len(devset)}")
             print(f"  size of testset: {len(testset)}")
 
-            print("Create the model. {}".format(datetime.now()))
+            print("Create the model.")
         params = {
             'n_words': vocab.n_train_words,
             'n_chars': vocab.n_chars,
