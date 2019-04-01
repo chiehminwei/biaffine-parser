@@ -33,7 +33,7 @@ parser.add_argument('--cloud_address', '-c',
                     default='gs://bert-chinese-mine/biaffine/tada/',
                     help='path to Google Cloud Storage')
 
-parser.set_defaults(func=self)
+# parser.set_defaults(func=self)
 args = parser.parse_args()
 
 print("***Start preprocessing the data at {}***".format(datetime.now()))
