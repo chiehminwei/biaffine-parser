@@ -104,18 +104,18 @@ class Vocab(object):
                     word = word.replace('—', '-')
 
 
-                    tokens = self.tokenizer.tokenize(word)
-                    ids = self.tokenizer.convert_tokens_to_ids(tokens)
-                    if regex.match(r'\p{P}+$', word):
-                        for token_id in ids:
-                            self.puncts.add(token_id)
+                tokens = self.tokenizer.tokenize(word)
+                ids = self.tokenizer.convert_tokens_to_ids(tokens)
+                if regex.match(r'\p{P}+$', word):
+                    for token_id in ids:
+                        self.puncts.add(token_id)
 
-                    if '[UNK]' in tokens:
-                        for offending_char in word:
-                            token = self.tokenizer.tokenize(offending_char)
-                            if '[UNK]' in token:
-                                offending_set.add(offending_char)
-                        flag = True
+                if '[UNK]' in tokens:
+                    for offending_char in word:
+                        token = self.tokenizer.tokenize(offending_char)
+                        if '[UNK]' in token:
+                            offending_set.add(offending_char)
+                    flag = True
                 
                 if tokens:        
                     sentence_token_ids.extend(ids)

@@ -57,7 +57,7 @@ if not os.path.isfile(args.vocab):
 else:
     vocab = torch.load(args.vocab)
 
-print("***Start loading the dataset at {}***.".format(datetime.now()))
+print("***Start loading the dataset at {}***".format(datetime.now()))
 if not os.path.isfile(args.ftrain_cache):
     print('Loading trainset from scratch.')
     vocab.numericalize(train, args.ftrain_cache)
