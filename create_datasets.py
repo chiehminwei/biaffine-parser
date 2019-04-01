@@ -57,20 +57,23 @@ if not os.path.isfile(args.vocab):
 else:
     vocab = torch.load(args.vocab)
 
-print(vocab)
-print("Load the dataset.")
-
+print("***Start loading the dataset at {}***.".format(datetime.now()))
 if not os.path.isfile(args.ftrain_cache):
     print('Loading trainset from scratch.')
     vocab.numericalize(train, args.ftrain_cache)
-    print('***Trainset loaded at {}***'.format(datetime.now()))
+    print('***trainset loaded at {}***'.format(datetime.now()))
+else:
+    print('trainset already exists.')
 
 if not os.path.isfile(args.fdev_cache):
     print('Loading devset from scratch.')
     vocab.numericalize(dev, args.fdev_cache)
-    print('***Devset loaded at {}***'.format(datetime.now()))
-
+    print('***devset loaded at {}***'.format(datetime.now()))
+else:
+    print('devset already exists.')
 if not os.path.isfile(args.ftest_cache):
     print('Loading testset from scratch.')
     vocab.numericalize(test, args.ftest_cache)
-    print('***Testset loaded at {}***'.format(datetime.now()))
+    print('***testset loaded at {}***'.format(datetime.now()))
+else:
+    print('testset already exists.')
