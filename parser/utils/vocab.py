@@ -124,6 +124,7 @@ class Vocab(object):
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
                 else:
+                    print('tokens', tokens)
                     len_sentence_token_ids = len(sentence_token_ids)
                     len_sentence_arc_ids = len(sentence_arc_ids)
                     len_sentence_rel_ids = len(sentence_rel_ids)
