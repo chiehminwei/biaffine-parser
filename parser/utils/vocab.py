@@ -132,16 +132,8 @@ class Vocab(object):
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
                 else:
-                    print('\nempty tokens: ', tokens)
-                    print('empty word: ', word)
-                    len_sentence_token_ids = len(sentence_token_ids)
-                    len_sentence_arc_ids = len(sentence_arc_ids)
-                    len_sentence_rel_ids = len(sentence_rel_ids)
-                    len_token_starts = len(token_starts)
-                    len_attentions = len(attentions)
-                    print('empty words: ', words)
-                    print('empty arcs: ', arcs)
-                    print('empty rels: ', rels)
+                    print('\noffending word: ', word)
+                    print('empty words: ', ' '.join(words))                    
                     error_flag = True
                     continue
                     # raise RuntimeError('wtf m8')
