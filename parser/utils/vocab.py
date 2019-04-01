@@ -119,9 +119,10 @@ class Vocab(object):
                     for offending_char in word:
                         token = self.tokenizer.tokenize(offending_char)
                         if '[UNK]' in token:
-                            if unicodedata.category(offending_char) == 'So':
-                                print(' '.join(words))
-                            offending_set.add(offending_char)
+                            # if unicodedata.category(offending_char) == 'So':
+                            #     print(' '.join(words))
+                            if unicodedata.category(offending_char) != 'So':
+                                offending_set.add(offending_char)
                     flag = True
                 
                 if tokens:        
@@ -131,7 +132,7 @@ class Vocab(object):
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
                 else:
-                    print('empty tokens: ', tokens)
+                    print('\nempty tokens: ', tokens)
                     print('empty word: ', word)
                     len_sentence_token_ids = len(sentence_token_ids)
                     len_sentence_arc_ids = len(sentence_arc_ids)
