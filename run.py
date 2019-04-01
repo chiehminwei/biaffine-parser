@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     if args.distributed:
         if args.local_rank == 0:
-            print('Training distributed.')
+            print('Distributed training enabled.')
         # FOR DISTRIBUTED:  Set the device according to local_rank.
         torch.cuda.set_device(args.local_rank)
 

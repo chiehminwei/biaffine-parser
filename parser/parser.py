@@ -175,7 +175,7 @@ class BiaffineParser(nn.Module):
 
         return network
 
-    def save(self, fname, epoch, cloud_address, local_rank):
+    def save(self, fname, epoch, cloud_address, local_rank=0):
         state = {
             'params': self.params,
             'state_dict': self.state_dict(),

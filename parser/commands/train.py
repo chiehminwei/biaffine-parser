@@ -40,7 +40,7 @@ class Train(object):
     def __call__(self, args):
 
         if args.local_rank == 0:
-            print("Preprocess the data. {}".format(datetime.now()))
+            print("***Start preprocessing the data at {}***".format(datetime.now()))
         
         train = Corpus.load(args.ftrain)
         dev = Corpus.load(args.fdev)
@@ -64,7 +64,7 @@ class Train(object):
         if args.local_rank == 0:
             print(vocab)
 
-            print("Load the dataset. {}".format(datetime.now()))
+            print("Load the dataset.")
 
         if not os.path.isfile(args.ftrain_cache):
             if args.local_rank == 0:
@@ -75,6 +75,9 @@ class Train(object):
                 print('Loading trainset from checkpoint.')
             trainset = TextDataset(torch.load(args.ftrain_cache))
 
+        if args.local_rank == 0:
+                print('***Trainset loaded at {}***'.format(datetime.now()))
+
         if not os.path.isfile(args.fdev_cache):
             if args.local_rank == 0:
                 print('Loading devset from scratch.')
@@ -83,6 +86,8 @@ class Train(object):
             if args.local_rank == 0:
                 print('Loading devset from checkpoint.')
             devset = TextDataset(torch.load(args.fdev_cache))
+        if args.local_rank == 0:
+                print('***Devset loaded at {}***'.format(datetime.now()))
 
         if not os.path.isfile(args.ftest_cache):
             if args.local_rank == 0:
@@ -92,6 +97,9 @@ class Train(object):
             if args.local_rank == 0:
                 print('Loading testset from checkpoint.')
             testset = TextDataset(torch.load(args.ftest_cache))
+        if args.local_rank == 0:
+            print('***Testset loaded at {}***'.format(datetime.now()))
+
         
         # set the data loaders
         train_sampler = None
@@ -175,8 +183,6 @@ class Train(object):
         #     network = torch.nn.DataParallel(network)
 
         if args.distributed:
-            if args.local_rank == 0:
-                print('Using distributed training.')
             network = DistributedDataParallel(network)
 
         # Scale learning rate based on global batch size ????????
