@@ -67,6 +67,7 @@ class Vocab(object):
         token_start_mask = []
         attention_mask = []
         flag = False
+        error_flag = False
         offending_set = set()
         for words, arcs, rels in zip(corpus.words, corpus.heads, corpus.rels):
             sentence_token_ids = []
@@ -111,9 +112,13 @@ class Vocab(object):
                         self.puncts.add(token_id)
 
                 if '[UNK]' in tokens:
+                    print('words: ', words)
+                    print('offending word: ', word)
+                    print('offending chars: ')
                     for offending_char in word:
                         token = self.tokenizer.tokenize(offending_char)
                         if '[UNK]' in token:
+                            print(offending_char)
                             offending_set.add(offending_char)
                     flag = True
                 
@@ -124,22 +129,19 @@ class Vocab(object):
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
                 else:
-                    print('tokens', tokens)
-                    print('word', word)
+                    print('empty tokens: ', tokens)
+                    print('empty word: ', word)
                     len_sentence_token_ids = len(sentence_token_ids)
                     len_sentence_arc_ids = len(sentence_arc_ids)
                     len_sentence_rel_ids = len(sentence_rel_ids)
                     len_token_starts = len(token_starts)
                     len_attentions = len(attentions)
-                    print(words)
-                    print(arcs)
-                    print(rels)
-                    print('len_sentence_token_ids: ', len_sentence_token_ids)
-                    print('len_sentence_arc_ids', len_sentence_arc_ids)
-                    print('len_sentence_rel_ids', len_sentence_rel_ids)
-                    print('len_token_starts', len_token_starts)
-                    print('len_attentions', len_attentions)
-                    raise RuntimeError('wtf m8')
+                    print('empty words: ', words)
+                    print('empty arcs: ', arcs)
+                    print('empty rels: ', rels)
+                    error_flag = True
+                    continue
+                    # raise RuntimeError('wtf m8')
 
                 len_sentence_token_ids = len(sentence_token_ids)
                 len_sentence_arc_ids = len(sentence_arc_ids)
@@ -168,6 +170,8 @@ class Vocab(object):
             print('WARNING: The following characters are unknown to BERT:')
             print(offending_set)
             # raise RuntimeError('Illegal character found in corpus.')
+        if error_flag:
+            raise RuntimeError('Some tokens are empty.')
         if save_name:
             torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical), save_name)
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
