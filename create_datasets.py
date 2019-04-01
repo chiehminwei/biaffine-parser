@@ -77,3 +77,4 @@ if not os.path.isfile(args.ftest_cache):
     print('***testset loaded at {}***'.format(datetime.now()))
 else:
     print('testset already exists.')
+print('Data preprocessing done.')
