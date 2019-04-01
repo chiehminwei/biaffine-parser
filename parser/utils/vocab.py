@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 from pytorch_pretrained_bert import BertTokenizer
 import numpy as np
+import unicodedata
 
 
 class Vocab(object):
@@ -112,13 +113,14 @@ class Vocab(object):
                         self.puncts.add(token_id)
 
                 if '[UNK]' in tokens:
-                    print('words: ', words)
-                    print('offending word: ', word)
-                    print('offending chars: ')
+                    # print('words: ', words)
+                    # print('offending word: ', word)
+                    # print('offending chars: ')
                     for offending_char in word:
                         token = self.tokenizer.tokenize(offending_char)
                         if '[UNK]' in token:
-                            print(offending_char)
+                            if unicodedata.category(offending_char) == 'So':
+                                print(' '.join(words))
                             offending_set.add(offending_char)
                     flag = True
                 
