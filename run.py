@@ -30,8 +30,8 @@ if __name__ == '__main__':
         #                        help='ID of GPU to use')
         subparser.add_argument('--seed', '-s', default=1, type=int,
                                help='seed for generating random numbers')
-        subparser.add_argument('--threads', '-t', default=4, type=int,
-                               help='max num of threads')
+        # subparser.add_argument('--threads', '-t', default=4, type=int,
+        #                        help='max num of threads')
         subparser.add_argument('--file', '-f', default='model.pt',
                                help='path to model file')
         subparser.add_argument('--vocab', '-v', default='vocab.pt',
@@ -60,10 +60,10 @@ if __name__ == '__main__':
 
     torch.backends.cudnn.benchmark = True
 
-    if args.local_rank == 0:
-        print(f"Set the max num of threads to {args.threads}")
-        print(f"Set the seed for generating random numbers to {args.local_rank}")
-    # print(f"Set the device with ID {args.device} visible")
+    # if args.local_rank == 0:
+        # print(f"Set the max num of threads to {args.threads}")
+        # print(f"Set the seed for generating random numbers to {args.local_rank}")
+        # print(f"Set the device with ID {args.device} visible")
     
     # torch.set_num_threads(args.threads)
     # torch.manual_seed(args.seed)

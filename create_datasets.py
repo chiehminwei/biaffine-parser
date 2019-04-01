@@ -1,0 +1,76 @@
+# -*- coding: utf-8 -*-
+
+from parser import BiaffineParser, Model
+from parser.utils import Corpus, Vocab
+
+import torch
+
+import os
+import argparse
+import subprocess
+from datetime import datetime, timedelta
+
+
+parser = argparse.ArgumentParser(
+    description='Data preprocessing module.'
+)
+
+parser.add_argument('--ftrain', default='data/train.conllx',
+                    help='path to train file')
+parser.add_argument('--fdev', default='data/dev.conllx',
+                    help='path to dev file')
+parser.add_argument('--ftest', default='data/test.conllx',
+                    help='path to test file')
+parser.add_argument('--ftrain_cache', default='trainset',
+                    help='path to train file cache')
+parser.add_argument('--fdev_cache', default='devset',
+                    help='path to dev file cache')
+parser.add_argument('--ftest_cache', default='testset',
+                    help='path to test file cache')
+parser.add_argument('--vocab', '-v', default='vocab.pt',
+                    help='path to vocabulary file')
+parser.add_argument('--cloud_address', '-c',
+                    default='gs://bert-chinese-mine/biaffine/tada/',
+                    help='path to Google Cloud Storage')
+
+parser.set_defaults(func=self)
+args = parser.parse_args()
+
+print("***Start preprocessing the data at {}***".format(datetime.now()))
+
+train = Corpus.load(args.ftrain)
+dev = Corpus.load(args.fdev)
+test = Corpus.load(args.ftest)
+
+if not os.path.isfile(args.vocab):
+    FNULL = open(os.devnull, 'w')
+    cloud_address = os.path.join(args.cloud_address, args.vocab)
+    subprocess.call(['gsutil', 'cp', cloud_address, args.vocab],
+                    stdout=FNULL, stderr=subprocess.STDOUT)
+if not os.path.isfile(args.vocab):
+    vocab = Vocab.from_corpus(corpus=train, min_freq=2)
+    torch.save(vocab, args.vocab)
+    FNULL = open(os.devnull, 'w')
+    cloud_address = os.path.join(args.cloud_address, args.vocab)
+    subprocess.call(['gsutil', 'cp', args.vocab, cloud_address],
+                    stdout=FNULL, stderr=subprocess.STDOUT)
+else:
+    vocab = torch.load(args.vocab)
+
+print(vocab)
+print("Load the dataset.")
+
+if not os.path.isfile(args.ftrain_cache):
+    print('Loading trainset from scratch.')
+    vocab.numericalize(train, args.ftrain_cache)
+    print('***Trainset loaded at {}***'.format(datetime.now()))
+
+if not os.path.isfile(args.fdev_cache):
+    print('Loading devset from scratch.')
+    vocab.numericalize(dev, args.fdev_cache)
+    print('***Devset loaded at {}***'.format(datetime.now()))
+
+if not os.path.isfile(args.ftest_cache):
+    print('Loading testset from scratch.')
+    vocab.numericalize(test, args.ftest_cache)
+    print('***Testset loaded at {}***'.format(datetime.now()))
