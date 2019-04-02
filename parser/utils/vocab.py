@@ -82,66 +82,69 @@ class Vocab(object):
             arcs = [0] + arcs + [0]
             rels = ['<ROOT>'] + rels + ['<ROOT>']
             for word, arc, rel in zip(words, arcs, rels):
+                # skip <ROOT>
                 if word == '<ROOT>':
                     continue
-                else:
-                    if word == '`':
-                        word = "'"
-                    if word == '``':
-                        word = '"'
-                    if word == "''":
-                        word = '"'
-                    if word == "non-``":
-                        word = 'non-"'
-                    word = word.replace('“', '"')
-                    word = word.replace('”', '"')
-
-                    word = word.replace("`", "'")
-                    word = word.replace("’", "'")
-                    word = word.replace("‘", "'")
-                    word = word.replace("'", "'")
-                    word = word.replace("´", "'")
-
-                    word = word.replace("…", "...")
-
-                    word = word.replace("–", "-")
-                    word = word.replace('—', '-')
-
-
-                tokens = self.tokenizer.tokenize(word)
-                ids = self.tokenizer.convert_tokens_to_ids(tokens)
-                if regex.match(r'\p{P}+$', word):
-                    for token_id in ids:
-                        self.puncts.add(token_id)
-
-                if '[UNK]' in tokens:
-                    # print('words: ', words)
-                    # print('offending word: ', word)
-                    # print('offending chars: ')
-                    for offending_char in word:
-                        token = self.tokenizer.tokenize(offending_char)
-                        if '[UNK]' in token:
-                            # if unicodedata.category(offending_char) == 'So':
-                            #     print(' '.join(words))
-                            if unicodedata.category(offending_char) != 'So':
-                                offending_set.add(offending_char)
-                            else:
-                                symbol_set.add(offending_char)
-                    flag = True
                 
-                if tokens:        
+                # take care of some idiosyncracies
+                if word == '`':
+                    word = "'"
+                if word == '``':
+                    word = '"'
+                if word == "''":
+                    word = '"'
+                if word == "non-``":
+                    word = 'non-"'
+                word = word.replace('“', '"')
+                word = word.replace('”', '"')
+                word = word.replace("`", "'")
+                word = word.replace("’", "'")
+                word = word.replace("‘", "'")
+                word = word.replace("'", "'")
+                word = word.replace("´", "'")
+                word = word.replace("…", "...")
+                word = word.replace("–", "-")
+                word = word.replace('—', '-')
+
+
+                tokens = self.tokenizer.tokenize(word)                
+                if tokens:
+                    ids = self.tokenizer.convert_tokens_to_ids(tokens)
+                    # take care of punctuation
+                    if regex.match(r'\p{P}+$', word):
+                        for token_id in ids:
+                            self.puncts.add(token_id)
+
+                    # log any unknown words
+                    if '[UNK]' in tokens:
+                        # print('words: ', words)
+                        # print('offending word: ', word)
+                        # print('offending chars: ')
+                        for offending_char in word:
+                            token = self.tokenizer.tokenize(offending_char)
+                            if '[UNK]' in token:
+                                if unicodedata.category(offending_char) != 'So':
+                                    offending_set.add(offending_char)
+                                else:
+                                    symbol_set.add(offending_char)
+                        flag = True    
+
+                    # main thing to do
                     sentence_token_ids.extend(ids)
                     sentence_arc_ids.extend([arc] * len(tokens))
                     sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
+                    
+                # take care of empty tokens
                 else:
                     # print('\noffending word: ', word)
                     # print('empty words: ', ' '.join(words))
                     empty_words.add(word)
                     error_flag = True
                     continue
-                    
+                
+                # error checking for lengths
                 len_sentence_token_ids = len(sentence_token_ids)
                 len_sentence_arc_ids = len(sentence_arc_ids)
                 len_sentence_rel_ids = len(sentence_rel_ids)
@@ -177,6 +180,7 @@ class Vocab(object):
             raise RuntimeError('Some tokens are empty.')
         if save_name:
             torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical), save_name)
+        
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
     def numericalize_sentences(self, sentences):
