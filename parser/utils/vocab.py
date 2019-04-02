@@ -70,6 +70,8 @@ class Vocab(object):
         flag = False
         error_flag = False
         offending_set = set()
+        symbol_set = set()
+        empty_words = set()
         for words, arcs, rels in zip(corpus.words, corpus.heads, corpus.rels):
             sentence_token_ids = []
             sentence_arc_ids = []
@@ -123,6 +125,8 @@ class Vocab(object):
                             #     print(' '.join(words))
                             if unicodedata.category(offending_char) != 'So':
                                 offending_set.add(offending_char)
+                            else:
+                                symbol_set.add(offending_char)
                     flag = True
                 
                 if tokens:        
@@ -132,12 +136,12 @@ class Vocab(object):
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
                 else:
-                    print('\noffending word: ', word)
-                    print('empty words: ', ' '.join(words))                    
+                    # print('\noffending word: ', word)
+                    # print('empty words: ', ' '.join(words))
+                    empty_words.add(word)
                     error_flag = True
                     continue
-                    # raise RuntimeError('wtf m8')
-
+                    
                 len_sentence_token_ids = len(sentence_token_ids)
                 len_sentence_arc_ids = len(sentence_arc_ids)
                 len_sentence_rel_ids = len(sentence_rel_ids)
@@ -162,10 +166,14 @@ class Vocab(object):
             attention_mask.append(torch.ByteTensor(attentions))
 
         if flag: 
-            print('WARNING: The following characters are unknown to BERT:')
+            print('WARNING: The following non-symbol characters are unknown to BERT:')
             print(offending_set)
-            # raise RuntimeError('Illegal character found in corpus.')
+            print('WARNING: The following symbol characters are unknown to BERT:')            
+            print(symbol_set)
+            
         if error_flag:
+            print('ERROR: The following characters are empty after going through tokenizer:')
+            print(empty_words)
             raise RuntimeError('Some tokens are empty.')
         if save_name:
             torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical), save_name)
