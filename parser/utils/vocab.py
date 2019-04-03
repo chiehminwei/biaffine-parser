@@ -110,6 +110,8 @@ class Vocab(object):
                 tokens = self.tokenizer.tokenize(word)                
                 if tokens:
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
+                    print(ids)
+                    raise RuntimeError('because I can')
                     # take care of punctuation
                     if regex.match(r'\p{P}+$', word):
                         for token_id in ids:
