@@ -74,6 +74,6 @@ if __name__ == '__main__':
         
     # if n_gpu > 0:
     #     torch.cuda.manual_seed_all(args.seed)
-    os.environ['CUDA_VISIBLE_DEVICES'] = -1
+    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
     args.func(args)
