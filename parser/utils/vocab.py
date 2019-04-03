@@ -176,9 +176,9 @@ class Vocab(object):
             print(symbol_set)
             
         if error_flag:
-            print('ERROR: The following characters are empty after going through tokenizer:')
+            print('WARNING: The following characters are empty after going through tokenizer:')
             print(empty_words)
-            raise RuntimeError('Some tokens are empty.')
+            # raise RuntimeError('Some tokens are empty.')
         if save_name:
             torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical), save_name)
         
