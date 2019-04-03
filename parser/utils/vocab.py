@@ -5,7 +5,8 @@ from collections import Counter
 import regex
 import torch
 import torch.nn as nn
-from pytorch_pretrained_bert import BertTokenizer
+#from pytorch_pretrained_bert import BertTokenizer
+import tokenization
 import numpy as np
 import unicodedata
 
@@ -33,7 +34,8 @@ class Vocab(object):
         self.n_rels = len(self.rels)
         self.n_train_words = self.n_words
 
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+        # self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+        self.tokenizer = tokenization.FullTokenizer(vocab_file='../../vocab.txt', do_lower_case=False)
 
     def __repr__(self):
         info = f"{self.__class__.__name__}(\n"
@@ -110,8 +112,7 @@ class Vocab(object):
                 tokens = self.tokenizer.tokenize(word)                
                 if tokens:
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
-                    print(ids)
-                    raise RuntimeError('because I can')
+
                     # take care of punctuation
                     if regex.match(r'\p{P}+$', word):
                         for token_id in ids:
@@ -165,6 +166,8 @@ class Vocab(object):
 
 
             words_numerical.append(torch.tensor(sentence_token_ids))
+            print(words_numerical)
+            raise RuntimeError('because I can')
             arcs_numerical.append(torch.tensor(sentence_arc_ids))
             rels_numerical.append(torch.tensor(sentence_rel_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
