@@ -166,8 +166,6 @@ class Vocab(object):
 
 
             words_numerical.append(torch.tensor(sentence_token_ids))
-            print(words_numerical)
-            raise RuntimeError('because I can')
             arcs_numerical.append(torch.tensor(sentence_arc_ids))
             rels_numerical.append(torch.tensor(sentence_rel_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
