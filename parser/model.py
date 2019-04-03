@@ -128,10 +128,19 @@ class Model(object):
             lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
             
-            # gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
+            gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]            
 
-            loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            try:
+                loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            except:
+                print(words.shape)
+                print(attention_mask.shape)
+                print(token_start_mask.shape)
+                print(s_arc.shape)
+                print(s_rel.shape)
+                print(gold_arcs.shape)
+                print(gold_rels.shape)
             
             if self.gradient_accumulation_steps > 1:
                 loss = loss / self.gradient_accumulation_steps
