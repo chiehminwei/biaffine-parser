@@ -25,14 +25,14 @@ class Train(object):
                                help='path to train file')
         subparser.add_argument('--fdev', default='data/dev.conllx',
                                help='path to dev file')
-        subparser.add_argument('--ftest', default='data/test.conllx',
-                               help='path to test file')
+        # subparser.add_argument('--ftest', default='data/test.conllx',
+        #                        help='path to test file')
         subparser.add_argument('--ftrain_cache', default='trainset',
                                help='path to train file cache')
         subparser.add_argument('--fdev_cache', default='devset',
                                help='path to dev file cache')
-        subparser.add_argument('--ftest_cache', default='testset',
-                               help='path to test file cache')
+        # subparser.add_argument('--ftest_cache', default='testset',
+        #                        help='path to test file cache')
         subparser.set_defaults(func=self)
 
         return subparser
@@ -44,7 +44,7 @@ class Train(object):
         
         train = Corpus.load(args.ftrain)
         dev = Corpus.load(args.fdev)
-        test = Corpus.load(args.ftest)
+        # test = Corpus.load(args.ftest)
 
         if not os.path.isfile(args.vocab):
             FNULL = open(os.devnull, 'w')
@@ -89,29 +89,29 @@ class Train(object):
         if args.local_rank == 0:
                 print('***Devset loaded at {}***'.format(datetime.now()))
 
-        if not os.path.isfile(args.ftest_cache):
-            if args.local_rank == 0:
-                print('Loading testset from scratch.')
-            testset = TextDataset(vocab.numericalize(test, args.ftest_cache))
-        else:
-            if args.local_rank == 0:
-                print('Loading testset from checkpoint.')
-            testset = TextDataset(torch.load(args.ftest_cache))
-        if args.local_rank == 0:
-            print('***Testset loaded at {}***'.format(datetime.now()))
+        # if not os.path.isfile(args.ftest_cache):
+        #     if args.local_rank == 0:
+        #         print('Loading testset from scratch.')
+        #     testset = TextDataset(vocab.numericalize(test, args.ftest_cache))
+        # else:
+        #     if args.local_rank == 0:
+        #         print('Loading testset from checkpoint.')
+        #     testset = TextDataset(torch.load(args.ftest_cache))
+        # if args.local_rank == 0:
+        #     print('***Testset loaded at {}***'.format(datetime.now()))
 
         
         # set the data loaders
         train_sampler = None
         dev_sampler = None
-        test_sampler = None
+        # test_sampler = None
         
         if args.distributed:
             if args.local_rank == 0:
                 print('Building distributed samplers.')
             train_sampler = DistributedSampler(trainset)
             dev_sampler = DistributedSampler(devset)
-            test_sampler = DistributedSampler(testset)
+            # test_sampler = DistributedSampler(testset)
 
         train_loader = DataLoader(dataset=trainset,
                                   batch_size=Config.batch_size // Config.gradient_accumulation_steps,
@@ -125,17 +125,17 @@ class Train(object):
                                 pin_memory=True,
                                 sampler=dev_sampler,
                                 collate_fn=collate_fn)
-        test_loader = DataLoader(dataset=testset,
-                                 batch_size=Config.batch_size,
-                                 shuffle=False,
-                                 pin_memory=True,
-                                 sampler=test_sampler,
-                                 collate_fn=collate_fn)
+        # test_loader = DataLoader(dataset=testset,
+        #                          batch_size=Config.batch_size,
+        #                          shuffle=False,
+        #                          pin_memory=True,
+        #                          sampler=test_sampler,
+        #                          collate_fn=collate_fn)
 
         if args.local_rank == 0:
             print(f"  size of trainset: {len(trainset)}")
             print(f"  size of devset: {len(devset)}")
-            print(f"  size of testset: {len(testset)}")
+            # print(f"  size of testset: {len(testset)}")
 
             print("Create the model.")
         params = {
@@ -186,7 +186,7 @@ class Train(object):
 
         model = Model(vocab, network)
 
-        model(loaders=(train_loader, dev_loader, test_loader),
+        model(loaders=(train_loader, dev_loader, dev_loader),
               epochs=Config.epochs,
               patience=Config.patience,
               lr=Config.lr,

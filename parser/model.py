@@ -62,9 +62,9 @@ class Model(object):
             dev_loss, dev_metric = self.evaluate(dev_loader)
             if args.local_rank == 0:
                 print(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")
-            test_loss, test_metric = self.evaluate(test_loader)
-            if args.local_rank == 0:
-                print(f"{'test:':<6} Loss: {test_loss:.4f} {test_metric}")
+            # test_loss, test_metric = self.evaluate(test_loader)
+            # if args.local_rank == 0:
+            #     print(f"{'test:':<6} Loss: {test_loss:.4f} {test_metric}")
             t = datetime.now() - start
             if args.local_rank == 0:
                 print(f"{t}s elapsed\n")
@@ -86,12 +86,12 @@ class Model(object):
                     break
         if args.local_rank == 0:
             print('***Finished training at {}***'.format(datetime.now()))
-        self.network = BiaffineParser.load(file, cloud_address)
-        loss, metric = self.evaluate(test_loader)
+        # self.network = BiaffineParser.load(file, cloud_address)
+        # loss, metric = self.evaluate(test_loader)
 
         if args.local_rank == 0:
             print(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
-            print(f"the score of test at epoch {max_e} is {metric.score:.2%}")
+            # print(f"the score of test at epoch {max_e} is {metric.score:.2%}")
             print(f"mean time of each epoch is {total_time / epoch}s")
             print(f"{total_time}s elapsed")
 
