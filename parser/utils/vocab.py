@@ -5,8 +5,8 @@ from collections import Counter
 import regex
 import torch
 import torch.nn as nn
-#from pytorch_pretrained_bert import BertTokenizer
-from .tokenization import FullTokenizer
+from pytorch_pretrained_bert import BertTokenizer
+# from .tokenization import FullTokenizer
 import numpy as np
 import unicodedata
 
@@ -34,8 +34,8 @@ class Vocab(object):
         self.n_rels = len(self.rels)
         self.n_train_words = self.n_words
 
-        # self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
-        self.tokenizer = FullTokenizer(vocab_file='../../vocab.txt', do_lower_case=False)
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+        # self.tokenizer = FullTokenizer(vocab_file='../../vocab.txt', do_lower_case=False)
 
     def __repr__(self):
         info = f"{self.__class__.__name__}(\n"
