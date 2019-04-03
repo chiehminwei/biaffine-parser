@@ -157,6 +157,16 @@ class Model(object):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
 
+            try:
+                gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
+            except:
+                print(words)
+                print(attention_mask)
+                print(token_start_mask)
+                print(arcs)
+                print(rels)
+                assert 1 == 2
+
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
@@ -169,7 +179,16 @@ class Model(object):
                 token_start_mask &= words.unsqueeze(-1).ne(puncts).all(-1)
 
             s_arc, s_rel = self.network(words, attention_mask)
-            s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
+            try:
+                s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
+            except:
+                print(words)
+                print(attention_mask)
+                print(token_start_mask)
+                print(arcs)
+                print(rels)
+                assert 2 == 3
+            
             gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
             # try:
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
