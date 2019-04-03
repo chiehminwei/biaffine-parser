@@ -6,7 +6,7 @@ import regex
 import torch
 import torch.nn as nn
 #from pytorch_pretrained_bert import BertTokenizer
-import tokenization
+import parser.utils.tokenization as tokenization
 import numpy as np
 import unicodedata
 
