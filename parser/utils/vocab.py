@@ -33,7 +33,7 @@ class Vocab(object):
         self.n_rels = len(self.rels)
         self.n_train_words = self.n_words
 
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
 
     def __repr__(self):
         info = f"{self.__class__.__name__}(\n"
@@ -135,7 +135,7 @@ class Vocab(object):
                     sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
-                    
+
                 # take care of empty tokens
                 else:
                     # print('\noffending word: ', word)
