@@ -122,7 +122,7 @@ def load_vocab(vocab_file):
   vocab = collections.OrderedDict()
   index = 0
   with open(vocab_file, "r") as reader:
-    for line in f:
+    for line in reader:
       line = line.strip()
       token = convert_to_unicode(line)
       if not token:
