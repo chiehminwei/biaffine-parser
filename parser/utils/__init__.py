@@ -3,7 +3,7 @@
 from .dataset import TextDataset, collate_fn
 from .reader import Corpus
 from .vocab import Vocab
-import tokenization
+from .tokenization import FullTokenizer
 
 
-__all__ = ['Corpus', 'TextDataset', 'Vocab', 'collate_fn', 'tokenization']
+__all__ = ['Corpus', 'TextDataset', 'Vocab', 'collate_fn', 'FullTokenizer']
