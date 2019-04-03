@@ -107,7 +107,7 @@ class Model(object):
 
             try:
                 gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
-                continue
+                # continue
             except:
                 for sentence in words:
                     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
