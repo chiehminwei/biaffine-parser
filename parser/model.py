@@ -101,7 +101,7 @@ class Model(object):
         # print('start iterating')
         # for step, batch in enumerate(loader):
         step = 0
-        for batch in loader:
+        for batch in tqdm(loader):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
 
@@ -128,7 +128,7 @@ class Model(object):
             lens = attention_mask.sum(dim=1) - 1
             token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
             
-            gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
+            # gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]            
 
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
