@@ -71,9 +71,9 @@ if __name__ == '__main__':
     n_gpu = torch.cuda.device_count()
     if args.local_rank == 0:
         print("\nCUDNN VERSION: {}\n".format(torch.backends.cudnn.version()))
-        
-    # if n_gpu > 0:
-    #     torch.cuda.manual_seed_all(args.seed)
-    # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
+    
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1,2,3'    
+    if n_gpu > 0:
+        torch.cuda.manual_seed_all(args.seed)
+    
     args.func(args)

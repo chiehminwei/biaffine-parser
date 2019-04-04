@@ -26,7 +26,7 @@ class Model(object):
             self.device = torch.device('cuda')
         else:
             self.device = torch.device('cpu')
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
 
     def __call__(self, loaders, epochs, patience,
                  lr, betas, epsilon, weight_decay, annealing, file,
@@ -73,14 +73,10 @@ class Model(object):
             # save the model if it is the best so far
             if args.local_rank == 0:
                 if dev_metric > max_metric:
-                    if args.distributed:
+                    if args.distributed or torch.cuda.device_count() > 1:
                         self.network.module.save(file, epoch, cloud_address, args.local_rank)
                     else:
                         self.network.save(file, epoch, cloud_address)
-                    # if not torch.cuda.device_count() > 1:
-                    #     self.network.save(file, epoch, cloud_address)
-                    # else:
-                    #     self.network.module.save(file, epoch, cloud_address)
                     max_e, max_metric = epoch, dev_metric
                 elif epoch - max_e >= patience:
                     break
@@ -97,50 +93,47 @@ class Model(object):
 
     def train(self, loader):
         self.network.train()
-        # for step, batch in enumerate(tqdm(loader)):
-        # print('start iterating')
-        # for step, batch in enumerate(loader):
         step = 0
         for batch in tqdm(loader):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
-
-            try:
+            
+            try: 
+                s_arc, s_rel = self.network(words, attention_mask)
+                # ignore [CLS]
+                token_start_mask[:, 0] = 0
+                # ignore [SEP]
+                lens = attention_mask.sum(dim=1) - 1
+                token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+                
                 gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
-                # continue
+                s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]            
+
+                loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+
             except:
                 for sentence in words:
                     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
                 
+                print('***DEBUGGING PARSER START***')
+                self.network.eval()
+                self.network(words, attention_mask, debug=True)
+                print('***DEBUGGING PARSER END***')
+
+                print('words', words.shape)
                 print('arcs', arcs.shape)
                 print('rels', rels.shape)
                 print('attention_mask', attention_mask.shape)
-                print('***DEBUGGING PARSER START***')
-                s_arc, s_rel = self.network(words, attention_mask, debug=True)
-                print('***DEBUGGING PARSER END***')
+                print('token_start_mask', token_start_mask.shape)
 
-                assert 1 == 2
-            
-            s_arc, s_rel = self.network(words, attention_mask)
-            # ignore [CLS]
-            token_start_mask[:, 0] = 0
-            # ignore [SEP]
-            lens = attention_mask.sum(dim=1) - 1
-            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
-            
-            gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
-            s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]            
+                print('s_arc', s_arc.shape)
+                print('s_rel', s_rel.shape)
+                print('gold_arcs', gold_arcs.shape)
+                print('gold_rels', gold_rels.shape)
 
-            try:
-                loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-            except:
-                print(words.shape)
-                print(attention_mask.shape)
-                print(token_start_mask.shape)
-                print(s_arc.shape)
-                print(s_rel.shape)
-                print(gold_arcs.shape)
-                print(gold_rels.shape)
+                
+                raise RuntimeError('training failed.')
+            
             
             if self.gradient_accumulation_steps > 1:
                 loss = loss / self.gradient_accumulation_steps
@@ -153,10 +146,7 @@ class Model(object):
                 # self.scheduler.step()
                 self.optimizer.zero_grad()
             step += 1
-            # print(self.tokenizer.convert_ids_to_tokens(words[token_start_mask].detach().to(torch.device("cpu")).numpy()))
-            # for sentence in words:
-            #     print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
-
+  
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
         self.network.eval()
@@ -167,48 +157,50 @@ class Model(object):
             words, attention_mask, token_start_mask, arcs, rels = batch
 
             try:
-                gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
-            except:
-                print(words)
-                print(attention_mask)
-                print(token_start_mask)
-                print(arcs)
-                print(rels)
-                assert 1 == 2
+                # ignore [CLS]
+                token_start_mask[:, 0] = 0
+                # ignore [SEP]
+                lens = attention_mask.sum(dim=1) - 1
+                token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
-            # ignore [CLS]
-            token_start_mask[:, 0] = 0
-            # ignore [SEP]
-            lens = attention_mask.sum(dim=1) - 1
-            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+                # ignore all punctuation if specified
+                if not include_punct:
+                    puncts = words.new_tensor([punct for punct in self.vocab.puncts])
+                    token_start_mask &= words.unsqueeze(-1).ne(puncts).all(-1)
 
-            # ignore all punctuation if specified
-            if not include_punct:
-                puncts = words.new_tensor([punct for punct in self.vocab.puncts])
-                token_start_mask &= words.unsqueeze(-1).ne(puncts).all(-1)
-
-            s_arc, s_rel = self.network(words, attention_mask)
-            try:
+                s_arc, s_rel = self.network(words, attention_mask)
                 s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
-            except:
-                print(words)
-                print(attention_mask)
-                print(token_start_mask)
-                print(arcs)
-                print(rels)
-                assert 2 == 3
-            
-            gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
-            # try:
-            pred_arcs, pred_rels = self.decode(s_arc, s_rel)
-            # except:
-            #     print(i)
-            #     print(words.size()[0])
-            #     for sentence in words:
-            #         print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
+                
+                gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
+                pred_arcs, pred_rels = self.decode(s_arc, s_rel)
+                
+                loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+                metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
 
-            loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-            metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
+            except:
+                for sentence in words:
+                    print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
+                
+                print('***DEBUGGING PARSER START***')
+                self.network.eval()
+                self.network(words, attention_mask, debug=True)
+                print('***DEBUGGING PARSER END***')
+
+                print('words', words.shape)
+                print('arcs', arcs.shape)
+                print('rels', rels.shape)
+                print('attention_mask', attention_mask.shape)
+                print('token_start_mask', token_start_mask.shape)
+
+                print('s_arc', s_arc.shape)
+                print('s_rel', s_rel.shape)
+                print('gold_arcs', gold_arcs.shape)
+                print('gold_rels', gold_rels.shape)
+                print('pred_arcs', pred_arcs.shape)
+                print('pred_rels', pred_rels.shape)
+                
+                raise RuntimeError('evaluation failed.')
+
         loss /= len(loader)
 
         return loss, metric

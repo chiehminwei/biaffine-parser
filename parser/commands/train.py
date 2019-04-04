@@ -174,12 +174,14 @@ class Train(object):
             last_epoch = state['last_epoch']
             network = network.load(args.file, args.cloud_address, args.local_rank)
 
-        # if torch.cuda.device_count() > 1:
-        #     print('Using {} GPUs to train'.format(torch.cuda.device_count()))
-        #     network = torch.nn.DataParallel(network)
-
         if args.distributed:
+            if args.local_rank == 0:
+                print("Using {} GPUs for distributed parallel training.".format(torch.cuda.device_count()))
             network = DistributedDataParallel(network)
+
+        elif torch.cuda.device_count() > 1:
+            print('Using {} GPUs for data parallel training'.format(torch.cuda.device_count()))
+            network = torch.nn.DataParallel(network)
 
         # Scale learning rate based on global batch size ????????
         # args.lr = args.lr*float(args.batch_size*args.world_size)/256.
