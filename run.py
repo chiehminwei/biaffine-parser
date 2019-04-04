@@ -72,7 +72,6 @@ if __name__ == '__main__':
     if args.local_rank == 0:
         print("\nCUDNN VERSION: {}\n".format(torch.backends.cudnn.version()))
     
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2,3'    
     if n_gpu > 0:
         torch.cuda.manual_seed_all(args.seed)
     
