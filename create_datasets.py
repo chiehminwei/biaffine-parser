@@ -71,10 +71,10 @@ if not os.path.isfile(args.fdev_cache):
     print('***devset loaded at {}***'.format(datetime.now()))
 else:
     print('devset already exists.')
-if not os.path.isfile(args.ftest_cache):
-    print('Loading testset from scratch.')
-    vocab.numericalize(test, args.ftest_cache)
-    print('***testset loaded at {}***'.format(datetime.now()))
-else:
-    print('testset already exists.')
+# if not os.path.isfile(args.ftest_cache):
+#     print('Loading testset from scratch.')
+#     vocab.numericalize(test, args.ftest_cache)
+#     print('***testset loaded at {}***'.format(datetime.now()))
+# else:
+#     print('testset already exists.')
 print('Data preprocessing done.')
