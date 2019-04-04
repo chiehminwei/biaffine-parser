@@ -181,7 +181,7 @@ class Train(object):
 
         elif torch.cuda.device_count() > 1:
             print('Using {} GPUs for data parallel training'.format(torch.cuda.device_count()))
-            network = torch.nn.DataParallel(network)
+            network = torch.nn.DataParallel(network, device_ids=[2, 3])
 
         # Scale learning rate based on global batch size ????????
         # args.lr = args.lr*float(args.batch_size*args.world_size)/256.
