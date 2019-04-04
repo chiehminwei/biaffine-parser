@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from collections import Counter
+from collections import Counter, defaultdict
 
 import regex
 import torch
@@ -72,6 +72,9 @@ class Vocab(object):
         offending_set = set()
         symbol_set = set()
         empty_words = set()
+        len_dict = defaultdict(int)
+        sent_count = 0
+        exceeding_count = 0
         for words, arcs, rels in zip(corpus.words, corpus.heads, corpus.rels):
             sentence_token_ids = []
             sentence_arc_ids = []
@@ -162,6 +165,12 @@ class Vocab(object):
                 print('len_attentions', len_attentions)
                 raise RuntimeError("Lengths don't match up.")
 
+
+            len_dict[len_sentence_token_ids] += 1
+            if len_sentence_token_ids > 128:
+                exceeding_count += 1
+            sent_count += 1
+
             sentence_token_ids = sentence_token_ids[:128]
             sentence_arc_ids = sentence_arc_ids[:128]
             sentence_rel_ids = sentence_rel_ids[:128]
@@ -184,10 +193,12 @@ class Vocab(object):
         if error_flag:
             print('WARNING: The following characters are empty after going through tokenizer:')
             print(empty_words)
-            # raise RuntimeError('Some tokens are empty.')
         if save_name:
             torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical), save_name)
         
+        print('Total number of sentences: {}'.format(sent_count))
+        print('Number of sentences exceeding max seq length of 128: {}'.format(exceeding_count))
+
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
     def numericalize_sentences(self, sentences):
@@ -252,6 +263,7 @@ class Vocab(object):
         if flag: 
             print('WARNING: The following characters are unknown to BERT:')
             print(offending_set)
+
 
         return words_numerical, attention_mask, token_start_mask
 
