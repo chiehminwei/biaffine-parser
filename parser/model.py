@@ -106,8 +106,8 @@ class Model(object):
                 # ignore [CLS]
                 token_start_mask[:, 0] = 0
                 # ignore [SEP]
-                lens = attention_mask.sum(dim=1) - 1
-                token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+                # lens = attention_mask.sum(dim=1) - 1
+                # token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
                 
                 gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
                 s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]            
@@ -163,8 +163,8 @@ class Model(object):
                 # ignore [CLS]
                 token_start_mask[:, 0] = 0
                 # ignore [SEP]
-                lens = attention_mask.sum(dim=1) - 1
-                token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+                # lens = attention_mask.sum(dim=1) - 1
+                # token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
                 # ignore all punctuation if specified
                 if not include_punct:
