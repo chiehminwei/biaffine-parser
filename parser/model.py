@@ -52,7 +52,7 @@ class Model(object):
             # train one epoch and update the parameters
             if args.distributed:
                 train_loader.sampler.set_epoch(epoch)
-            self.train(train_loader)
+            self.train(train_loader, distirbuted=args.distributed)
             
             if args.local_rank == 0:
                 print(f"Epoch {epoch} / {epochs}:")
@@ -91,10 +91,13 @@ class Model(object):
             print(f"mean time of each epoch is {total_time / epoch}s")
             print(f"{total_time}s elapsed")
 
-    def train(self, loader):
+    def train(self, loader, distirbuted=False):
         self.network.train()
         step = 0
-        for batch in tqdm(loader):
+        if not distirbuted:
+            loader = tqdm(loader)
+
+        for batch in loader:
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
             
