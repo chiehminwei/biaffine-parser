@@ -145,22 +145,28 @@ class Vocab(object):
                     error_flag = True
                     continue
                 
-                # error checking for lengths
-                len_sentence_token_ids = len(sentence_token_ids)
-                len_sentence_arc_ids = len(sentence_arc_ids)
-                len_sentence_rel_ids = len(sentence_rel_ids)
-                len_token_starts = len(token_starts)
-                len_attentions = len(attentions)
-                if not (len_sentence_token_ids == len_sentence_arc_ids == len_sentence_rel_ids == len_token_starts == len_attentions):
-                    print(words)
-                    print(arcs)
-                    print(rels)
-                    print('len_sentence_token_ids: ', len_sentence_token_ids)
-                    print('len_sentence_arc_ids', len_sentence_arc_ids)
-                    print('len_sentence_rel_ids', len_sentence_rel_ids)
-                    print('len_token_starts', len_token_starts)
-                    print('len_attentions', len_attentions)
-                    raise RuntimeError("Lengths don't match up.")
+            # error checking for lengths
+            len_sentence_token_ids = len(sentence_token_ids)
+            len_sentence_arc_ids = len(sentence_arc_ids)
+            len_sentence_rel_ids = len(sentence_rel_ids)
+            len_token_starts = len(token_starts)
+            len_attentions = len(attentions)
+            if not (len_sentence_token_ids == len_sentence_arc_ids == len_sentence_rel_ids == len_token_starts == len_attentions):
+                print(words)
+                print(arcs)
+                print(rels)
+                print('len_sentence_token_ids: ', len_sentence_token_ids)
+                print('len_sentence_arc_ids', len_sentence_arc_ids)
+                print('len_sentence_rel_ids', len_sentence_rel_ids)
+                print('len_token_starts', len_token_starts)
+                print('len_attentions', len_attentions)
+                raise RuntimeError("Lengths don't match up.")
+
+            sentence_token_ids = sentence_token_ids[:128]
+            sentence_arc_ids = sentence_arc_ids[:128]
+            sentence_rel_ids = sentence_rel_ids[:128]
+            token_starts = token_starts[:128]
+            attentions = attentions[:128]
 
 
             words_numerical.append(torch.tensor(sentence_token_ids))
