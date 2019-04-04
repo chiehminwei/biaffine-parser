@@ -50,12 +50,12 @@ class Model(object):
         for epoch in range(last_epoch + 1, epochs + 1):
             start = datetime.now()
             # train one epoch and update the parameters
+            if args.local_rank == 0:
+                print(f"Epoch {epoch} / {epochs}:")
             if args.distributed:
                 train_loader.sampler.set_epoch(epoch)
             self.train(train_loader, distirbuted=args.distributed)
             
-            if args.local_rank == 0:
-                print(f"Epoch {epoch} / {epochs}:")
             train_loss, train_metric = self.evaluate(train_loader)
             if args.local_rank == 0:
                 print(f"{'train:':<6} Loss: {train_loss:.4f} {train_metric}")
