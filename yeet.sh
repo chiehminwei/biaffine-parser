@@ -2,7 +2,7 @@
 
 
 path="all/";
-for conllx_file in ${path}UD_*/*.conllx; do
+for conllx_file in ${path}/*.conllx; do
 	echo $conllx_file
     filename=$(echo $conllx_file | cut -d '/' -f 1)
 	echo $filename
