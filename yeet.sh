@@ -9,7 +9,7 @@ for conllx_file in ${path}/*.conllx; do
 	echo $filename
 	echo '***************************************'
 	echo ' '
-	# bash CUDA_VISIBLE_DEVICES=2,3 python run.py train -c=gs:/dsfsdfs --ftrain=$conllx_file --ftrain_cache= --fdev_cache=
+	bash CUDA_VISIBLE_DEVICES=2,3 python run.py train --ftrain=$conllx_file --ftrain_cache=all_trainset/$filename --vocab=all_vocab/$filename
 	echo '***************************************'
 	echo ' '
 done

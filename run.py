@@ -37,7 +37,7 @@ if __name__ == '__main__':
         subparser.add_argument('--vocab', '-v', default='vocab.pt',
                                help='path to vocabulary file')
         subparser.add_argument('--cloud_address', '-c',
-                               default='gs://bert-chinese-mine/biaffine/',
+                               default='gs://no_cloud_by_default/',
                                help='path to Google Cloud Storage')
     args = parser.parse_args()
 
