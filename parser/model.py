@@ -59,9 +59,10 @@ class Model(object):
             train_loss, train_metric = self.evaluate(train_loader)
             if args.local_rank == 0:
                 print(f"{'train:':<6} Loss: {train_loss:.4f} {train_metric}")
-            dev_loss, dev_metric = self.evaluate(dev_loader)
-            if args.local_rank == 0:
-                print(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")
+            
+            # dev_loss, dev_metric = self.evaluate(dev_loader)
+            # if args.local_rank == 0:
+            #     print(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")
 
             # test_loss, test_metric = self.evaluate(test_loader)
             # if args.local_rank == 0:
