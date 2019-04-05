@@ -67,8 +67,6 @@ class Vocab(object):
         rels_numerical = []
         token_start_mask = []
         attention_mask = []
-        flag = False
-        error_flag = False
         offending_set = set()
         symbol_set = set()
         empty_words = set()
@@ -131,8 +129,7 @@ class Vocab(object):
                                     offending_set.add(offending_char)
                                 else:
                                     symbol_set.add(offending_char)
-                        flag = True    
-
+                        
                     # main thing to do
                     sentence_token_ids.extend(ids)
                     sentence_arc_ids.extend([arc] * len(tokens))
@@ -145,7 +142,6 @@ class Vocab(object):
                     # print('\noffending word: ', word)
                     # print('empty words: ', ' '.join(words))
                     empty_words.add(word)
-                    error_flag = True
                     continue
                 
             # error checking for lengths
@@ -184,13 +180,13 @@ class Vocab(object):
             token_start_mask.append(torch.ByteTensor(token_starts))
             attention_mask.append(torch.ByteTensor(attentions))
 
-        if flag: 
+        if offending_set: 
             print('WARNING: The following non-symbol characters are unknown to BERT:')
             print(offending_set)
+        if symbol_set:
             print('WARNING: The following symbol characters are unknown to BERT:')            
             print(symbol_set)
-            
-        if error_flag:
+        if empty_words:
             print('WARNING: The following characters are empty after going through tokenizer:')
             print(empty_words)
         if save_name:

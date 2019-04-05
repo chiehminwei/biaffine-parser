@@ -48,6 +48,7 @@ if not os.path.isfile(args.vocab):
     subprocess.call(['gsutil', 'cp', cloud_address, args.vocab],
                     stdout=FNULL, stderr=subprocess.STDOUT)
 if not os.path.isfile(args.vocab):
+    print("***Loading vocab from scratch.")
     vocab = Vocab.from_corpus(corpus=train, min_freq=2)
     torch.save(vocab, args.vocab)
     FNULL = open(os.devnull, 'w')
@@ -55,6 +56,7 @@ if not os.path.isfile(args.vocab):
     subprocess.call(['gsutil', 'cp', args.vocab, cloud_address],
                     stdout=FNULL, stderr=subprocess.STDOUT)
 else:
+    print("***Loading vocab from checkpoint.")
     vocab = torch.load(args.vocab)
 
 print("***Start loading the dataset at {}***".format(datetime.now()))
