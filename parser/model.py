@@ -93,9 +93,9 @@ class Model(object):
         # loss, metric = self.evaluate(test_loader)
 
         if args.local_rank == 0:
-            print(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
+            # print(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
             # print(f"the score of test at epoch {max_e} is {metric.score:.2%}")
-            print(f"mean time of each epoch is {total_time / epoch}s")
+            # print(f"mean time of each epoch is {total_time / epoch}s")
             print(f"{total_time}s elapsed")
 
     def train(self, loader, distirbuted=False):
