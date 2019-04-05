@@ -9,7 +9,7 @@ for conllx_file in ${path}/*.conllx; do
 	echo $filename
 	echo '***************************************'
 	echo ' '
-	CUDA_VISIBLE_DEVICES=2,3 python run.py train --ftrain=$conllx_file --ftrain_cache=all_trainset/$filename --vocab=all_vocab/$filename
+	CUDA_VISIBLE_DEVICES=2,3 python run.py train --ftrain=$conllx_file --ftrain_cache=all_trainset/$filename --vocab=all_vocab/$filename && echo $filename >> success || echo $filename >> failure
 	echo '***************************************'
 	echo ' '
 done
