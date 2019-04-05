@@ -62,6 +62,7 @@ class Model(object):
             dev_loss, dev_metric = self.evaluate(dev_loader)
             if args.local_rank == 0:
                 print(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")
+
             # test_loss, test_metric = self.evaluate(test_loader)
             # if args.local_rank == 0:
             #     print(f"{'test:':<6} Loss: {test_loss:.4f} {test_metric}")
@@ -69,6 +70,11 @@ class Model(object):
             if args.local_rank == 0:
                 print(f"{t}s elapsed\n")
             total_time += t
+
+            # **************!!!!!!!!**REMBMBER TO COMMENT OUT BREAK LATER********************
+            # THIS IS TO TEST FOR CORRUPTED DATASET, SO ONLY TRAIN FOR ONE EPOCH AND DONT SAVE
+            break
+            
 
             # save the model if it is the best so far
             if args.local_rank == 0:
