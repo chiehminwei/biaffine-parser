@@ -90,7 +90,7 @@ for file_path in sorted(glob.glob(folder_path + '/*/*train.conllu')):
 			if line.startswith('# text ='):
 				count += 1
 	corpora[file] = count
-	language[file.split('-')[0][3:]] += 1
+	language[file.split('-')[0][3:]] += count
 
 print('languages sorted by frequency')
 print(tabulate(sorted(language.items(), key=lambda x: -x[1]), tablefmt='github'))
