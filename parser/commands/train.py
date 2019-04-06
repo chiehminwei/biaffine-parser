@@ -6,7 +6,6 @@ from parser.utils import Corpus, TextDataset, Vocab, collate_fn
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
-from apex.parallel import DistributedDataParallel
 
 from config import Config
 
@@ -176,6 +175,7 @@ class Train(object):
             network = network.load(args.file, args.cloud_address, args.local_rank)
 
         if args.distributed:
+            from apex.parallel import DistributedDataParallel
             if args.local_rank == 0:
                 print("Using {} GPUs for distributed parallel training.".format(torch.cuda.device_count()))
             network = DistributedDataParallel(network)
