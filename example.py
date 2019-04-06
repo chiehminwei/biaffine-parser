@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import Config
+from config import Config
 from parser import BiaffineParser, Model
 from parser.utils import TextDataset, collate_fn
 import torch
