@@ -59,7 +59,7 @@ def PennTreebank(corpus_path, out_file, meta_file):
 			for word_embed in sentence:
 				f.write('\t'.join(word_embed)+'\n')
 		ff.write('Word\tPOS\n')
-		for words, tags in zip(corpus.words, corpus.tags)
+		for words, tags in zip(corpus.words, corpus.tags):
 			for word, tag in zip(words, tags):
 				ff.write(word + '\t' + tag + '\n')
 
