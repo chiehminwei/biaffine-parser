@@ -30,7 +30,7 @@ parser.add_argument('--ftest_cache', default='testset',
 parser.add_argument('--vocab', '-v', default='vocab.pt',
                     help='path to vocabulary file')
 parser.add_argument('--cloud_address', '-c',
-                    default='gs://bert-chinese-mine/biaffine/tada/',
+                    default='gs://no_you_dont_want_cloud_bro',
                     help='path to Google Cloud Storage')
 
 # parser.set_defaults(func=self)
