@@ -75,6 +75,11 @@ used = {"UD_Afrikaans-AfriBooms",
 		"UD_Turkish-IMST",
 		"UD_Urdu-UDTB",
 		"UD_Vietnamese-VTB"}
+
+used_lang = set()
+for corpus in used:
+	lang = corpus.split('-')[0][3:]
+	used_lang.add(lang)
             
 corpora = defaultdict(list)
 language = defaultdict(lambda: [0, 0, 0])
@@ -93,23 +98,43 @@ for index, dataset in enumerate(['train', 'dev', 'test']):
 		corpora[file].append(count)
 		language[file.split('-')[0][3:]][index] += count
 
+print('## Everything\n')
 headers = ['Language', 'Train', 'Dev', 'Test', 'Total']
-print('**Languages by Frequency**')
+print('**Languages by Frequency**\n')
 print(tabulate([[k] + v + [sum(v)] for k, v in sorted(language.items(), key=lambda x: -sum(x[1]))], tablefmt='github', headers=headers))
 
 print(' ')
-print('**Languages Alphabetical**')
+print('**Languages Alphabetical**\n')
 print(tabulate([[k] + v + [sum(v)] for k, v in sorted(language.items())], tablefmt='github', headers=headers))
 
 headers = ['Corpus', 'Train', 'Dev', 'Test', 'Total']
 print(' ')
-print('**Corpora by Frequency**')
+print('**Corpora by Frequency**\n')
 print(tabulate([[k] + v + [sum(v)] for k, v in sorted(corpora.items(), key=lambda x: -sum(x[1]))], tablefmt='github', headers=headers))
 
 print(' ')
-print('**Corpora Alphabetical**')
+print('**Corpora Alphabetical**\n')
 print(tabulate([[k] + v + [sum(v)] for k, v in sorted(corpora.items())], tablefmt='github', headers=headers))
 
+
+
+print('## The Ones Used\n')
+headers = ['Language', 'Train', 'Dev', 'Test', 'Total']
+print('**Languages by Frequency**\n')
+print(tabulate([[k] + v + [sum(v)] for k, v in sorted(language.items(), key=lambda x: -sum(x[1])) if k in used_lang], tablefmt='github', headers=headers))
+
+print(' ')
+print('**Languages Alphabetical**\n')
+print(tabulate([[k] + v + [sum(v)] for k, v in sorted(language.items()) if k in used_lang], tablefmt='github', headers=headers))
+
+headers = ['Corpus', 'Train', 'Dev', 'Test', 'Total']
+print(' ')
+print('**Corpora by Frequency**\n')
+print(tabulate([[k] + v + [sum(v)] for k, v in sorted(corpora.items(), key=lambda x: -sum(x[1])) if k in used], tablefmt='github', headers=headers))
+
+print(' ')
+print('**Corpora Alphabetical**\n')
+print(tabulate([[k] + v + [sum(v)] for k, v in sorted(corpora.items()) if k in used], tablefmt='github', headers=headers))
 
 # corpora = {}
 # language = defaultdict(int)
