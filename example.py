@@ -2,7 +2,7 @@
 
 from config import Config
 from parser import BiaffineParser, Model
-from parser.utils import TextDataset, collate_fn
+from parser.utils import Corpus, TextDataset, Vocab, collate_fn
 import torch
 from torch.utils.data import DataLoader
 
