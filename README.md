@@ -24,7 +24,7 @@ pytorch == 1.0.0
 
 ## Datasets
 
-## Languages by Frequency
+**Languages by Frequency**
 | Language              |   Train |   Dev |   Test |   Total |
 |-----------------------|---------|-------|--------|---------|
 | Czech                 |  102993 | 11311 |  13203 |  127507 |
@@ -104,7 +104,7 @@ pytorch == 1.0.0
 | Tagalog               |       0 |     0 |     55 |      55 |
 | Warlpiri              |       0 |     0 |     55 |      55 |
  
-## Languages Alphabetical
+**Languages Alphabetical**
 | Language              |   Train |   Dev |   Test |   Total |
 |-----------------------|---------|-------|--------|---------|
 | Afrikaans             |    1315 |   194 |    425 |    1934 |
@@ -184,7 +184,7 @@ pytorch == 1.0.0
 | Warlpiri              |       0 |     0 |     55 |      55 |
 | Yoruba                |       0 |     0 |    100 |     100 |
  
-## Corpora by Frequency
+**Corpora by Frequency**
 | Corpus                        |   Train |   Dev |   Test |   Total |
 |-------------------------------|---------|-------|--------|---------|
 | UD_Czech-PDT                  |   68495 |  9270 |  10148 |   87913 |
@@ -317,7 +317,7 @@ pytorch == 1.0.0
 | UD_Tagalog-TRG                |      55 |    55 |        |         |
 | UD_Warlpiri-UFAL              |      55 |    55 |        |         |
  
-## Corpora Alphabetical
+**Corpora Alphabetical**
 | Corpus                        |   Train |   Dev |   Test |   Total |
 |-------------------------------|---------|-------|--------|---------|
 | UD_Afrikaans-AfriBooms        |    1315 |   194 |    425 |    1934 |
@@ -449,6 +449,7 @@ pytorch == 1.0.0
 | UD_Vietnamese-VTB             |    1400 |   800 |    800 |    3000 |
 | UD_Warlpiri-UFAL              |      55 |    55 |        |         |
 | UD_Yoruba-YTB                 |     100 |   100 |        |         |
+
 
 
 

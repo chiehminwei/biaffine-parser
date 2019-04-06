@@ -94,20 +94,20 @@ for index, dataset in enumerate(['train', 'dev', 'test']):
 		language[file.split('-')[0][3:]][index] += count
 
 headers = ['Language', 'Train', 'Dev', 'Test', 'Total']
-print('## Languages by Frequency')
+print('**Languages by Frequency**')
 print(tabulate([[k] + v + [sum(v)] for k, v in sorted(language.items(), key=lambda x: -sum(x[1]))], tablefmt='github', headers=headers))
 
 print(' ')
-print('## Languages Alphabetical')
+print('**Languages Alphabetical**')
 print(tabulate([[k] + v + [sum(v)] for k, v in sorted(language.items())], tablefmt='github', headers=headers))
 
 headers = ['Corpus', 'Train', 'Dev', 'Test', 'Total']
 print(' ')
-print('## Corpora by Frequency')
+print('**Corpora by Frequency**')
 print(tabulate([[k] + v + [sum(v)] for k, v in sorted(corpora.items(), key=lambda x: -sum(x[1]))], tablefmt='github', headers=headers))
 
 print(' ')
-print('## Corpora Alphabetical')
+print('**Corpora Alphabetical**')
 print(tabulate([[k] + v + [sum(v)] for k, v in sorted(corpora.items())], tablefmt='github', headers=headers))
 
 
