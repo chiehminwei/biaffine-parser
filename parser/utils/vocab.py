@@ -167,12 +167,9 @@ class Vocab(object):
                 exceeding_count += 1
             sent_count += 1
 
-            sentence_token_ids = sentence_token_ids[:128]
-            sentence_arc_ids = sentence_arc_ids[:128]
-            sentence_rel_ids = sentence_rel_ids[:128]
-            token_starts = token_starts[:128]
-            attentions = attentions[:128]
-
+            # Skip too long sentences
+            if len_sentence_token_ids > 128:
+                continue
 
             words_numerical.append(torch.tensor(sentence_token_ids))
             arcs_numerical.append(torch.tensor(sentence_arc_ids))
