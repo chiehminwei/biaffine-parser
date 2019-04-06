@@ -40,7 +40,7 @@ print("***Start preprocessing the data at {}***".format(datetime.now()))
 
 train = Corpus.load(args.ftrain)
 dev = Corpus.load(args.fdev)
-test = Corpus.load(args.ftest)
+# test = Corpus.load(args.ftest)
 
 if not os.path.isfile(args.vocab):
     FNULL = open(os.devnull, 'w')
