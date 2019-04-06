@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from pytorch_pretrained_bert import BertModel
 from parser import BiaffineParser, Model
 from parser.utils import TextDataset, collate_fn
 import torch
