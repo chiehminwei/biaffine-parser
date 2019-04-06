@@ -82,8 +82,8 @@ folder_path = "/Users/Jimmy/Downloads/Universal_Dependencies_2.3/ud-treebanks-v2
 for index, dataset in enumerate(['train', 'dev', 'test']):
 	for file_path in sorted(glob.glob(folder_path + '/*/*{}.conllu'.format(dataset))):
 		file = file_path.split('/')[-2]
-		if file not in used:
-			continue
+		# if file not in used:
+		# 	continue
 		with open(file_path) as f_in:
 			count = 0
 			for line in f_in:
@@ -93,17 +93,22 @@ for index, dataset in enumerate(['train', 'dev', 'test']):
 		corpora[file].append(count)
 		language[file.split('-')[0][3:]][index] += count
 
-headers = ['Language', 'train', 'dev', 'test']
-print('languages sorted by frequency')
-print(tabulate(sorted(language.items(), key=lambda x: -sum(x[1])), tablefmt='github', headers=headers))
+headers = ['Language', 'Train', 'Dev', 'Test', 'Total']
+print('## Languages by Frequency')
+print(tabulate([[k] + v + [sum(v)] for k, v in sorted(language.items(), key=lambda x: -sum(x[1]))], tablefmt='github', headers=headers))
 
 print(' ')
-print('corpora sorted by frequency')
-print(tabulate(sorted(corpora.items(), key=lambda x: -sum(x[1])), tablefmt='github', headers=headers))
+print('## Languages Alphabetical')
+print(tabulate([[k] + v + [sum(v)] for k, v in sorted(language.items())], tablefmt='github', headers=headers))
+
+headers = ['Corpus', 'Train', 'Dev', 'Test', 'Total']
+print(' ')
+print('## Corpora by Frequency')
+print(tabulate([[k] + v + [sum(v)] for k, v in sorted(corpora.items(), key=lambda x: -sum(x[1]))], tablefmt='github', headers=headers))
 
 print(' ')
-print('corpora alphabetical')
-print(tabulate(sorted(corpora.items()), tablefmt='github', headers=headers))
+print('## Corpora Alphabetical')
+print(tabulate([[k] + v + [sum(v)] for k, v in sorted(corpora.items())], tablefmt='github', headers=headers))
 
 
 # corpora = {}

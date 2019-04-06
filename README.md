@@ -24,351 +24,433 @@ pytorch == 1.0.0
 
 ## Datasets
 
-| Language   | # sent |
-|------------|--------|
-| Czech      | 102993 |
-| Russian    |  52664 |
-| Latin      |  34049 |
-| Norwegian  |  29870 |
-| Spanish    |  28492 |
-| Korean     |  27410 |
-| Finnish    |  27198 |
-| Estonian   |  24384 |
-| English    |  24100 |
-| Arabic     |  21864 |
-| Polish     |  19874 |
-| Dutch      |  18058 |
-| Portuguese |  17992 |
-| French     |  17483 |
-| Italian    |  14902 |
-| German     |  13814 |
-| Hindi      |  13304 |
-| Catalan    |  13123 |
-| Bulgarian  |   8907 |
-| Slovak     |   8483 |
-| Romanian   |   8043 |
-| Latvian    |   7163 |
-| Japanese   |   7133 |
-| Swedish    |   7041 |
-| Croatian   |   6983 |
-| Slovenian  |   6478 |
-| Basque     |   5396 |
-| Hebrew     |   5241 |
-| Persian    |   4798 |
-| Indonesian |   4477 |
-| Danish     |   4383 |
-| Urdu       |   4043 |
-| Chinese    |   3997 |
-| Turkish    |   3685 |
-| Serbian    |   2935 |
-| Galician   |   2872 |
-| Greek      |   1662 |
-| Vietnamese |   1400 |
-| Afrikaans  |   1315 |
-| Telugu     |   1051 |
-| Hungarian  |    910 |
-| Irish      |    566 |
-| Armenian   |    560 |
-| Tamil      |    400 |
-| Marathi    |    373 |
-| Belarusian |    260 |
-| Lithuanian |    153 |
-| Kazakh     |     31 |
+## Languages by Frequency
+| Language              |   Train |   Dev |   Test |   Total |
+|-----------------------|---------|-------|--------|---------|
+| Czech                 |  102993 | 11311 |  13203 |  127507 |
+| Russian               |   53544 |  7163 |   8976 |   69683 |
+| Japanese              |   47934 |  8938 |  10254 |   67126 |
+| French                |   33395 |  4137 |   5249 |   42781 |
+| Latin                 |   34049 |  3335 |   4300 |   41684 |
+| Norwegian             |   30209 |  4300 |   4507 |   39016 |
+| Finnish               |   27198 |  3239 |   4422 |   34859 |
+| Korean                |   27410 |  3016 |   4276 |   34702 |
+| Spanish               |   28492 |  3054 |   3147 |   34693 |
+| English               |   24100 |  4277 |   5422 |   33799 |
+| Ancient_Greek         |   26491 |  2156 |   2353 |   31000 |
+| Estonian              |   24384 |  3125 |   3214 |   30723 |
+| Arabic                |   21864 |  2895 |   3643 |   28402 |
+| Polish                |   19874 |  2772 |   2827 |   25473 |
+| Italian               |   20270 |  1391 |   2309 |   23970 |
+| Portuguese            |   17992 |  1770 |   2681 |   22443 |
+| Dutch                 |   18058 |  1394 |   1472 |   20924 |
+| Romanian              |   16008 |  1804 |   1781 |   19593 |
+| Old_French            |   13909 |  1842 |   1927 |   17678 |
+| Hindi                 |   13304 |  1659 |   2684 |   17647 |
+| Catalan               |   13123 |  1709 |   1846 |   16678 |
+| German                |   13814 |   799 |   1977 |   16590 |
+| Swedish               |    7041 |  1416 |   3133 |   11590 |
+| Slovenian             |    8556 |   734 |   1898 |   11188 |
+| Bulgarian             |    8907 |  1115 |   1116 |   11138 |
+| Slovak                |    8483 |  1060 |   1061 |   10604 |
+| Latvian               |    7163 |  1304 |   1453 |    9920 |
+| Basque                |    5396 |  1798 |   1799 |    8993 |
+| Croatian              |    6983 |   849 |   1057 |    8889 |
+| Chinese               |    3997 |   500 |   2859 |    7356 |
+| Ukrainian             |    5290 |   647 |    864 |    6801 |
+| Turkish               |    3685 |   975 |   1975 |    6635 |
+| Indonesian            |    4477 |   559 |   1557 |    6593 |
+| Old_Church_Slavonic   |    4123 |  1073 |   1141 |    6337 |
+| Hebrew                |    5241 |   484 |    491 |    6216 |
+| Persian               |    4798 |   599 |    600 |    5997 |
+| Danish                |    4383 |   564 |    565 |    5512 |
+| Gothic                |    3387 |   985 |   1029 |    5401 |
+| Urdu                  |    4043 |   552 |    535 |    5130 |
+| Galician              |    2872 |   860 |   1261 |    4993 |
+| Serbian               |    2935 |   465 |    491 |    3891 |
+| Uyghur                |    1656 |   900 |    900 |    3456 |
+| North_Sami            |    2257 |     0 |    865 |    3122 |
+| Vietnamese            |    1400 |   800 |    800 |    3000 |
+| Greek                 |    1662 |   403 |    456 |    2521 |
+| Maltese               |    1123 |   433 |    518 |    2074 |
+| Afrikaans             |    1315 |   194 |    425 |    1934 |
+| Hindi_English         |    1448 |   225 |    225 |    1898 |
+| Hungarian             |     910 |   441 |    449 |    1800 |
+| Erzya                 |       0 |     0 |   1550 |    1550 |
+| Telugu                |    1051 |   131 |    146 |    1328 |
+| Faroese               |       0 |     0 |   1208 |    1208 |
+| Kazakh                |      31 |     0 |   1047 |    1078 |
+| Amharic               |       0 |     0 |   1074 |    1074 |
+| Armenian              |     560 |     0 |    470 |    1030 |
+| Bambara               |       0 |     0 |   1026 |    1026 |
+| Irish                 |     566 |     0 |    454 |    1020 |
+| Thai                  |       0 |     0 |   1000 |    1000 |
+| Naija                 |       0 |     0 |    948 |     948 |
+| Buryat                |      19 |     0 |    908 |     927 |
+| Breton                |       0 |     0 |    888 |     888 |
+| Coptic                |     370 |   203 |    267 |     840 |
+| Kurmanji              |      20 |     0 |    734 |     754 |
+| Cantonese             |       0 |     0 |    650 |     650 |
+| Upper_Sorbian         |      23 |     0 |    623 |     646 |
+| Tamil                 |     400 |    80 |    120 |     600 |
+| Marathi               |     373 |    46 |     47 |     466 |
+| Belarusian            |     260 |    65 |     68 |     393 |
+| Komi_Zyrian           |       0 |     0 |    277 |     277 |
+| Lithuanian            |     153 |    55 |     55 |     263 |
+| Sanskrit              |       0 |     0 |    230 |     230 |
+| Swedish_Sign_Language |      87 |    82 |     34 |     203 |
+| Akkadian              |       0 |     0 |    101 |     101 |
+| Yoruba                |       0 |     0 |    100 |     100 |
+| Tagalog               |       0 |     0 |     55 |      55 |
+| Warlpiri              |       0 |     0 |     55 |      55 |
  
-corpora sorted by frequency
-
-| Corpus                 | # sent|
-|------------------------|-------|
-| UD_Czech-PDT           | 68495 |
-| UD_Russian-SynTagRus   | 48814 |
-| UD_Estonian-EDT        | 24384 |
-| UD_Czech-CAC           | 23478 |
-| UD_Korean-Kaist        | 23010 |
-| UD_Latin-ITTB          | 16809 |
-| UD_Latin-PROIEL        | 15906 |
-| UD_Arabic-NYUAD        | 15789 |
-| UD_Norwegian-Bokmaal   | 15696 |
-| UD_Finnish-FTB         | 14981 |
-| UD_French-GSD          | 14449 |
-| UD_Spanish-AnCora      | 14305 |
-| UD_Spanish-GSD         | 14187 |
-| UD_Norwegian-Nynorsk   | 14174 |
-| UD_German-GSD          | 13814 |
-| UD_Polish-LFG          | 13774 |
-| UD_Hindi-HDTB          | 13304 |
-| UD_Catalan-AnCora      | 13123 |
-| UD_Italian-ISDT        | 13121 |
-| UD_English-EWT         | 12543 |
-| UD_Dutch-Alpino        | 12269 |
-| UD_Finnish-TDT         | 12217 |
-| UD_Czech-FicTree       | 10160 |
-| UD_Portuguese-GSD      |  9664 |
-| UD_Bulgarian-BTB       |  8907 |
-| UD_Slovak-SNK          |  8483 |
-| UD_Portuguese-Bosque   |  8328 |
-| UD_Romanian-RRT        |  8043 |
-| UD_Latvian-LVTB        |  7163 |
-| UD_Japanese-GSD        |  7133 |
-| UD_Croatian-SET        |  6983 |
-| UD_Slovenian-SSJ       |  6478 |
-| UD_Polish-SZ           |  6100 |
-| UD_Arabic-PADT         |  6075 |
-| UD_Dutch-LassySmall    |  5789 |
-| UD_Basque-BDT          |  5396 |
-| UD_Hebrew-HTB          |  5241 |
-| UD_Persian-Seraji      |  4798 |
-| UD_Indonesian-GSD      |  4477 |
-| UD_Korean-GSD          |  4400 |
-| UD_Danish-DDT          |  4383 |
-| UD_Swedish-Talbanken   |  4303 |
-| UD_English-ESL         |  4124 |
-| UD_Urdu-UDTB           |  4043 |
-| UD_Chinese-GSD         |  3997 |
-| UD_Russian-GSD         |  3850 |
-| UD_Turkish-IMST        |  3685 |
-| UD_Serbian-SET         |  2935 |
-| UD_English-GUM         |  2914 |
-| UD_English-LinES       |  2738 |
-| UD_Swedish-LinES       |  2738 |
-| UD_Galician-CTG        |  2272 |
-| UD_French-Sequoia      |  2231 |
-| UD_English-ParTUT      |  1781 |
-| UD_Italian-ParTUT      |  1781 |
-| UD_Greek-GDT           |  1662 |
-| UD_Vietnamese-VTB      |  1400 |
-| UD_Latin-Perseus       |  1334 |
-| UD_Afrikaans-AfriBooms |  1315 |
-| UD_Telugu-MTG          |  1051 |
-| UD_Hungarian-Szeged    |   910 |
-| UD_Czech-CLTT          |   860 |
-| UD_French-ParTUT       |   803 |
-| UD_Galician-TreeGal    |   600 |
-| UD_Irish-IDT           |   566 |
-| UD_Armenian-ArmTDP     |   560 |
-| UD_Tamil-TTB           |   400 |
-| UD_Marathi-UFAL        |   373 |
-| UD_Belarusian-HSE      |   260 |
-| UD_Lithuanian-HSE      |   153 |
-| UD_Kazakh-KTB          |    31 |
+## Languages Alphabetical
+| Language              |   Train |   Dev |   Test |   Total |
+|-----------------------|---------|-------|--------|---------|
+| Afrikaans             |    1315 |   194 |    425 |    1934 |
+| Akkadian              |       0 |     0 |    101 |     101 |
+| Amharic               |       0 |     0 |   1074 |    1074 |
+| Ancient_Greek         |   26491 |  2156 |   2353 |   31000 |
+| Arabic                |   21864 |  2895 |   3643 |   28402 |
+| Armenian              |     560 |     0 |    470 |    1030 |
+| Bambara               |       0 |     0 |   1026 |    1026 |
+| Basque                |    5396 |  1798 |   1799 |    8993 |
+| Belarusian            |     260 |    65 |     68 |     393 |
+| Breton                |       0 |     0 |    888 |     888 |
+| Bulgarian             |    8907 |  1115 |   1116 |   11138 |
+| Buryat                |      19 |     0 |    908 |     927 |
+| Cantonese             |       0 |     0 |    650 |     650 |
+| Catalan               |   13123 |  1709 |   1846 |   16678 |
+| Chinese               |    3997 |   500 |   2859 |    7356 |
+| Coptic                |     370 |   203 |    267 |     840 |
+| Croatian              |    6983 |   849 |   1057 |    8889 |
+| Czech                 |  102993 | 11311 |  13203 |  127507 |
+| Danish                |    4383 |   564 |    565 |    5512 |
+| Dutch                 |   18058 |  1394 |   1472 |   20924 |
+| English               |   24100 |  4277 |   5422 |   33799 |
+| Erzya                 |       0 |     0 |   1550 |    1550 |
+| Estonian              |   24384 |  3125 |   3214 |   30723 |
+| Faroese               |       0 |     0 |   1208 |    1208 |
+| Finnish               |   27198 |  3239 |   4422 |   34859 |
+| French                |   33395 |  4137 |   5249 |   42781 |
+| Galician              |    2872 |   860 |   1261 |    4993 |
+| German                |   13814 |   799 |   1977 |   16590 |
+| Gothic                |    3387 |   985 |   1029 |    5401 |
+| Greek                 |    1662 |   403 |    456 |    2521 |
+| Hebrew                |    5241 |   484 |    491 |    6216 |
+| Hindi                 |   13304 |  1659 |   2684 |   17647 |
+| Hindi_English         |    1448 |   225 |    225 |    1898 |
+| Hungarian             |     910 |   441 |    449 |    1800 |
+| Indonesian            |    4477 |   559 |   1557 |    6593 |
+| Irish                 |     566 |     0 |    454 |    1020 |
+| Italian               |   20270 |  1391 |   2309 |   23970 |
+| Japanese              |   47934 |  8938 |  10254 |   67126 |
+| Kazakh                |      31 |     0 |   1047 |    1078 |
+| Komi_Zyrian           |       0 |     0 |    277 |     277 |
+| Korean                |   27410 |  3016 |   4276 |   34702 |
+| Kurmanji              |      20 |     0 |    734 |     754 |
+| Latin                 |   34049 |  3335 |   4300 |   41684 |
+| Latvian               |    7163 |  1304 |   1453 |    9920 |
+| Lithuanian            |     153 |    55 |     55 |     263 |
+| Maltese               |    1123 |   433 |    518 |    2074 |
+| Marathi               |     373 |    46 |     47 |     466 |
+| Naija                 |       0 |     0 |    948 |     948 |
+| North_Sami            |    2257 |     0 |    865 |    3122 |
+| Norwegian             |   30209 |  4300 |   4507 |   39016 |
+| Old_Church_Slavonic   |    4123 |  1073 |   1141 |    6337 |
+| Old_French            |   13909 |  1842 |   1927 |   17678 |
+| Persian               |    4798 |   599 |    600 |    5997 |
+| Polish                |   19874 |  2772 |   2827 |   25473 |
+| Portuguese            |   17992 |  1770 |   2681 |   22443 |
+| Romanian              |   16008 |  1804 |   1781 |   19593 |
+| Russian               |   53544 |  7163 |   8976 |   69683 |
+| Sanskrit              |       0 |     0 |    230 |     230 |
+| Serbian               |    2935 |   465 |    491 |    3891 |
+| Slovak                |    8483 |  1060 |   1061 |   10604 |
+| Slovenian             |    8556 |   734 |   1898 |   11188 |
+| Spanish               |   28492 |  3054 |   3147 |   34693 |
+| Swedish               |    7041 |  1416 |   3133 |   11590 |
+| Swedish_Sign_Language |      87 |    82 |     34 |     203 |
+| Tagalog               |       0 |     0 |     55 |      55 |
+| Tamil                 |     400 |    80 |    120 |     600 |
+| Telugu                |    1051 |   131 |    146 |    1328 |
+| Thai                  |       0 |     0 |   1000 |    1000 |
+| Turkish               |    3685 |   975 |   1975 |    6635 |
+| Ukrainian             |    5290 |   647 |    864 |    6801 |
+| Upper_Sorbian         |      23 |     0 |    623 |     646 |
+| Urdu                  |    4043 |   552 |    535 |    5130 |
+| Uyghur                |    1656 |   900 |    900 |    3456 |
+| Vietnamese            |    1400 |   800 |    800 |    3000 |
+| Warlpiri              |       0 |     0 |     55 |      55 |
+| Yoruba                |       0 |     0 |    100 |     100 |
  
-corpora alphabetical
+## Corpora by Frequency
+| Corpus                        |   Train |   Dev |   Test |   Total |
+|-------------------------------|---------|-------|--------|---------|
+| UD_Czech-PDT                  |   68495 |  9270 |  10148 |   87913 |
+| UD_Russian-SynTagRus          |   48814 |  6584 |   6491 |   61889 |
+| UD_Japanese-BCCWJ             |   40801 |  8427 |   7881 |   57109 |
+| UD_Estonian-EDT               |   24384 |  3125 |   3214 |   30723 |
+| UD_Korean-Kaist               |   23010 |  2066 |   2287 |   27363 |
+| UD_Czech-CAC                  |   23478 |   603 |    628 |   24709 |
+| UD_Latin-ITTB                 |   16809 |  2101 |   2101 |   21011 |
+| UD_Norwegian-Bokmaal          |   15696 |  2410 |   1939 |   20045 |
+| UD_Arabic-NYUAD               |   15789 |  1986 |   1963 |   19738 |
+| UD_Finnish-FTB                |   14981 |  1875 |   1867 |   18723 |
+| UD_French-FTB                 |   14759 |  1235 |   2541 |   18535 |
+| UD_Latin-PROIEL               |   15906 |  1234 |   1260 |   18400 |
+| UD_Spanish-AnCora             |   14305 |  1654 |   1721 |   17680 |
+| UD_Old_French-SRCMF           |   13909 |  1842 |   1927 |   17678 |
+| UD_Norwegian-Nynorsk          |   14174 |  1890 |   1511 |   17575 |
+| UD_Polish-LFG                 |   13774 |  1745 |   1727 |   17246 |
+| UD_Ancient_Greek-PROIEL       |   15015 |  1019 |   1047 |   17081 |
+| UD_Catalan-AnCora             |   13123 |  1709 |   1846 |   16678 |
+| UD_Hindi-HDTB                 |   13304 |  1659 |   1684 |   16647 |
+| UD_English-EWT                |   12543 |  2002 |   2077 |   16622 |
+| UD_French-GSD                 |   14449 |  1476 |    416 |   16341 |
+| UD_Spanish-GSD                |   14187 |  1400 |    426 |   16013 |
+| UD_German-GSD                 |   13814 |   799 |    977 |   15590 |
+| UD_Finnish-TDT                |   12217 |  1364 |   1555 |   15136 |
+| UD_Italian-ISDT               |   13121 |   564 |    482 |   14167 |
+| UD_Ancient_Greek-Perseus      |   11476 |  1137 |   1306 |   13919 |
+| UD_Dutch-Alpino               |   12269 |   718 |    596 |   13583 |
+| UD_Czech-FicTree              |   10160 |  1309 |   1291 |   12760 |
+| UD_Portuguese-GSD             |    9664 |  1210 |   1204 |   12078 |
+| UD_Bulgarian-BTB              |    8907 |  1115 |   1116 |   11138 |
+| UD_Slovak-SNK                 |    8483 |  1060 |   1061 |   10604 |
+| UD_Romanian-Nonstandard       |    7965 |  1052 |   1052 |   10069 |
+| UD_Latvian-LVTB               |    7163 |  1304 |   1453 |    9920 |
+| UD_Romanian-RRT               |    8043 |   752 |    729 |    9524 |
+| UD_Portuguese-Bosque          |    8328 |   560 |    477 |    9365 |
+| UD_Basque-BDT                 |    5396 |  1798 |   1799 |    8993 |
+| UD_Croatian-SET               |    6983 |   849 |   1057 |    8889 |
+| UD_Polish-SZ                  |    6100 |  1027 |   1100 |    8227 |
+| UD_Japanese-GSD               |    7133 |   511 |    551 |    8195 |
+| UD_Slovenian-SSJ              |    6478 |   734 |    788 |    8000 |
+| UD_Arabic-PADT                |    6075 |   909 |    680 |    7664 |
+| UD_Dutch-LassySmall           |    5789 |   676 |    876 |    7341 |
+| UD_Ukrainian-IU               |    5290 |   647 |    864 |    6801 |
+| UD_Italian-PoSTWITA           |    5368 |   671 |    674 |    6713 |
+| UD_Korean-GSD                 |    4400 |   950 |    989 |    6339 |
+| UD_Old_Church_Slavonic-PROIEL |    4123 |  1073 |   1141 |    6337 |
+| UD_Hebrew-HTB                 |    5241 |   484 |    491 |    6216 |
+| UD_Swedish-Talbanken          |    4303 |   504 |   1219 |    6026 |
+| UD_Persian-Seraji             |    4798 |   599 |    600 |    5997 |
+| UD_Turkish-IMST               |    3685 |   975 |    975 |    5635 |
+| UD_Indonesian-GSD             |    4477 |   559 |    557 |    5593 |
+| UD_Danish-DDT                 |    4383 |   564 |    565 |    5512 |
+| UD_Gothic-PROIEL              |    3387 |   985 |   1029 |    5401 |
+| UD_Urdu-UDTB                  |    4043 |   552 |    535 |    5130 |
+| UD_English-ESL                |    4124 |   500 |    500 |    5124 |
+| UD_Russian-GSD                |    3850 |   579 |    601 |    5030 |
+| UD_Chinese-GSD                |    3997 |   500 |    500 |    4997 |
+| UD_English-LinES              |    2738 |   912 |    914 |    4564 |
+| UD_Swedish-LinES              |    2738 |   912 |    914 |    4564 |
+| UD_English-GUM                |    2914 |   707 |    778 |    4399 |
+| UD_Galician-CTG               |    2272 |   860 |    861 |    3993 |
+| UD_Serbian-SET                |    2935 |   465 |    491 |    3891 |
+| UD_Uyghur-UDT                 |    1656 |   900 |    900 |    3456 |
+| UD_Slovenian-SST              |    2078 |  1110 |   3188 |         |
+| UD_North_Sami-Giella          |    2257 |   865 |   3122 |         |
+| UD_French-Sequoia             |    2231 |   412 |    456 |    3099 |
+| UD_Vietnamese-VTB             |    1400 |   800 |    800 |    3000 |
+| UD_French-Spoken              |    1153 |   907 |    726 |    2786 |
+| UD_Greek-GDT                  |    1662 |   403 |    456 |    2521 |
+| UD_Latin-Perseus              |    1334 |   939 |   2273 |         |
+| UD_English-ParTUT             |    1781 |   156 |    153 |    2090 |
+| UD_Italian-ParTUT             |    1781 |   156 |    153 |    2090 |
+| UD_Maltese-MUDT               |    1123 |   433 |    518 |    2074 |
+| UD_Afrikaans-AfriBooms        |    1315 |   194 |    425 |    1934 |
+| UD_Hindi_English-HIENCS       |    1448 |   225 |    225 |    1898 |
+| UD_Hungarian-Szeged           |     910 |   441 |    449 |    1800 |
+| UD_Russian-Taiga              |     880 |   884 |   1764 |         |
+| UD_Erzya-JR                   |    1550 |  1550 |        |         |
+| UD_Norwegian-NynorskLIA       |     339 |  1057 |   1396 |         |
+| UD_Telugu-MTG                 |    1051 |   131 |    146 |    1328 |
+| UD_Faroese-OFT                |    1208 |  1208 |        |         |
+| UD_Czech-CLTT                 |     860 |   129 |    136 |    1125 |
+| UD_Kazakh-KTB                 |      31 |  1047 |   1078 |         |
+| UD_Amharic-ATT                |    1074 |  1074 |        |         |
+| UD_Armenian-ArmTDP            |     560 |   470 |   1030 |         |
+| UD_Bambara-CRB                |    1026 |  1026 |        |         |
+| UD_French-ParTUT              |     803 |   107 |    110 |    1020 |
+| UD_Irish-IDT                  |     566 |   454 |   1020 |         |
+| UD_Galician-TreeGal           |     600 |   400 |   1000 |         |
+| UD_Arabic-PUD                 |    1000 |  1000 |        |         |
+| UD_Chinese-PUD                |    1000 |  1000 |        |         |
+| UD_Czech-PUD                  |    1000 |  1000 |        |         |
+| UD_English-PUD                |    1000 |  1000 |        |         |
+| UD_Finnish-PUD                |    1000 |  1000 |        |         |
+| UD_French-PUD                 |    1000 |  1000 |        |         |
+| UD_German-PUD                 |    1000 |  1000 |        |         |
+| UD_Hindi-PUD                  |    1000 |  1000 |        |         |
+| UD_Indonesian-PUD             |    1000 |  1000 |        |         |
+| UD_Italian-PUD                |    1000 |  1000 |        |         |
+| UD_Japanese-PUD               |    1000 |  1000 |        |         |
+| UD_Korean-PUD                 |    1000 |  1000 |        |         |
+| UD_Portuguese-PUD             |    1000 |  1000 |        |         |
+| UD_Russian-PUD                |    1000 |  1000 |        |         |
+| UD_Spanish-PUD                |    1000 |  1000 |        |         |
+| UD_Swedish-PUD                |    1000 |  1000 |        |         |
+| UD_Thai-PUD                   |    1000 |  1000 |        |         |
+| UD_Turkish-PUD                |    1000 |  1000 |        |         |
+| UD_Naija-NSC                  |     948 |   948 |        |         |
+| UD_Buryat-BDT                 |      19 |   908 |    927 |         |
+| UD_Chinese-HK                 |     908 |   908 |        |         |
+| UD_Breton-KEB                 |     888 |   888 |        |         |
+| UD_Coptic-Scriptorium         |     370 |   203 |    267 |     840 |
+| UD_Japanese-Modern            |     822 |   822 |        |         |
+| UD_Kurmanji-MG                |      20 |   734 |    754 |         |
+| UD_Cantonese-HK               |     650 |   650 |        |         |
+| UD_Upper_Sorbian-UFAL         |      23 |   623 |    646 |         |
+| UD_Tamil-TTB                  |     400 |    80 |    120 |     600 |
+| UD_Marathi-UFAL               |     373 |    46 |     47 |     466 |
+| UD_Chinese-CFL                |     451 |   451 |        |         |
+| UD_Belarusian-HSE             |     260 |    65 |     68 |     393 |
+| UD_Lithuanian-HSE             |     153 |    55 |     55 |     263 |
+| UD_Sanskrit-UFAL              |     230 |   230 |        |         |
+| UD_Swedish_Sign_Language-SSLC |      87 |    82 |     34 |     203 |
+| UD_Komi_Zyrian-Lattice        |     190 |   190 |        |         |
+| UD_Akkadian-PISANDUB          |     101 |   101 |        |         |
+| UD_Yoruba-YTB                 |     100 |   100 |        |         |
+| UD_Komi_Zyrian-IKDP           |      87 |    87 |        |         |
+| UD_Tagalog-TRG                |      55 |    55 |        |         |
+| UD_Warlpiri-UFAL              |      55 |    55 |        |         |
+ 
+## Corpora Alphabetical
+| Corpus                        |   Train |   Dev |   Test |   Total |
+|-------------------------------|---------|-------|--------|---------|
+| UD_Afrikaans-AfriBooms        |    1315 |   194 |    425 |    1934 |
+| UD_Akkadian-PISANDUB          |     101 |   101 |        |         |
+| UD_Amharic-ATT                |    1074 |  1074 |        |         |
+| UD_Ancient_Greek-PROIEL       |   15015 |  1019 |   1047 |   17081 |
+| UD_Ancient_Greek-Perseus      |   11476 |  1137 |   1306 |   13919 |
+| UD_Arabic-NYUAD               |   15789 |  1986 |   1963 |   19738 |
+| UD_Arabic-PADT                |    6075 |   909 |    680 |    7664 |
+| UD_Arabic-PUD                 |    1000 |  1000 |        |         |
+| UD_Armenian-ArmTDP            |     560 |   470 |   1030 |         |
+| UD_Bambara-CRB                |    1026 |  1026 |        |         |
+| UD_Basque-BDT                 |    5396 |  1798 |   1799 |    8993 |
+| UD_Belarusian-HSE             |     260 |    65 |     68 |     393 |
+| UD_Breton-KEB                 |     888 |   888 |        |         |
+| UD_Bulgarian-BTB              |    8907 |  1115 |   1116 |   11138 |
+| UD_Buryat-BDT                 |      19 |   908 |    927 |         |
+| UD_Cantonese-HK               |     650 |   650 |        |         |
+| UD_Catalan-AnCora             |   13123 |  1709 |   1846 |   16678 |
+| UD_Chinese-CFL                |     451 |   451 |        |         |
+| UD_Chinese-GSD                |    3997 |   500 |    500 |    4997 |
+| UD_Chinese-HK                 |     908 |   908 |        |         |
+| UD_Chinese-PUD                |    1000 |  1000 |        |         |
+| UD_Coptic-Scriptorium         |     370 |   203 |    267 |     840 |
+| UD_Croatian-SET               |    6983 |   849 |   1057 |    8889 |
+| UD_Czech-CAC                  |   23478 |   603 |    628 |   24709 |
+| UD_Czech-CLTT                 |     860 |   129 |    136 |    1125 |
+| UD_Czech-FicTree              |   10160 |  1309 |   1291 |   12760 |
+| UD_Czech-PDT                  |   68495 |  9270 |  10148 |   87913 |
+| UD_Czech-PUD                  |    1000 |  1000 |        |         |
+| UD_Danish-DDT                 |    4383 |   564 |    565 |    5512 |
+| UD_Dutch-Alpino               |   12269 |   718 |    596 |   13583 |
+| UD_Dutch-LassySmall           |    5789 |   676 |    876 |    7341 |
+| UD_English-ESL                |    4124 |   500 |    500 |    5124 |
+| UD_English-EWT                |   12543 |  2002 |   2077 |   16622 |
+| UD_English-GUM                |    2914 |   707 |    778 |    4399 |
+| UD_English-LinES              |    2738 |   912 |    914 |    4564 |
+| UD_English-PUD                |    1000 |  1000 |        |         |
+| UD_English-ParTUT             |    1781 |   156 |    153 |    2090 |
+| UD_Erzya-JR                   |    1550 |  1550 |        |         |
+| UD_Estonian-EDT               |   24384 |  3125 |   3214 |   30723 |
+| UD_Faroese-OFT                |    1208 |  1208 |        |         |
+| UD_Finnish-FTB                |   14981 |  1875 |   1867 |   18723 |
+| UD_Finnish-PUD                |    1000 |  1000 |        |         |
+| UD_Finnish-TDT                |   12217 |  1364 |   1555 |   15136 |
+| UD_French-FTB                 |   14759 |  1235 |   2541 |   18535 |
+| UD_French-GSD                 |   14449 |  1476 |    416 |   16341 |
+| UD_French-PUD                 |    1000 |  1000 |        |         |
+| UD_French-ParTUT              |     803 |   107 |    110 |    1020 |
+| UD_French-Sequoia             |    2231 |   412 |    456 |    3099 |
+| UD_French-Spoken              |    1153 |   907 |    726 |    2786 |
+| UD_Galician-CTG               |    2272 |   860 |    861 |    3993 |
+| UD_Galician-TreeGal           |     600 |   400 |   1000 |         |
+| UD_German-GSD                 |   13814 |   799 |    977 |   15590 |
+| UD_German-PUD                 |    1000 |  1000 |        |         |
+| UD_Gothic-PROIEL              |    3387 |   985 |   1029 |    5401 |
+| UD_Greek-GDT                  |    1662 |   403 |    456 |    2521 |
+| UD_Hebrew-HTB                 |    5241 |   484 |    491 |    6216 |
+| UD_Hindi-HDTB                 |   13304 |  1659 |   1684 |   16647 |
+| UD_Hindi-PUD                  |    1000 |  1000 |        |         |
+| UD_Hindi_English-HIENCS       |    1448 |   225 |    225 |    1898 |
+| UD_Hungarian-Szeged           |     910 |   441 |    449 |    1800 |
+| UD_Indonesian-GSD             |    4477 |   559 |    557 |    5593 |
+| UD_Indonesian-PUD             |    1000 |  1000 |        |         |
+| UD_Irish-IDT                  |     566 |   454 |   1020 |         |
+| UD_Italian-ISDT               |   13121 |   564 |    482 |   14167 |
+| UD_Italian-PUD                |    1000 |  1000 |        |         |
+| UD_Italian-ParTUT             |    1781 |   156 |    153 |    2090 |
+| UD_Italian-PoSTWITA           |    5368 |   671 |    674 |    6713 |
+| UD_Japanese-BCCWJ             |   40801 |  8427 |   7881 |   57109 |
+| UD_Japanese-GSD               |    7133 |   511 |    551 |    8195 |
+| UD_Japanese-Modern            |     822 |   822 |        |         |
+| UD_Japanese-PUD               |    1000 |  1000 |        |         |
+| UD_Kazakh-KTB                 |      31 |  1047 |   1078 |         |
+| UD_Komi_Zyrian-IKDP           |      87 |    87 |        |         |
+| UD_Komi_Zyrian-Lattice        |     190 |   190 |        |         |
+| UD_Korean-GSD                 |    4400 |   950 |    989 |    6339 |
+| UD_Korean-Kaist               |   23010 |  2066 |   2287 |   27363 |
+| UD_Korean-PUD                 |    1000 |  1000 |        |         |
+| UD_Kurmanji-MG                |      20 |   734 |    754 |         |
+| UD_Latin-ITTB                 |   16809 |  2101 |   2101 |   21011 |
+| UD_Latin-PROIEL               |   15906 |  1234 |   1260 |   18400 |
+| UD_Latin-Perseus              |    1334 |   939 |   2273 |         |
+| UD_Latvian-LVTB               |    7163 |  1304 |   1453 |    9920 |
+| UD_Lithuanian-HSE             |     153 |    55 |     55 |     263 |
+| UD_Maltese-MUDT               |    1123 |   433 |    518 |    2074 |
+| UD_Marathi-UFAL               |     373 |    46 |     47 |     466 |
+| UD_Naija-NSC                  |     948 |   948 |        |         |
+| UD_North_Sami-Giella          |    2257 |   865 |   3122 |         |
+| UD_Norwegian-Bokmaal          |   15696 |  2410 |   1939 |   20045 |
+| UD_Norwegian-Nynorsk          |   14174 |  1890 |   1511 |   17575 |
+| UD_Norwegian-NynorskLIA       |     339 |  1057 |   1396 |         |
+| UD_Old_Church_Slavonic-PROIEL |    4123 |  1073 |   1141 |    6337 |
+| UD_Old_French-SRCMF           |   13909 |  1842 |   1927 |   17678 |
+| UD_Persian-Seraji             |    4798 |   599 |    600 |    5997 |
+| UD_Polish-LFG                 |   13774 |  1745 |   1727 |   17246 |
+| UD_Polish-SZ                  |    6100 |  1027 |   1100 |    8227 |
+| UD_Portuguese-Bosque          |    8328 |   560 |    477 |    9365 |
+| UD_Portuguese-GSD             |    9664 |  1210 |   1204 |   12078 |
+| UD_Portuguese-PUD             |    1000 |  1000 |        |         |
+| UD_Romanian-Nonstandard       |    7965 |  1052 |   1052 |   10069 |
+| UD_Romanian-RRT               |    8043 |   752 |    729 |    9524 |
+| UD_Russian-GSD                |    3850 |   579 |    601 |    5030 |
+| UD_Russian-PUD                |    1000 |  1000 |        |         |
+| UD_Russian-SynTagRus          |   48814 |  6584 |   6491 |   61889 |
+| UD_Russian-Taiga              |     880 |   884 |   1764 |         |
+| UD_Sanskrit-UFAL              |     230 |   230 |        |         |
+| UD_Serbian-SET                |    2935 |   465 |    491 |    3891 |
+| UD_Slovak-SNK                 |    8483 |  1060 |   1061 |   10604 |
+| UD_Slovenian-SSJ              |    6478 |   734 |    788 |    8000 |
+| UD_Slovenian-SST              |    2078 |  1110 |   3188 |         |
+| UD_Spanish-AnCora             |   14305 |  1654 |   1721 |   17680 |
+| UD_Spanish-GSD                |   14187 |  1400 |    426 |   16013 |
+| UD_Spanish-PUD                |    1000 |  1000 |        |         |
+| UD_Swedish-LinES              |    2738 |   912 |    914 |    4564 |
+| UD_Swedish-PUD                |    1000 |  1000 |        |         |
+| UD_Swedish-Talbanken          |    4303 |   504 |   1219 |    6026 |
+| UD_Swedish_Sign_Language-SSLC |      87 |    82 |     34 |     203 |
+| UD_Tagalog-TRG                |      55 |    55 |        |         |
+| UD_Tamil-TTB                  |     400 |    80 |    120 |     600 |
+| UD_Telugu-MTG                 |    1051 |   131 |    146 |    1328 |
+| UD_Thai-PUD                   |    1000 |  1000 |        |         |
+| UD_Turkish-IMST               |    3685 |   975 |    975 |    5635 |
+| UD_Turkish-PUD                |    1000 |  1000 |        |         |
+| UD_Ukrainian-IU               |    5290 |   647 |    864 |    6801 |
+| UD_Upper_Sorbian-UFAL         |      23 |   623 |    646 |         |
+| UD_Urdu-UDTB                  |    4043 |   552 |    535 |    5130 |
+| UD_Uyghur-UDT                 |    1656 |   900 |    900 |    3456 |
+| UD_Vietnamese-VTB             |    1400 |   800 |    800 |    3000 |
+| UD_Warlpiri-UFAL              |      55 |    55 |        |         |
+| UD_Yoruba-YTB                 |     100 |   100 |        |         |
 
-| Corpus                 | # sent|
-|------------------------|-------|
-| UD_Afrikaans-AfriBooms |  1315 |
-| UD_Arabic-NYUAD        | 15789 |
-| UD_Arabic-PADT         |  6075 |
-| UD_Armenian-ArmTDP     |   560 |
-| UD_Basque-BDT          |  5396 |
-| UD_Belarusian-HSE      |   260 |
-| UD_Bulgarian-BTB       |  8907 |
-| UD_Catalan-AnCora      | 13123 |
-| UD_Chinese-GSD         |  3997 |
-| UD_Croatian-SET        |  6983 |
-| UD_Czech-CAC           | 23478 |
-| UD_Czech-CLTT          |   860 |
-| UD_Czech-FicTree       | 10160 |
-| UD_Czech-PDT           | 68495 |
-| UD_Danish-DDT          |  4383 |
-| UD_Dutch-Alpino        | 12269 |
-| UD_Dutch-LassySmall    |  5789 |
-| UD_English-ESL         |  4124 |
-| UD_English-EWT         | 12543 |
-| UD_English-GUM         |  2914 |
-| UD_English-LinES       |  2738 |
-| UD_English-ParTUT      |  1781 |
-| UD_Estonian-EDT        | 24384 |
-| UD_Finnish-FTB         | 14981 |
-| UD_Finnish-TDT         | 12217 |
-| UD_French-GSD          | 14449 |
-| UD_French-ParTUT       |   803 |
-| UD_French-Sequoia      |  2231 |
-| UD_Galician-CTG        |  2272 |
-| UD_Galician-TreeGal    |   600 |
-| UD_German-GSD          | 13814 |
-| UD_Greek-GDT           |  1662 |
-| UD_Hebrew-HTB          |  5241 |
-| UD_Hindi-HDTB          | 13304 |
-| UD_Hungarian-Szeged    |   910 |
-| UD_Indonesian-GSD      |  4477 |
-| UD_Irish-IDT           |   566 |
-| UD_Italian-ISDT        | 13121 |
-| UD_Italian-ParTUT      |  1781 |
-| UD_Japanese-GSD        |  7133 |
-| UD_Kazakh-KTB          |    31 |
-| UD_Korean-GSD          |  4400 |
-| UD_Korean-Kaist        | 23010 |
-| UD_Latin-ITTB          | 16809 |
-| UD_Latin-PROIEL        | 15906 |
-| UD_Latin-Perseus       |  1334 |
-| UD_Latvian-LVTB        |  7163 |
-| UD_Lithuanian-HSE      |   153 |
-| UD_Marathi-UFAL        |   373 |
-| UD_Norwegian-Bokmaal   | 15696 |
-| UD_Norwegian-Nynorsk   | 14174 |
-| UD_Persian-Seraji      |  4798 |
-| UD_Polish-LFG          | 13774 |
-| UD_Polish-SZ           |  6100 |
-| UD_Portuguese-Bosque   |  8328 |
-| UD_Portuguese-GSD      |  9664 |
-| UD_Romanian-RRT        |  8043 |
-| UD_Russian-GSD         |  3850 |
-| UD_Russian-SynTagRus   | 48814 |
-| UD_Serbian-SET         |  2935 |
-| UD_Slovak-SNK          |  8483 |
-| UD_Slovenian-SSJ       |  6478 |
-| UD_Spanish-AnCora      | 14305 |
-| UD_Spanish-GSD         | 14187 |
-| UD_Swedish-LinES       |  2738 |
-| UD_Swedish-Talbanken   |  4303 |
-| UD_Tamil-TTB           |   400 |
-| UD_Telugu-MTG          |  1051 |
-| UD_Turkish-IMST        |  3685 |
-| UD_Urdu-UDTB           |  4043 |
-| UD_Vietnamese-VTB      |  1400 |
 
-
-|                   |   train |   dev |   test |
-|-------------------|---------|-------|--------|
-| UD_English-ESL    |    4124 |   500 |    500 |
-| UD_English-EWT    |   12543 |  2002 |   2077 |
-| UD_English-GUM    |    2914 |   707 |    778 |
-| UD_English-LinES  |    2738 |   912 |    914 |
-| UD_English-PUD    |         |       |   1000 |
-| UD_English-ParTUT |    1781 |   156 |    153 |
-
-
-|                       Corpus  | # Tree|  
-|-------------------------------|-------|
-| UD_Afrikaans-AfriBooms        |  1934 |
-| UD_Akkadian-PISANDUB          |   101 |
-| UD_Amharic-ATT                |  1074 |
-| UD_Ancient_Greek-PROIEL       | 17081 |
-| UD_Ancient_Greek-Perseus      | 13919 |
-| UD_Arabic-NYUAD               | 19738 |
-| UD_Arabic-PADT                |  7664 |
-| UD_Arabic-PUD                 |  1000 |
-| UD_Armenian-ArmTDP            |  1030 |
-| UD_Bambara-CRB                |  1026 |
-| UD_Basque-BDT                 |  8993 |
-| UD_Belarusian-HSE             |   393 |
-| UD_Breton-KEB                 |   888 |
-| UD_Bulgarian-BTB              | 11138 |
-| UD_Buryat-BDT                 |   927 |
-| UD_Cantonese-HK               |   650 |
-| UD_Catalan-AnCora             | 16678 |
-| UD_Chinese-CFL                |   451 |
-| UD_Chinese-GSD                |  4997 |
-| UD_Chinese-HK                 |   908 |
-| UD_Chinese-PUD                |  1000 |
-| UD_Coptic-Scriptorium         |   840 |
-| UD_Croatian-SET               |  8889 |
-| UD_Czech-CAC                  | 24709 |
-| UD_Czech-CLTT                 |  1125 |
-| UD_Czech-FicTree              | 12760 |
-| UD_Czech-PDT                  | 87913 |
-| UD_Czech-PUD                  |  1000 |
-| UD_Danish-DDT                 |  5512 |
-| UD_Dutch-Alpino               | 13583 |
-| UD_Dutch-LassySmall           |  7341 |
-| UD_English-ESL                |  5124 |
-| UD_English-EWT                | 16622 |
-| UD_English-GUM                |  4399 |
-| UD_English-LinES              |  4564 |
-| UD_English-PUD                |  1000 |
-| UD_English-ParTUT             |  2090 |
-| UD_Erzya-JR                   |  1550 |
-| UD_Estonian-EDT               | 30723 |
-| UD_Faroese-OFT                |  1208 |
-| UD_Finnish-FTB                | 18723 |
-| UD_Finnish-PUD                |  1000 |
-| UD_Finnish-TDT                | 15136 |
-| UD_French-FTB                 | 18535 |
-| UD_French-GSD                 | 16342 |
-| UD_French-PUD                 |  1000 |
-| UD_French-ParTUT              |  1020 |
-| UD_French-Sequoia             |  3099 |
-| UD_French-Spoken              |  2786 |
-| UD_Galician-CTG               |  3993 |
-| UD_Galician-TreeGal           |  1000 |
-| UD_German-GSD                 | 15590 |
-| UD_German-PUD                 |  1000 |
-| UD_Gothic-PROIEL              |  5401 |
-| UD_Greek-GDT                  |  2521 |
-| UD_Hebrew-HTB                 |  6216 |
-| UD_Hindi-HDTB                 | 16647 |
-| UD_Hindi-PUD                  |  1000 |
-| UD_Hindi_English-HIENCS       |  1898 |
-| UD_Hungarian-Szeged           |  1800 |
-| UD_Indonesian-GSD             |  5593 |
-| UD_Indonesian-PUD             |  1000 |
-| UD_Irish-IDT                  |  1020 |
-| UD_Italian-ISDT               | 14167 |
-| UD_Italian-PUD                |  1000 |
-| UD_Italian-ParTUT             |  2090 |
-| UD_Italian-PoSTWITA           |  6713 |
-| UD_Japanese-BCCWJ             | 57109 |
-| UD_Japanese-GSD               |  8195 |
-| UD_Japanese-Modern            |   822 |
-| UD_Japanese-PUD               |  1000 |
-| UD_Kazakh-KTB                 |  1078 |
-| UD_Komi_Zyrian-IKDP           |    87 |
-| UD_Komi_Zyrian-Lattice        |   190 |
-| UD_Korean-GSD                 |  6339 |
-| UD_Korean-Kaist               | 27363 |
-| UD_Korean-PUD                 |  1000 |
-| UD_Kurmanji-MG                |   754 |
-| UD_Latin-ITTB                 | 21011 |
-| UD_Latin-PROIEL               | 18400 |
-| UD_Latin-Perseus              |  2273 |
-| UD_Latvian-LVTB               |  9920 |
-| UD_Lithuanian-HSE             |   263 |
-| UD_Maltese-MUDT               |  2074 |
-| UD_Marathi-UFAL               |   466 |
-| UD_Naija-NSC                  |   948 |
-| UD_North_Sami-Giella          |  3122 |
-| UD_Norwegian-Bokmaal          | 20045 |
-| UD_Norwegian-Nynorsk          | 17575 |
-| UD_Norwegian-NynorskLIA       |  1396 |
-| UD_Old_Church_Slavonic-PROIEL |  6337 |
-| UD_Old_French-SRCMF           | 17678 |
-| UD_Persian-Seraji             |  5997 |
-| UD_Polish-LFG                 | 17246 |
-| UD_Polish-SZ                  |  8227 |
-| UD_Portuguese-Bosque          |  9365 |
-| UD_Portuguese-GSD             | 12078 |
-| UD_Portuguese-PUD             |  1000 |
-| UD_Romanian-Nonstandard       | 10069 |
-| UD_Romanian-RRT               |  9524 |
-| UD_Russian-GSD                |  5030 |
-| UD_Russian-PUD                |  1000 |
-| UD_Russian-SynTagRus          | 61889 |
-| UD_Russian-Taiga              |  1764 |
-| UD_Sanskrit-UFAL              |   230 |
-| UD_Serbian-SET                |  3891 |
-| UD_Slovak-SNK                 | 10604 |
-| UD_Slovenian-SSJ              |  8000 |
-| UD_Slovenian-SST              |  3188 |
-| UD_Spanish-AnCora             | 17680 |
-| UD_Spanish-GSD                | 16013 |
-| UD_Spanish-PUD                |  1000 |
-| UD_Swedish-LinES              |  4564 |
-| UD_Swedish-PUD                |  1000 |
-| UD_Swedish-Talbanken          |  6026 |
-| UD_Swedish_Sign_Language-SSLC |   203 |
-| UD_Tagalog-TRG                |    55 |
-| UD_Tamil-TTB                  |   600 |
-| UD_Telugu-MTG                 |  1328 |
-| UD_Thai-PUD                   |  1000 |
-| UD_Turkish-IMST               |  5635 |
-| UD_Turkish-PUD                |  1000 |
-| UD_Ukrainian-IU               |  6801 |
-| UD_Upper_Sorbian-UFAL         |   646 |
-| UD_Urdu-UDTB                  |  5130 |
-| UD_Uyghur-UDT                 |  3456 |
-| UD_Vietnamese-VTB             |  3000 |
-| UD_Warlpiri-UFAL              |    55 |
-| UD_Yoruba-YTB                 |   100 |
 
 
 The model is evaluated on the Stanford Dependency conversion ([v3.3.0](https://nlp.stanford.edu/software/stanford-parser-full-2013-11-12.zip)) of the English Penn Treebank with POS tags predicted by [Stanford POS tagger](https://nlp.stanford.edu/software/stanford-postagger-full-2018-10-16.zip).
