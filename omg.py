@@ -76,32 +76,34 @@ used = {"UD_Afrikaans-AfriBooms",
 		"UD_Urdu-UDTB",
 		"UD_Vietnamese-VTB"}
             
-corpora = {}
-language = defaultdict(int)
+corpora = defaultdict(list)
+language = defaultdict(lambda: [0, 0, 0])
 folder_path = "/Users/Jimmy/Downloads/Universal_Dependencies_2.3/ud-treebanks-v2.3/"
-for file_path in sorted(glob.glob(folder_path + '/*/*train.conllu')):
-	file = file_path.split('/')[-2]
-	if file not in used:
-		continue
-	with open(file_path) as f_in:
-		count = 0
-		for line in f_in:
-			line = line.strip()
-			if line.startswith('# text ='):
-				count += 1
-	corpora[file] = count
-	language[file.split('-')[0][3:]] += count
+for index, dataset in enumerate(['train', 'dev', 'test']):
+	for file_path in sorted(glob.glob(folder_path + '/*/*{}.conllu'.format(dataset))):
+		file = file_path.split('/')[-2]
+		if file not in used:
+			continue
+		with open(file_path) as f_in:
+			count = 0
+			for line in f_in:
+				line = line.strip()
+				if line.startswith('# text ='):
+					count += 1
+		corpora[file].append(count)
+		language[file.split('-')[0][3:]][index] += count
 
+headers = ['Language', 'train', 'dev', 'test']
 print('languages sorted by frequency')
-print(tabulate(sorted(language.items(), key=lambda x: -x[1]), tablefmt='github'))
+print(tabulate(sorted(language.items(), key=lambda x: -sum(x[1])), tablefmt='github', headers=headers))
 
 print(' ')
 print('corpora sorted by frequency')
-print(tabulate(sorted(corpora.items(), key=lambda x: -x[1]), tablefmt='github'))
+print(tabulate(sorted(corpora.items(), key=lambda x: -sum(x[1])), tablefmt='github', headers=headers))
 
 print(' ')
 print('corpora alphabetical')
-print(tabulate(sorted(corpora.items()), tablefmt='github'))
+print(tabulate(sorted(corpora.items()), tablefmt='github', headers=headers))
 
 
 # corpora = {}

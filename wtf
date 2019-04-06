@@ -1,0 +1,201 @@
+languages sorted by frequency
+| Language   | train                  |
+|------------|------------------------|
+| Czech      | [102993, 11311, 12203] |
+| Russian    | [52664, 7163, 7092]    |
+| Latin      | [34049, 3335, 4300]    |
+| Norwegian  | [29870, 4300, 3450]    |
+| Finnish    | [27198, 3239, 3422]    |
+| Korean     | [27410, 3016, 3276]    |
+| Spanish    | [28492, 3054, 2147]    |
+| English    | [24100, 4277, 4422]    |
+| Estonian   | [24384, 3125, 3214]    |
+| Arabic     | [21864, 2895, 2643]    |
+| Polish     | [19874, 2772, 2827]    |
+| Portuguese | [17992, 1770, 1681]    |
+| Dutch      | [18058, 1394, 1472]    |
+| French     | [17483, 1995, 982]     |
+| Catalan    | [13123, 1709, 1846]    |
+| Hindi      | [13304, 1659, 1684]    |
+| Italian    | [14902, 720, 635]      |
+| German     | [13814, 799, 977]      |
+| Bulgarian  | [8907, 1115, 1116]     |
+| Slovak     | [8483, 1060, 1061]     |
+| Swedish    | [7041, 1416, 2133]     |
+| Latvian    | [7163, 1304, 1453]     |
+| Romanian   | [8043, 752, 729]       |
+| Basque     | [5396, 1798, 1799]     |
+| Croatian   | [6983, 849, 1057]      |
+| Japanese   | [7133, 511, 551]       |
+| Slovenian  | [6478, 734, 788]       |
+| Hebrew     | [5241, 484, 491]       |
+| Persian    | [4798, 599, 600]       |
+| Turkish    | [3685, 975, 975]       |
+| Indonesian | [4477, 559, 557]       |
+| Danish     | [4383, 564, 565]       |
+| Urdu       | [4043, 552, 535]       |
+| Chinese    | [3997, 500, 500]       |
+| Galician   | [2872, 860, 1261]      |
+| Serbian    | [2935, 465, 491]       |
+| Vietnamese | [1400, 800, 800]       |
+| Greek      | [1662, 403, 456]       |
+| Afrikaans  | [1315, 194, 425]       |
+| Hungarian  | [910, 441, 449]        |
+| Telugu     | [1051, 131, 146]       |
+| Kazakh     | [31, 0, 1047]          |
+| Armenian   | [560, 0, 470]          |
+| Irish      | [566, 0, 454]          |
+| Tamil      | [400, 80, 120]         |
+| Marathi    | [373, 46, 47]          |
+| Belarusian | [260, 65, 68]          |
+| Lithuanian | [153, 55, 55]          |
+ 
+corpora sorted by frequency
+| Language               | train                |
+|------------------------|----------------------|
+| UD_Czech-PDT           | [68495, 9270, 10148] |
+| UD_Russian-SynTagRus   | [48814, 6584, 6491]  |
+| UD_Estonian-EDT        | [24384, 3125, 3214]  |
+| UD_Korean-Kaist        | [23010, 2066, 2287]  |
+| UD_Czech-CAC           | [23478, 603, 628]    |
+| UD_Latin-ITTB          | [16809, 2101, 2101]  |
+| UD_Norwegian-Bokmaal   | [15696, 2410, 1939]  |
+| UD_Arabic-NYUAD        | [15789, 1986, 1963]  |
+| UD_Finnish-FTB         | [14981, 1875, 1867]  |
+| UD_Latin-PROIEL        | [15906, 1234, 1260]  |
+| UD_Spanish-AnCora      | [14305, 1654, 1721]  |
+| UD_Norwegian-Nynorsk   | [14174, 1890, 1511]  |
+| UD_Polish-LFG          | [13774, 1745, 1727]  |
+| UD_Catalan-AnCora      | [13123, 1709, 1846]  |
+| UD_Hindi-HDTB          | [13304, 1659, 1684]  |
+| UD_English-EWT         | [12543, 2002, 2077]  |
+| UD_French-GSD          | [14449, 1476, 416]   |
+| UD_Spanish-GSD         | [14187, 1400, 426]   |
+| UD_German-GSD          | [13814, 799, 977]    |
+| UD_Finnish-TDT         | [12217, 1364, 1555]  |
+| UD_Italian-ISDT        | [13121, 564, 482]    |
+| UD_Dutch-Alpino        | [12269, 718, 596]    |
+| UD_Czech-FicTree       | [10160, 1309, 1291]  |
+| UD_Portuguese-GSD      | [9664, 1210, 1204]   |
+| UD_Bulgarian-BTB       | [8907, 1115, 1116]   |
+| UD_Slovak-SNK          | [8483, 1060, 1061]   |
+| UD_Latvian-LVTB        | [7163, 1304, 1453]   |
+| UD_Romanian-RRT        | [8043, 752, 729]     |
+| UD_Portuguese-Bosque   | [8328, 560, 477]     |
+| UD_Basque-BDT          | [5396, 1798, 1799]   |
+| UD_Croatian-SET        | [6983, 849, 1057]    |
+| UD_Polish-SZ           | [6100, 1027, 1100]   |
+| UD_Japanese-GSD        | [7133, 511, 551]     |
+| UD_Slovenian-SSJ       | [6478, 734, 788]     |
+| UD_Arabic-PADT         | [6075, 909, 680]     |
+| UD_Dutch-LassySmall    | [5789, 676, 876]     |
+| UD_Korean-GSD          | [4400, 950, 989]     |
+| UD_Hebrew-HTB          | [5241, 484, 491]     |
+| UD_Swedish-Talbanken   | [4303, 504, 1219]    |
+| UD_Persian-Seraji      | [4798, 599, 600]     |
+| UD_Turkish-IMST        | [3685, 975, 975]     |
+| UD_Indonesian-GSD      | [4477, 559, 557]     |
+| UD_Danish-DDT          | [4383, 564, 565]     |
+| UD_Urdu-UDTB           | [4043, 552, 535]     |
+| UD_English-ESL         | [4124, 500, 500]     |
+| UD_Russian-GSD         | [3850, 579, 601]     |
+| UD_Chinese-GSD         | [3997, 500, 500]     |
+| UD_English-LinES       | [2738, 912, 914]     |
+| UD_Swedish-LinES       | [2738, 912, 914]     |
+| UD_English-GUM         | [2914, 707, 778]     |
+| UD_Galician-CTG        | [2272, 860, 861]     |
+| UD_Serbian-SET         | [2935, 465, 491]     |
+| UD_French-Sequoia      | [2231, 412, 456]     |
+| UD_Vietnamese-VTB      | [1400, 800, 800]     |
+| UD_Greek-GDT           | [1662, 403, 456]     |
+| UD_Latin-Perseus       | [1334, 939]          |
+| UD_English-ParTUT      | [1781, 156, 153]     |
+| UD_Italian-ParTUT      | [1781, 156, 153]     |
+| UD_Afrikaans-AfriBooms | [1315, 194, 425]     |
+| UD_Hungarian-Szeged    | [910, 441, 449]      |
+| UD_Telugu-MTG          | [1051, 131, 146]     |
+| UD_Czech-CLTT          | [860, 129, 136]      |
+| UD_Kazakh-KTB          | [31, 1047]           |
+| UD_Armenian-ArmTDP     | [560, 470]           |
+| UD_French-ParTUT       | [803, 107, 110]      |
+| UD_Irish-IDT           | [566, 454]           |
+| UD_Galician-TreeGal    | [600, 400]           |
+| UD_Tamil-TTB           | [400, 80, 120]       |
+| UD_Marathi-UFAL        | [373, 46, 47]        |
+| UD_Belarusian-HSE      | [260, 65, 68]        |
+| UD_Lithuanian-HSE      | [153, 55, 55]        |
+ 
+corpora alphabetical
+| Language               | train                |
+|------------------------|----------------------|
+| UD_Afrikaans-AfriBooms | [1315, 194, 425]     |
+| UD_Arabic-NYUAD        | [15789, 1986, 1963]  |
+| UD_Arabic-PADT         | [6075, 909, 680]     |
+| UD_Armenian-ArmTDP     | [560, 470]           |
+| UD_Basque-BDT          | [5396, 1798, 1799]   |
+| UD_Belarusian-HSE      | [260, 65, 68]        |
+| UD_Bulgarian-BTB       | [8907, 1115, 1116]   |
+| UD_Catalan-AnCora      | [13123, 1709, 1846]  |
+| UD_Chinese-GSD         | [3997, 500, 500]     |
+| UD_Croatian-SET        | [6983, 849, 1057]    |
+| UD_Czech-CAC           | [23478, 603, 628]    |
+| UD_Czech-CLTT          | [860, 129, 136]      |
+| UD_Czech-FicTree       | [10160, 1309, 1291]  |
+| UD_Czech-PDT           | [68495, 9270, 10148] |
+| UD_Danish-DDT          | [4383, 564, 565]     |
+| UD_Dutch-Alpino        | [12269, 718, 596]    |
+| UD_Dutch-LassySmall    | [5789, 676, 876]     |
+| UD_English-ESL         | [4124, 500, 500]     |
+| UD_English-EWT         | [12543, 2002, 2077]  |
+| UD_English-GUM         | [2914, 707, 778]     |
+| UD_English-LinES       | [2738, 912, 914]     |
+| UD_English-ParTUT      | [1781, 156, 153]     |
+| UD_Estonian-EDT        | [24384, 3125, 3214]  |
+| UD_Finnish-FTB         | [14981, 1875, 1867]  |
+| UD_Finnish-TDT         | [12217, 1364, 1555]  |
+| UD_French-GSD          | [14449, 1476, 416]   |
+| UD_French-ParTUT       | [803, 107, 110]      |
+| UD_French-Sequoia      | [2231, 412, 456]     |
+| UD_Galician-CTG        | [2272, 860, 861]     |
+| UD_Galician-TreeGal    | [600, 400]           |
+| UD_German-GSD          | [13814, 799, 977]    |
+| UD_Greek-GDT           | [1662, 403, 456]     |
+| UD_Hebrew-HTB          | [5241, 484, 491]     |
+| UD_Hindi-HDTB          | [13304, 1659, 1684]  |
+| UD_Hungarian-Szeged    | [910, 441, 449]      |
+| UD_Indonesian-GSD      | [4477, 559, 557]     |
+| UD_Irish-IDT           | [566, 454]           |
+| UD_Italian-ISDT        | [13121, 564, 482]    |
+| UD_Italian-ParTUT      | [1781, 156, 153]     |
+| UD_Japanese-GSD        | [7133, 511, 551]     |
+| UD_Kazakh-KTB          | [31, 1047]           |
+| UD_Korean-GSD          | [4400, 950, 989]     |
+| UD_Korean-Kaist        | [23010, 2066, 2287]  |
+| UD_Latin-ITTB          | [16809, 2101, 2101]  |
+| UD_Latin-PROIEL        | [15906, 1234, 1260]  |
+| UD_Latin-Perseus       | [1334, 939]          |
+| UD_Latvian-LVTB        | [7163, 1304, 1453]   |
+| UD_Lithuanian-HSE      | [153, 55, 55]        |
+| UD_Marathi-UFAL        | [373, 46, 47]        |
+| UD_Norwegian-Bokmaal   | [15696, 2410, 1939]  |
+| UD_Norwegian-Nynorsk   | [14174, 1890, 1511]  |
+| UD_Persian-Seraji      | [4798, 599, 600]     |
+| UD_Polish-LFG          | [13774, 1745, 1727]  |
+| UD_Polish-SZ           | [6100, 1027, 1100]   |
+| UD_Portuguese-Bosque   | [8328, 560, 477]     |
+| UD_Portuguese-GSD      | [9664, 1210, 1204]   |
+| UD_Romanian-RRT        | [8043, 752, 729]     |
+| UD_Russian-GSD         | [3850, 579, 601]     |
+| UD_Russian-SynTagRus   | [48814, 6584, 6491]  |
+| UD_Serbian-SET         | [2935, 465, 491]     |
+| UD_Slovak-SNK          | [8483, 1060, 1061]   |
+| UD_Slovenian-SSJ       | [6478, 734, 788]     |
+| UD_Spanish-AnCora      | [14305, 1654, 1721]  |
+| UD_Spanish-GSD         | [14187, 1400, 426]   |
+| UD_Swedish-LinES       | [2738, 912, 914]     |
+| UD_Swedish-Talbanken   | [4303, 504, 1219]    |
+| UD_Tamil-TTB           | [400, 80, 120]       |
+| UD_Telugu-MTG          | [1051, 131, 146]     |
+| UD_Turkish-IMST        | [3685, 975, 975]     |
+| UD_Urdu-UDTB           | [4043, 552, 535]     |
+| UD_Vietnamese-VTB      | [1400, 800, 800]     |

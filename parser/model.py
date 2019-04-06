@@ -56,13 +56,13 @@ class Model(object):
                 train_loader.sampler.set_epoch(epoch)
             self.train(train_loader, distirbuted=args.distributed)
             
-            train_loss, train_metric = self.evaluate(train_loader)
-            if args.local_rank == 0:
-                print(f"{'train:':<6} Loss: {train_loss:.4f} {train_metric}")
-            
-            # dev_loss, dev_metric = self.evaluate(dev_loader)
+            # train_loss, train_metric = self.evaluate(train_loader)
             # if args.local_rank == 0:
-            #     print(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")
+            #     print(f"{'train:':<6} Loss: {train_loss:.4f} {train_metric}")
+            
+            dev_loss, dev_metric = self.evaluate(dev_loader)
+            if args.local_rank == 0:
+                print(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")
 
             # test_loss, test_metric = self.evaluate(test_loader)
             # if args.local_rank == 0:
@@ -70,12 +70,7 @@ class Model(object):
             t = datetime.now() - start
             if args.local_rank == 0:
                 print(f"{t}s elapsed\n")
-            total_time += t
-
-            # **************!!!!!!!!**REMBMBER TO COMMENT OUT BREAK LATER********************
-            # THIS IS TO TEST FOR CORRUPTED DATASET, SO ONLY TRAIN FOR ONE EPOCH AND DONT SAVE
-            break
-            
+            total_time += t       
 
             # save the model if it is the best so far
             if args.local_rank == 0:
@@ -89,13 +84,11 @@ class Model(object):
                     break
         if args.local_rank == 0:
             print('***Finished training at {}***'.format(datetime.now()))
-        # self.network = BiaffineParser.load(file, cloud_address)
-        # loss, metric = self.evaluate(test_loader)
-
-        if args.local_rank == 0:
-            # print(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
-            # print(f"the score of test at epoch {max_e} is {metric.score:.2%}")
-            # print(f"mean time of each epoch is {total_time / epoch}s")
+            self.network = BiaffineParser.load(file, cloud_address)
+            loss, metric = self.evaluate(test_loader)
+            print(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
+            print(f"the score of test at epoch {max_e} is {metric.score:.2%}")
+            print(f"mean time of each epoch is {total_time / epoch}s")
             print(f"{total_time}s elapsed")
 
     def train(self, loader, distirbuted=False):
