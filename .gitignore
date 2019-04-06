@@ -1,6 +1,8 @@
 # ignore data files
 data
 debugging
+debugging*
+
 
 # ignore results
 results
