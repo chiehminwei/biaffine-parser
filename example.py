@@ -41,9 +41,26 @@ def example(sentences):
 
 	# Three options
 	embeddings = model.get_embeddings(loader)
-	print(embeddings)
-	print(embeddings.shape)
 	s_arc, s_rel = model.get_matrices(loader)
 	s_arc, s_rel, embeddings = model.get_everything(loader)
 
-example(sentences)
+# example(sentences)
+
+def PennTreebank(corpus_path, out_file, meta_file):
+	corpus = Corpus.load(corpus_path)
+	vocab = Vocab.from_corpus(corpus=train, min_freq=2)
+	dataset = TextDataset(vocab.numericalize_tags(corpus))
+	loader = DataLoader(dataset=dataset,
+	                    batch_size=BATCH_SIZE,
+	                    collate_fn=collate_fn)
+	embeddings = model.get_embeddings(loader)
+	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
+		for sentence in embeddings:
+			for word_embed in sentence:
+				f.write('\t'.join(word_embed)+'\n')
+		ff.write('Word\tPOS\n')
+		for words, tags in zip(corpus.words, corpus.tags)
+			for word, tag in zip(words, tags):
+				ff.write(word + '\t' + tag + '\n')
+
+PennTreebank('data/train.conllx', 'embeddings.tsv', 'meta.tsv')

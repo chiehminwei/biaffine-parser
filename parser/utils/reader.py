@@ -54,6 +54,11 @@ class Corpus(object):
                 for sentence in self.sentences]
 
     @property
+    def tags(self):
+        return [[self.ROOT] + list(sentence.POS)
+                for sentence in self.sentences]
+                
+    @property
     def rels(self):
         return [[self.ROOT] + list(sentence.DEPREL)
                 for sentence in self.sentences]

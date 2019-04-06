@@ -269,6 +269,85 @@ class Vocab(object):
         
         return words_numerical, attention_mask, token_start_mask
 
+    def numericalize_tags(self, corpus):
+        words_numerical = []
+        tags_total = []
+        token_start_mask = []
+        attention_mask = []
+        offending_set = set()
+        symbol_set = set()
+        empty_words = set()
+        exceeding_count = 0
+        for sentence in corpus.words:
+            sentence_token_ids = []
+            token_starts = []
+            attentions = []
+            sentence = ['[CLS]'] + sentence + ['[SEP]']
+            for word in sentence:
+                # skip <ROOT>
+                if word == '<ROOT>':
+                    continue
+                
+                # take care of some idiosyncracies
+                if word == '`':
+                    word = "'"
+                if word == '``':
+                    word = '"'
+                if word == "''":
+                    word = '"'
+                if word == "non-``":
+                    word = 'non-"'
+                word = word.replace('“', '"')
+                word = word.replace('”', '"')
+                word = word.replace("`", "'")
+                word = word.replace("’", "'")
+                word = word.replace("‘", "'")
+                word = word.replace("'", "'")
+                word = word.replace("´", "'")
+                word = word.replace("…", "...")
+                word = word.replace("–", "-")
+                word = word.replace('—', '-')
+
+
+                tokens = self.tokenizer.tokenize(word)
+                if tokens:
+                    ids = self.tokenizer.convert_tokens_to_ids(tokens)
+                    
+                    # Keep track of punctuation
+                    if regex.match(r'\p{P}+$', word):
+                        for token_id in ids:
+                            self.puncts.add(token_id)
+
+                    # log any unknown words
+                    if '[UNK]' in tokens:
+                        for offending_char in word:
+                            token = self.tokenizer.tokenize(offending_char)
+                            if unicodedata.category(offending_char) != 'So':
+                                offending_set.add(offending_char)
+                            else:
+                                symbol_set.add(offending_char)
+                        
+                    sentence_token_ids.extend(ids)
+                    token_starts.extend([1] + [0] * (len(tokens) - 1))
+                    attentions.extend([1] * len(tokens))
+                
+                # take care of empty tokens
+                else:
+                    empty_words.add(word)
+                    continue
+
+            # Skip too long sentences
+            len_sentence_token_ids = len(sentence_token_ids)
+            if len_sentence_token_ids > 128:
+                exceeding_count += 1
+                continue
+
+            words_numerical.append(torch.tensor(sentence_token_ids))
+            attention_mask.append(torch.ByteTensor(attentions))
+            token_start_mask.append(torch.ByteTensor(token_starts))
+            
+        return words_numerical, attention_mask, token_start_mask
+
     @classmethod
     def from_corpus(cls, corpus, min_freq=1):
         words = Counter(word for seq in corpus.words for word in seq)
