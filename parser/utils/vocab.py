@@ -280,6 +280,10 @@ class Vocab(object):
         empty_words = set()
         exceeding_count = 0
         for sentence, words, tags in zip(corpus.words, corpus.words, corpus.tags):
+            # skip <ROOT>
+            words = words[1:]
+            tags = tags[1:]
+
             sentence_token_ids = []
             token_starts = []
             attentions = []
