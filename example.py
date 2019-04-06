@@ -41,6 +41,8 @@ def example(sentences):
 
 	# Three options
 	embeddings = model.get_embeddings(loader)
+	print(embeddings)
+	print(embeddings.shape)
 	s_arc, s_rel = model.get_matrices(loader)
 	s_arc, s_rel, embeddings = model.get_everything(loader)
 
