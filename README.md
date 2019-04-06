@@ -25,6 +25,7 @@ pytorch == 1.0.0
 ## Datasets
 
 **Languages by Frequency**
+
 | Language              |   Train |   Dev |   Test |   Total |
 |-----------------------|---------|-------|--------|---------|
 | Czech                 |  102993 | 11311 |  13203 |  127507 |
@@ -105,6 +106,7 @@ pytorch == 1.0.0
 | Warlpiri              |       0 |     0 |     55 |      55 |
  
 **Languages Alphabetical**
+
 | Language              |   Train |   Dev |   Test |   Total |
 |-----------------------|---------|-------|--------|---------|
 | Afrikaans             |    1315 |   194 |    425 |    1934 |
@@ -185,6 +187,7 @@ pytorch == 1.0.0
 | Yoruba                |       0 |     0 |    100 |     100 |
  
 **Corpora by Frequency**
+
 | Corpus                        |   Train |   Dev |   Test |   Total |
 |-------------------------------|---------|-------|--------|---------|
 | UD_Czech-PDT                  |   68495 |  9270 |  10148 |   87913 |
@@ -318,6 +321,7 @@ pytorch == 1.0.0
 | UD_Warlpiri-UFAL              |      55 |    55 |        |         |
  
 **Corpora Alphabetical**
+
 | Corpus                        |   Train |   Dev |   Test |   Total |
 |-------------------------------|---------|-------|--------|---------|
 | UD_Afrikaans-AfriBooms        |    1315 |   194 |    425 |    1934 |
