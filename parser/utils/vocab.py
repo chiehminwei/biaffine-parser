@@ -279,7 +279,7 @@ class Vocab(object):
         symbol_set = set()
         empty_words = set()
         exceeding_count = 0
-        for sentence, words, tags in corpus.words, corpus.words, corpus.tags:
+        for sentence, words, tags in zip(corpus.words, corpus.words, corpus.tags):
             sentence_token_ids = []
             token_starts = []
             attentions = []
