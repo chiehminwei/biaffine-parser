@@ -49,7 +49,8 @@ def example(sentences):
 def PennTreebank(corpus_path, out_file, meta_file):
 	corpus = Corpus.load(corpus_path)
 	vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
-	dataset = TextDataset(vocab.numericalize_tags(corpus))
+	a, b, c, words, tags = vocab.numericalize_tags(corpus)
+	dataset = TextDataset((a, b, c))
 	loader = DataLoader(dataset=dataset,
 	                    batch_size=BATCH_SIZE,
 	                    collate_fn=collate_fn)

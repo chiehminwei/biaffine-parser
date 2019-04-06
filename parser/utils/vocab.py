@@ -271,6 +271,7 @@ class Vocab(object):
 
     def numericalize_tags(self, corpus):
         words_numerical = []
+        words_total = []
         tags_total = []
         token_start_mask = []
         attention_mask = []
@@ -278,7 +279,7 @@ class Vocab(object):
         symbol_set = set()
         empty_words = set()
         exceeding_count = 0
-        for sentence in corpus.words:
+        for sentence, words, tags in corpus.words, corpus.words, corpus.tags:
             sentence_token_ids = []
             token_starts = []
             attentions = []
@@ -345,8 +346,10 @@ class Vocab(object):
             words_numerical.append(torch.tensor(sentence_token_ids))
             attention_mask.append(torch.ByteTensor(attentions))
             token_start_mask.append(torch.ByteTensor(token_starts))
+            words_total.append(words)
+            tags_total.append(tags)
             
-        return words_numerical, attention_mask, token_start_mask
+        return words_numerical, attention_mask, token_start_mask, words_total, tags_total
 
     @classmethod
     def from_corpus(cls, corpus, min_freq=1):
