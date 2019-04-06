@@ -60,8 +60,8 @@ def PennTreebank(corpus_path, out_file, meta_file):
 			for word_embed in sentence:
 				f.write('\t'.join([str(val) for val in word_embed])+'\n')
 		ff.write('Word\tPOS\n')
-		for words, tags in zip(corpus.words, corpus.tags):
-			for word, tag in zip(words, tags):
+		for sentence, sentence_tags in zip(words, tags):
+			for word, tag in zip(sentence, sentence_tags):
 				ff.write(word + '\t' + tag + '\n')
 
 PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
