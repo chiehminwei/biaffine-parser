@@ -255,105 +255,105 @@ pytorch == 1.0.0
 | UD_Galician-CTG               |    2272 |   860 |    861 |    3993 |
 | UD_Serbian-SET                |    2935 |   465 |    491 |    3891 |
 | UD_Uyghur-UDT                 |    1656 |   900 |    900 |    3456 |
-| UD_Slovenian-SST              |    2078 |  1110 |   3188 |         |
-| UD_North_Sami-Giella          |    2257 |   865 |   3122 |         |
+| UD_Slovenian-SST              |    2078 |     0 |   1110 |    3188 |
+| UD_North_Sami-Giella          |    2257 |     0 |    865 |    3122 |
 | UD_French-Sequoia             |    2231 |   412 |    456 |    3099 |
 | UD_Vietnamese-VTB             |    1400 |   800 |    800 |    3000 |
 | UD_French-Spoken              |    1153 |   907 |    726 |    2786 |
 | UD_Greek-GDT                  |    1662 |   403 |    456 |    2521 |
-| UD_Latin-Perseus              |    1334 |   939 |   2273 |         |
+| UD_Latin-Perseus              |    1334 |     0 |    939 |    2273 |
 | UD_English-ParTUT             |    1781 |   156 |    153 |    2090 |
 | UD_Italian-ParTUT             |    1781 |   156 |    153 |    2090 |
 | UD_Maltese-MUDT               |    1123 |   433 |    518 |    2074 |
 | UD_Afrikaans-AfriBooms        |    1315 |   194 |    425 |    1934 |
 | UD_Hindi_English-HIENCS       |    1448 |   225 |    225 |    1898 |
 | UD_Hungarian-Szeged           |     910 |   441 |    449 |    1800 |
-| UD_Russian-Taiga              |     880 |   884 |   1764 |         |
-| UD_Erzya-JR                   |    1550 |  1550 |        |         |
-| UD_Norwegian-NynorskLIA       |     339 |  1057 |   1396 |         |
+| UD_Russian-Taiga              |     880 |     0 |    884 |    1764 |
+| UD_Erzya-JR                   |       0 |     0 |   1550 |    1550 |
+| UD_Norwegian-NynorskLIA       |     339 |     0 |   1057 |    1396 |
 | UD_Telugu-MTG                 |    1051 |   131 |    146 |    1328 |
-| UD_Faroese-OFT                |    1208 |  1208 |        |         |
+| UD_Faroese-OFT                |       0 |     0 |   1208 |    1208 |
 | UD_Czech-CLTT                 |     860 |   129 |    136 |    1125 |
-| UD_Kazakh-KTB                 |      31 |  1047 |   1078 |         |
-| UD_Amharic-ATT                |    1074 |  1074 |        |         |
-| UD_Armenian-ArmTDP            |     560 |   470 |   1030 |         |
-| UD_Bambara-CRB                |    1026 |  1026 |        |         |
+| UD_Kazakh-KTB                 |      31 |     0 |   1047 |    1078 |
+| UD_Amharic-ATT                |       0 |     0 |   1074 |    1074 |
+| UD_Armenian-ArmTDP            |     560 |     0 |    470 |    1030 |
+| UD_Bambara-CRB                |       0 |     0 |   1026 |    1026 |
 | UD_French-ParTUT              |     803 |   107 |    110 |    1020 |
-| UD_Irish-IDT                  |     566 |   454 |   1020 |         |
-| UD_Galician-TreeGal           |     600 |   400 |   1000 |         |
-| UD_Arabic-PUD                 |    1000 |  1000 |        |         |
-| UD_Chinese-PUD                |    1000 |  1000 |        |         |
-| UD_Czech-PUD                  |    1000 |  1000 |        |         |
-| UD_English-PUD                |    1000 |  1000 |        |         |
-| UD_Finnish-PUD                |    1000 |  1000 |        |         |
-| UD_French-PUD                 |    1000 |  1000 |        |         |
-| UD_German-PUD                 |    1000 |  1000 |        |         |
-| UD_Hindi-PUD                  |    1000 |  1000 |        |         |
-| UD_Indonesian-PUD             |    1000 |  1000 |        |         |
-| UD_Italian-PUD                |    1000 |  1000 |        |         |
-| UD_Japanese-PUD               |    1000 |  1000 |        |         |
-| UD_Korean-PUD                 |    1000 |  1000 |        |         |
-| UD_Portuguese-PUD             |    1000 |  1000 |        |         |
-| UD_Russian-PUD                |    1000 |  1000 |        |         |
-| UD_Spanish-PUD                |    1000 |  1000 |        |         |
-| UD_Swedish-PUD                |    1000 |  1000 |        |         |
-| UD_Thai-PUD                   |    1000 |  1000 |        |         |
-| UD_Turkish-PUD                |    1000 |  1000 |        |         |
-| UD_Naija-NSC                  |     948 |   948 |        |         |
-| UD_Buryat-BDT                 |      19 |   908 |    927 |         |
-| UD_Chinese-HK                 |     908 |   908 |        |         |
-| UD_Breton-KEB                 |     888 |   888 |        |         |
+| UD_Irish-IDT                  |     566 |     0 |    454 |    1020 |
+| UD_Galician-TreeGal           |     600 |     0 |    400 |    1000 |
+| UD_Arabic-PUD                 |       0 |     0 |   1000 |    1000 |
+| UD_Chinese-PUD                |       0 |     0 |   1000 |    1000 |
+| UD_Czech-PUD                  |       0 |     0 |   1000 |    1000 |
+| UD_English-PUD                |       0 |     0 |   1000 |    1000 |
+| UD_Finnish-PUD                |       0 |     0 |   1000 |    1000 |
+| UD_French-PUD                 |       0 |     0 |   1000 |    1000 |
+| UD_German-PUD                 |       0 |     0 |   1000 |    1000 |
+| UD_Hindi-PUD                  |       0 |     0 |   1000 |    1000 |
+| UD_Indonesian-PUD             |       0 |     0 |   1000 |    1000 |
+| UD_Italian-PUD                |       0 |     0 |   1000 |    1000 |
+| UD_Japanese-PUD               |       0 |     0 |   1000 |    1000 |
+| UD_Korean-PUD                 |       0 |     0 |   1000 |    1000 |
+| UD_Portuguese-PUD             |       0 |     0 |   1000 |    1000 |
+| UD_Russian-PUD                |       0 |     0 |   1000 |    1000 |
+| UD_Spanish-PUD                |       0 |     0 |   1000 |    1000 |
+| UD_Swedish-PUD                |       0 |     0 |   1000 |    1000 |
+| UD_Thai-PUD                   |       0 |     0 |   1000 |    1000 |
+| UD_Turkish-PUD                |       0 |     0 |   1000 |    1000 |
+| UD_Naija-NSC                  |       0 |     0 |    948 |     948 |
+| UD_Buryat-BDT                 |      19 |     0 |    908 |     927 |
+| UD_Chinese-HK                 |       0 |     0 |    908 |     908 |
+| UD_Breton-KEB                 |       0 |     0 |    888 |     888 |
 | UD_Coptic-Scriptorium         |     370 |   203 |    267 |     840 |
-| UD_Japanese-Modern            |     822 |   822 |        |         |
-| UD_Kurmanji-MG                |      20 |   734 |    754 |         |
-| UD_Cantonese-HK               |     650 |   650 |        |         |
-| UD_Upper_Sorbian-UFAL         |      23 |   623 |    646 |         |
+| UD_Japanese-Modern            |       0 |     0 |    822 |     822 |
+| UD_Kurmanji-MG                |      20 |     0 |    734 |     754 |
+| UD_Cantonese-HK               |       0 |     0 |    650 |     650 |
+| UD_Upper_Sorbian-UFAL         |      23 |     0 |    623 |     646 |
 | UD_Tamil-TTB                  |     400 |    80 |    120 |     600 |
 | UD_Marathi-UFAL               |     373 |    46 |     47 |     466 |
-| UD_Chinese-CFL                |     451 |   451 |        |         |
+| UD_Chinese-CFL                |       0 |     0 |    451 |     451 |
 | UD_Belarusian-HSE             |     260 |    65 |     68 |     393 |
 | UD_Lithuanian-HSE             |     153 |    55 |     55 |     263 |
-| UD_Sanskrit-UFAL              |     230 |   230 |        |         |
+| UD_Sanskrit-UFAL              |       0 |     0 |    230 |     230 |
 | UD_Swedish_Sign_Language-SSLC |      87 |    82 |     34 |     203 |
-| UD_Komi_Zyrian-Lattice        |     190 |   190 |        |         |
-| UD_Akkadian-PISANDUB          |     101 |   101 |        |         |
-| UD_Yoruba-YTB                 |     100 |   100 |        |         |
-| UD_Komi_Zyrian-IKDP           |      87 |    87 |        |         |
-| UD_Tagalog-TRG                |      55 |    55 |        |         |
-| UD_Warlpiri-UFAL              |      55 |    55 |        |         |
+| UD_Komi_Zyrian-Lattice        |       0 |     0 |    190 |     190 |
+| UD_Akkadian-PISANDUB          |       0 |     0 |    101 |     101 |
+| UD_Yoruba-YTB                 |       0 |     0 |    100 |     100 |
+| UD_Komi_Zyrian-IKDP           |       0 |     0 |     87 |      87 |
+| UD_Tagalog-TRG                |       0 |     0 |     55 |      55 |
+| UD_Warlpiri-UFAL              |       0 |     0 |     55 |      55 |
  
 **Corpora Alphabetical**
 
 | Corpus                        |   Train |   Dev |   Test |   Total |
 |-------------------------------|---------|-------|--------|---------|
 | UD_Afrikaans-AfriBooms        |    1315 |   194 |    425 |    1934 |
-| UD_Akkadian-PISANDUB          |     101 |   101 |        |         |
-| UD_Amharic-ATT                |    1074 |  1074 |        |         |
+| UD_Akkadian-PISANDUB          |       0 |     0 |    101 |     101 |
+| UD_Amharic-ATT                |       0 |     0 |   1074 |    1074 |
 | UD_Ancient_Greek-PROIEL       |   15015 |  1019 |   1047 |   17081 |
 | UD_Ancient_Greek-Perseus      |   11476 |  1137 |   1306 |   13919 |
 | UD_Arabic-NYUAD               |   15789 |  1986 |   1963 |   19738 |
 | UD_Arabic-PADT                |    6075 |   909 |    680 |    7664 |
-| UD_Arabic-PUD                 |    1000 |  1000 |        |         |
-| UD_Armenian-ArmTDP            |     560 |   470 |   1030 |         |
-| UD_Bambara-CRB                |    1026 |  1026 |        |         |
+| UD_Arabic-PUD                 |       0 |     0 |   1000 |    1000 |
+| UD_Armenian-ArmTDP            |     560 |     0 |    470 |    1030 |
+| UD_Bambara-CRB                |       0 |     0 |   1026 |    1026 |
 | UD_Basque-BDT                 |    5396 |  1798 |   1799 |    8993 |
 | UD_Belarusian-HSE             |     260 |    65 |     68 |     393 |
-| UD_Breton-KEB                 |     888 |   888 |        |         |
+| UD_Breton-KEB                 |       0 |     0 |    888 |     888 |
 | UD_Bulgarian-BTB              |    8907 |  1115 |   1116 |   11138 |
-| UD_Buryat-BDT                 |      19 |   908 |    927 |         |
-| UD_Cantonese-HK               |     650 |   650 |        |         |
+| UD_Buryat-BDT                 |      19 |     0 |    908 |     927 |
+| UD_Cantonese-HK               |       0 |     0 |    650 |     650 |
 | UD_Catalan-AnCora             |   13123 |  1709 |   1846 |   16678 |
-| UD_Chinese-CFL                |     451 |   451 |        |         |
+| UD_Chinese-CFL                |       0 |     0 |    451 |     451 |
 | UD_Chinese-GSD                |    3997 |   500 |    500 |    4997 |
-| UD_Chinese-HK                 |     908 |   908 |        |         |
-| UD_Chinese-PUD                |    1000 |  1000 |        |         |
+| UD_Chinese-HK                 |       0 |     0 |    908 |     908 |
+| UD_Chinese-PUD                |       0 |     0 |   1000 |    1000 |
 | UD_Coptic-Scriptorium         |     370 |   203 |    267 |     840 |
 | UD_Croatian-SET               |    6983 |   849 |   1057 |    8889 |
 | UD_Czech-CAC                  |   23478 |   603 |    628 |   24709 |
 | UD_Czech-CLTT                 |     860 |   129 |    136 |    1125 |
 | UD_Czech-FicTree              |   10160 |  1309 |   1291 |   12760 |
 | UD_Czech-PDT                  |   68495 |  9270 |  10148 |   87913 |
-| UD_Czech-PUD                  |    1000 |  1000 |        |         |
+| UD_Czech-PUD                  |       0 |     0 |   1000 |    1000 |
 | UD_Danish-DDT                 |    4383 |   564 |    565 |    5512 |
 | UD_Dutch-Alpino               |   12269 |   718 |    596 |   13583 |
 | UD_Dutch-LassySmall           |    5789 |   676 |    876 |    7341 |
@@ -361,61 +361,61 @@ pytorch == 1.0.0
 | UD_English-EWT                |   12543 |  2002 |   2077 |   16622 |
 | UD_English-GUM                |    2914 |   707 |    778 |    4399 |
 | UD_English-LinES              |    2738 |   912 |    914 |    4564 |
-| UD_English-PUD                |    1000 |  1000 |        |         |
+| UD_English-PUD                |       0 |     0 |   1000 |    1000 |
 | UD_English-ParTUT             |    1781 |   156 |    153 |    2090 |
-| UD_Erzya-JR                   |    1550 |  1550 |        |         |
+| UD_Erzya-JR                   |       0 |     0 |   1550 |    1550 |
 | UD_Estonian-EDT               |   24384 |  3125 |   3214 |   30723 |
-| UD_Faroese-OFT                |    1208 |  1208 |        |         |
+| UD_Faroese-OFT                |       0 |     0 |   1208 |    1208 |
 | UD_Finnish-FTB                |   14981 |  1875 |   1867 |   18723 |
-| UD_Finnish-PUD                |    1000 |  1000 |        |         |
+| UD_Finnish-PUD                |       0 |     0 |   1000 |    1000 |
 | UD_Finnish-TDT                |   12217 |  1364 |   1555 |   15136 |
 | UD_French-FTB                 |   14759 |  1235 |   2541 |   18535 |
 | UD_French-GSD                 |   14449 |  1476 |    416 |   16341 |
-| UD_French-PUD                 |    1000 |  1000 |        |         |
+| UD_French-PUD                 |       0 |     0 |   1000 |    1000 |
 | UD_French-ParTUT              |     803 |   107 |    110 |    1020 |
 | UD_French-Sequoia             |    2231 |   412 |    456 |    3099 |
 | UD_French-Spoken              |    1153 |   907 |    726 |    2786 |
 | UD_Galician-CTG               |    2272 |   860 |    861 |    3993 |
-| UD_Galician-TreeGal           |     600 |   400 |   1000 |         |
+| UD_Galician-TreeGal           |     600 |     0 |    400 |    1000 |
 | UD_German-GSD                 |   13814 |   799 |    977 |   15590 |
-| UD_German-PUD                 |    1000 |  1000 |        |         |
+| UD_German-PUD                 |       0 |     0 |   1000 |    1000 |
 | UD_Gothic-PROIEL              |    3387 |   985 |   1029 |    5401 |
 | UD_Greek-GDT                  |    1662 |   403 |    456 |    2521 |
 | UD_Hebrew-HTB                 |    5241 |   484 |    491 |    6216 |
 | UD_Hindi-HDTB                 |   13304 |  1659 |   1684 |   16647 |
-| UD_Hindi-PUD                  |    1000 |  1000 |        |         |
+| UD_Hindi-PUD                  |       0 |     0 |   1000 |    1000 |
 | UD_Hindi_English-HIENCS       |    1448 |   225 |    225 |    1898 |
 | UD_Hungarian-Szeged           |     910 |   441 |    449 |    1800 |
 | UD_Indonesian-GSD             |    4477 |   559 |    557 |    5593 |
-| UD_Indonesian-PUD             |    1000 |  1000 |        |         |
-| UD_Irish-IDT                  |     566 |   454 |   1020 |         |
+| UD_Indonesian-PUD             |       0 |     0 |   1000 |    1000 |
+| UD_Irish-IDT                  |     566 |     0 |    454 |    1020 |
 | UD_Italian-ISDT               |   13121 |   564 |    482 |   14167 |
-| UD_Italian-PUD                |    1000 |  1000 |        |         |
+| UD_Italian-PUD                |       0 |     0 |   1000 |    1000 |
 | UD_Italian-ParTUT             |    1781 |   156 |    153 |    2090 |
 | UD_Italian-PoSTWITA           |    5368 |   671 |    674 |    6713 |
 | UD_Japanese-BCCWJ             |   40801 |  8427 |   7881 |   57109 |
 | UD_Japanese-GSD               |    7133 |   511 |    551 |    8195 |
-| UD_Japanese-Modern            |     822 |   822 |        |         |
-| UD_Japanese-PUD               |    1000 |  1000 |        |         |
-| UD_Kazakh-KTB                 |      31 |  1047 |   1078 |         |
-| UD_Komi_Zyrian-IKDP           |      87 |    87 |        |         |
-| UD_Komi_Zyrian-Lattice        |     190 |   190 |        |         |
+| UD_Japanese-Modern            |       0 |     0 |    822 |     822 |
+| UD_Japanese-PUD               |       0 |     0 |   1000 |    1000 |
+| UD_Kazakh-KTB                 |      31 |     0 |   1047 |    1078 |
+| UD_Komi_Zyrian-IKDP           |       0 |     0 |     87 |      87 |
+| UD_Komi_Zyrian-Lattice        |       0 |     0 |    190 |     190 |
 | UD_Korean-GSD                 |    4400 |   950 |    989 |    6339 |
 | UD_Korean-Kaist               |   23010 |  2066 |   2287 |   27363 |
-| UD_Korean-PUD                 |    1000 |  1000 |        |         |
-| UD_Kurmanji-MG                |      20 |   734 |    754 |         |
+| UD_Korean-PUD                 |       0 |     0 |   1000 |    1000 |
+| UD_Kurmanji-MG                |      20 |     0 |    734 |     754 |
 | UD_Latin-ITTB                 |   16809 |  2101 |   2101 |   21011 |
 | UD_Latin-PROIEL               |   15906 |  1234 |   1260 |   18400 |
-| UD_Latin-Perseus              |    1334 |   939 |   2273 |         |
+| UD_Latin-Perseus              |    1334 |     0 |    939 |    2273 |
 | UD_Latvian-LVTB               |    7163 |  1304 |   1453 |    9920 |
 | UD_Lithuanian-HSE             |     153 |    55 |     55 |     263 |
 | UD_Maltese-MUDT               |    1123 |   433 |    518 |    2074 |
 | UD_Marathi-UFAL               |     373 |    46 |     47 |     466 |
-| UD_Naija-NSC                  |     948 |   948 |        |         |
-| UD_North_Sami-Giella          |    2257 |   865 |   3122 |         |
+| UD_Naija-NSC                  |       0 |     0 |    948 |     948 |
+| UD_North_Sami-Giella          |    2257 |     0 |    865 |    3122 |
 | UD_Norwegian-Bokmaal          |   15696 |  2410 |   1939 |   20045 |
 | UD_Norwegian-Nynorsk          |   14174 |  1890 |   1511 |   17575 |
-| UD_Norwegian-NynorskLIA       |     339 |  1057 |   1396 |         |
+| UD_Norwegian-NynorskLIA       |     339 |     0 |   1057 |    1396 |
 | UD_Old_Church_Slavonic-PROIEL |    4123 |  1073 |   1141 |    6337 |
 | UD_Old_French-SRCMF           |   13909 |  1842 |   1927 |   17678 |
 | UD_Persian-Seraji             |    4798 |   599 |    600 |    5997 |
@@ -423,38 +423,38 @@ pytorch == 1.0.0
 | UD_Polish-SZ                  |    6100 |  1027 |   1100 |    8227 |
 | UD_Portuguese-Bosque          |    8328 |   560 |    477 |    9365 |
 | UD_Portuguese-GSD             |    9664 |  1210 |   1204 |   12078 |
-| UD_Portuguese-PUD             |    1000 |  1000 |        |         |
+| UD_Portuguese-PUD             |       0 |     0 |   1000 |    1000 |
 | UD_Romanian-Nonstandard       |    7965 |  1052 |   1052 |   10069 |
 | UD_Romanian-RRT               |    8043 |   752 |    729 |    9524 |
 | UD_Russian-GSD                |    3850 |   579 |    601 |    5030 |
-| UD_Russian-PUD                |    1000 |  1000 |        |         |
+| UD_Russian-PUD                |       0 |     0 |   1000 |    1000 |
 | UD_Russian-SynTagRus          |   48814 |  6584 |   6491 |   61889 |
-| UD_Russian-Taiga              |     880 |   884 |   1764 |         |
-| UD_Sanskrit-UFAL              |     230 |   230 |        |         |
+| UD_Russian-Taiga              |     880 |     0 |    884 |    1764 |
+| UD_Sanskrit-UFAL              |       0 |     0 |    230 |     230 |
 | UD_Serbian-SET                |    2935 |   465 |    491 |    3891 |
 | UD_Slovak-SNK                 |    8483 |  1060 |   1061 |   10604 |
 | UD_Slovenian-SSJ              |    6478 |   734 |    788 |    8000 |
-| UD_Slovenian-SST              |    2078 |  1110 |   3188 |         |
+| UD_Slovenian-SST              |    2078 |     0 |   1110 |    3188 |
 | UD_Spanish-AnCora             |   14305 |  1654 |   1721 |   17680 |
 | UD_Spanish-GSD                |   14187 |  1400 |    426 |   16013 |
-| UD_Spanish-PUD                |    1000 |  1000 |        |         |
+| UD_Spanish-PUD                |       0 |     0 |   1000 |    1000 |
 | UD_Swedish-LinES              |    2738 |   912 |    914 |    4564 |
-| UD_Swedish-PUD                |    1000 |  1000 |        |         |
+| UD_Swedish-PUD                |       0 |     0 |   1000 |    1000 |
 | UD_Swedish-Talbanken          |    4303 |   504 |   1219 |    6026 |
 | UD_Swedish_Sign_Language-SSLC |      87 |    82 |     34 |     203 |
-| UD_Tagalog-TRG                |      55 |    55 |        |         |
+| UD_Tagalog-TRG                |       0 |     0 |     55 |      55 |
 | UD_Tamil-TTB                  |     400 |    80 |    120 |     600 |
 | UD_Telugu-MTG                 |    1051 |   131 |    146 |    1328 |
-| UD_Thai-PUD                   |    1000 |  1000 |        |         |
+| UD_Thai-PUD                   |       0 |     0 |   1000 |    1000 |
 | UD_Turkish-IMST               |    3685 |   975 |    975 |    5635 |
-| UD_Turkish-PUD                |    1000 |  1000 |        |         |
+| UD_Turkish-PUD                |       0 |     0 |   1000 |    1000 |
 | UD_Ukrainian-IU               |    5290 |   647 |    864 |    6801 |
-| UD_Upper_Sorbian-UFAL         |      23 |   623 |    646 |         |
+| UD_Upper_Sorbian-UFAL         |      23 |     0 |    623 |     646 |
 | UD_Urdu-UDTB                  |    4043 |   552 |    535 |    5130 |
 | UD_Uyghur-UDT                 |    1656 |   900 |    900 |    3456 |
 | UD_Vietnamese-VTB             |    1400 |   800 |    800 |    3000 |
-| UD_Warlpiri-UFAL              |      55 |    55 |        |         |
-| UD_Yoruba-YTB                 |     100 |   100 |        |         |
+| UD_Warlpiri-UFAL              |       0 |     0 |     55 |      55 |
+| UD_Yoruba-YTB                 |       0 |     0 |    100 |     100 |
 ## The Ones Used
 
 **Languages by Frequency**
@@ -622,18 +622,18 @@ pytorch == 1.0.0
 | UD_French-Sequoia      |    2231 |   412 |    456 |    3099 |
 | UD_Vietnamese-VTB      |    1400 |   800 |    800 |    3000 |
 | UD_Greek-GDT           |    1662 |   403 |    456 |    2521 |
-| UD_Latin-Perseus       |    1334 |   939 |   2273 |         |
+| UD_Latin-Perseus       |    1334 |     0 |    939 |    2273 |
 | UD_English-ParTUT      |    1781 |   156 |    153 |    2090 |
 | UD_Italian-ParTUT      |    1781 |   156 |    153 |    2090 |
 | UD_Afrikaans-AfriBooms |    1315 |   194 |    425 |    1934 |
 | UD_Hungarian-Szeged    |     910 |   441 |    449 |    1800 |
 | UD_Telugu-MTG          |    1051 |   131 |    146 |    1328 |
 | UD_Czech-CLTT          |     860 |   129 |    136 |    1125 |
-| UD_Kazakh-KTB          |      31 |  1047 |   1078 |         |
-| UD_Armenian-ArmTDP     |     560 |   470 |   1030 |         |
+| UD_Kazakh-KTB          |      31 |     0 |   1047 |    1078 |
+| UD_Armenian-ArmTDP     |     560 |     0 |    470 |    1030 |
 | UD_French-ParTUT       |     803 |   107 |    110 |    1020 |
-| UD_Irish-IDT           |     566 |   454 |   1020 |         |
-| UD_Galician-TreeGal    |     600 |   400 |   1000 |         |
+| UD_Irish-IDT           |     566 |     0 |    454 |    1020 |
+| UD_Galician-TreeGal    |     600 |     0 |    400 |    1000 |
 | UD_Tamil-TTB           |     400 |    80 |    120 |     600 |
 | UD_Marathi-UFAL        |     373 |    46 |     47 |     466 |
 | UD_Belarusian-HSE      |     260 |    65 |     68 |     393 |
@@ -646,7 +646,7 @@ pytorch == 1.0.0
 | UD_Afrikaans-AfriBooms |    1315 |   194 |    425 |    1934 |
 | UD_Arabic-NYUAD        |   15789 |  1986 |   1963 |   19738 |
 | UD_Arabic-PADT         |    6075 |   909 |    680 |    7664 |
-| UD_Armenian-ArmTDP     |     560 |   470 |   1030 |         |
+| UD_Armenian-ArmTDP     |     560 |     0 |    470 |    1030 |
 | UD_Basque-BDT          |    5396 |  1798 |   1799 |    8993 |
 | UD_Belarusian-HSE      |     260 |    65 |     68 |     393 |
 | UD_Bulgarian-BTB       |    8907 |  1115 |   1116 |   11138 |
@@ -672,23 +672,23 @@ pytorch == 1.0.0
 | UD_French-ParTUT       |     803 |   107 |    110 |    1020 |
 | UD_French-Sequoia      |    2231 |   412 |    456 |    3099 |
 | UD_Galician-CTG        |    2272 |   860 |    861 |    3993 |
-| UD_Galician-TreeGal    |     600 |   400 |   1000 |         |
+| UD_Galician-TreeGal    |     600 |     0 |    400 |    1000 |
 | UD_German-GSD          |   13814 |   799 |    977 |   15590 |
 | UD_Greek-GDT           |    1662 |   403 |    456 |    2521 |
 | UD_Hebrew-HTB          |    5241 |   484 |    491 |    6216 |
 | UD_Hindi-HDTB          |   13304 |  1659 |   1684 |   16647 |
 | UD_Hungarian-Szeged    |     910 |   441 |    449 |    1800 |
 | UD_Indonesian-GSD      |    4477 |   559 |    557 |    5593 |
-| UD_Irish-IDT           |     566 |   454 |   1020 |         |
+| UD_Irish-IDT           |     566 |     0 |    454 |    1020 |
 | UD_Italian-ISDT        |   13121 |   564 |    482 |   14167 |
 | UD_Italian-ParTUT      |    1781 |   156 |    153 |    2090 |
 | UD_Japanese-GSD        |    7133 |   511 |    551 |    8195 |
-| UD_Kazakh-KTB          |      31 |  1047 |   1078 |         |
+| UD_Kazakh-KTB          |      31 |     0 |   1047 |    1078 |
 | UD_Korean-GSD          |    4400 |   950 |    989 |    6339 |
 | UD_Korean-Kaist        |   23010 |  2066 |   2287 |   27363 |
 | UD_Latin-ITTB          |   16809 |  2101 |   2101 |   21011 |
 | UD_Latin-PROIEL        |   15906 |  1234 |   1260 |   18400 |
-| UD_Latin-Perseus       |    1334 |   939 |   2273 |         |
+| UD_Latin-Perseus       |    1334 |     0 |    939 |    2273 |
 | UD_Latvian-LVTB        |    7163 |  1304 |   1453 |    9920 |
 | UD_Lithuanian-HSE      |     153 |    55 |     55 |     263 |
 | UD_Marathi-UFAL        |     373 |    46 |     47 |     466 |

@@ -81,7 +81,7 @@ for corpus in used:
 	lang = corpus.split('-')[0][3:]
 	used_lang.add(lang)
             
-corpora = defaultdict(list)
+corpora = defaultdict(lambda: [0, 0, 0])
 language = defaultdict(lambda: [0, 0, 0])
 folder_path = "/Users/Jimmy/Downloads/Universal_Dependencies_2.3/ud-treebanks-v2.3/"
 for index, dataset in enumerate(['train', 'dev', 'test']):
@@ -95,7 +95,7 @@ for index, dataset in enumerate(['train', 'dev', 'test']):
 				line = line.strip()
 				if line.startswith('# text ='):
 					count += 1
-		corpora[file].append(count)
+		corpora[file][index] = count
 		language[file.split('-')[0][3:]][index] += count
 
 print('## Everything\n')
