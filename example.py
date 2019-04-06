@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pytorch_pretrained_bert import BertModel
+import Config
 from parser import BiaffineParser, Model
 from parser.utils import TextDataset, collate_fn
 import torch
@@ -12,8 +12,6 @@ CHECKPOINT_DIR = 'model.pt' # you'll need to change this
 VOCAB_DIR = 'vocab.pt'		# and this
 
 vocab = torch.load(VOCAB_DIR)
-
-bert = BertModel.from_pretrained('bert-base-multilingual-cased')
 
 # what's in the params won't affect embeddings, they're just here so that my initialization code doesn't break
 params = {
@@ -28,7 +26,7 @@ params = {
 	'n_rels': vocab.n_rels,
 	'pad_index': vocab.pad_index
 }
-network = BiaffineParser(params)			  # if you want to use the original (not tuned) BERT
+# network = BiaffineParser(params)			  # if you want to use the original (not tuned) BERT
 network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
 model = Model(vocab, network)
 
