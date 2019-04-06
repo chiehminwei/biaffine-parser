@@ -161,15 +161,12 @@ class Vocab(object):
                 print('len_attentions', len_attentions)
                 raise RuntimeError("Lengths don't match up.")
 
-
+            # Skip too long sentences
             len_dict[len_sentence_token_ids] += 1
             if len_sentence_token_ids > 128:
                 exceeding_count += 1
-            sent_count += 1
-
-            # Skip too long sentences
-            if len_sentence_token_ids > 128:
                 continue
+            sent_count += 1                
 
             words_numerical.append(torch.tensor(sentence_token_ids))
             arcs_numerical.append(torch.tensor(sentence_arc_ids))
@@ -198,66 +195,78 @@ class Vocab(object):
         words_numerical = []
         token_start_mask = []
         attention_mask = []
-        flag = False
         offending_set = set()
+        symbol_set = set()
+        empty_words = set()
+        exceeding_count = 0
         for sentence in sentences:
             sentence_token_ids = []
             token_starts = []
             attentions = []
             sentence = ['[CLS]'] + sentence + ['[SEP]']
             for word in sentence:
+                # skip <ROOT>
                 if word == '<ROOT>':
                     continue
-                else:
-                    if word == '`':
-                        word = "'"
-                    if word == '``':
-                        word = '"'
-                    if word == "''":
-                        word = '"'
-                    if word == "non-``":
-                        word = 'non-"'
-                    word = word.replace('“', '"')
-                    word = word.replace('”', '"')
-
-                    word = word.replace("`", "'")
-                    word = word.replace("’", "'")
-                    word = word.replace("‘", "'")
-                    word = word.replace("'", "'")
-                    word = word.replace("´", "'")
-
-                    word = word.replace("…", "...")
-
-                    word = word.replace("–", "-")
-                    word = word.replace('—', '-')
+                
+                # take care of some idiosyncracies
+                if word == '`':
+                    word = "'"
+                if word == '``':
+                    word = '"'
+                if word == "''":
+                    word = '"'
+                if word == "non-``":
+                    word = 'non-"'
+                word = word.replace('“', '"')
+                word = word.replace('”', '"')
+                word = word.replace("`", "'")
+                word = word.replace("’", "'")
+                word = word.replace("‘", "'")
+                word = word.replace("'", "'")
+                word = word.replace("´", "'")
+                word = word.replace("…", "...")
+                word = word.replace("–", "-")
+                word = word.replace('—', '-')
 
 
-                    tokens = self.tokenizer.tokenize(word)
+                tokens = self.tokenizer.tokenize(word)
+                if tokens:
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
+                    
+                    # Keep track of punctuation
                     if regex.match(r'\p{P}+$', word):
                         for token_id in ids:
                             self.puncts.add(token_id)
 
+                    # log any unknown words
                     if '[UNK]' in tokens:
                         for offending_char in word:
                             token = self.tokenizer.tokenize(offending_char)
-                            if '[UNK]' in token:
+                            if unicodedata.category(offending_char) != 'So':
                                 offending_set.add(offending_char)
-                        flag = True
+                            else:
+                                symbol_set.add(offending_char)
                         
-                sentence_token_ids.extend(ids)
-                token_starts.extend([1] + [0] * (len(tokens) - 1))
-                attentions.extend([1] * len(tokens))
+                    sentence_token_ids.extend(ids)
+                    token_starts.extend([1] + [0] * (len(tokens) - 1))
+                    attentions.extend([1] * len(tokens))
                 
+                # take care of empty tokens
+                else:
+                    empty_words.add(word)
+                    continue
+
+            # Skip too long sentences
+            len_sentence_token_ids = len(sentence_token_ids)
+            if len_sentence_token_ids > 128:
+                exceeding_count += 1
+                continue
+
             words_numerical.append(torch.tensor(sentence_token_ids))
             attention_mask.append(torch.ByteTensor(attentions))
-            token_start_mask.append(torch.ByteTensor(token_starts))
-            
-        if flag: 
-            print('WARNING: The following characters are unknown to BERT:')
-            print(offending_set)
-
-
+            token_start_mask.append(torch.ByteTensor(token_starts))    
+        
         return words_numerical, attention_mask, token_start_mask
 
     @classmethod
