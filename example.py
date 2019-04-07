@@ -26,8 +26,8 @@ params = {
 	'n_rels': vocab.n_rels,
 	'pad_index': vocab.pad_index
 }
-# network = BiaffineParser(params)			  # if you want to use the original (not tuned) BERT
-network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
+network = BiaffineParser(params)			  # if you want to use the original (not tuned) BERT
+# network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
 model = Model(vocab, network)
 
 sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
@@ -64,4 +64,4 @@ def PennTreebank(corpus_path, out_file, meta_file):
 			for word, tag in zip(sentence, sentence_tags):
 				ff.write(word + '\t' + tag + '\n')
 
-PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
+PennTreebank('data/dev.conllx', 'untrained_embeddings.tsv', 'untrained_meta.tsv')
