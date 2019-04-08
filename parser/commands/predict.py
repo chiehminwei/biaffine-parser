@@ -30,7 +30,7 @@ class Predict(object):
         if not os.path.isfile(args.vocab):
             FNULL = open(os.devnull, 'w')
             cloud_address = os.path.join(args.cloud_address, args.vocab)
-            subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
+            # subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         vocab = torch.load(args.vocab)
         network = BiaffineParser.load(args.file, args.cloud_address)
         model = Model(vocab, network)

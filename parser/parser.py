@@ -158,7 +158,7 @@ class BiaffineParser(nn.Module):
             if cloud_address:
                 FNULL = open(os.devnull, 'w')
                 cloud_address = os.path.join(cloud_address, fname)
-                subprocess.call(['gsutil', 'cp', cloud_address, fname], stdout=FNULL, stderr=subprocess.STDOUT)
+                # subprocess.call(['gsutil', 'cp', cloud_address, fname], stdout=FNULL, stderr=subprocess.STDOUT)
         # Proceed only if either [1] copy success [2] local file already exists
         if os.path.isfile(fname):
             if torch.cuda.is_available():
@@ -186,4 +186,4 @@ class BiaffineParser(nn.Module):
         # Save a copy to cloud as well
         FNULL = open(os.devnull, 'w')
         cloud_address = os.path.join(cloud_address, fname)
-        subprocess.call(['gsutil', 'cp', fname, cloud_address], stdout=FNULL, stderr=subprocess.STDOUT)
+        # subprocess.call(['gsutil', 'cp', fname, cloud_address], stdout=FNULL, stderr=subprocess.STDOUT)
