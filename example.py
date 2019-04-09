@@ -78,4 +78,4 @@ def PennTreebank(corpus_path, out_file, meta_file):
 			for word, tag in zip(sentence, sentence_tags):
 				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
-PennTreebank('data/dev.conllx', 'untrained_embeddings.tsv', 'untrained_meta.tsv')
+PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
