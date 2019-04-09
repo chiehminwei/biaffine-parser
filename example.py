@@ -28,8 +28,11 @@ params = {
 }
 network = BiaffineParser(params)			  # if you want to use the original (not tuned) BERT
 network.to(torch.device('cuda'))
-# network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
+syntactic_network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
+syntactic_network.to(torch.device('cuda'))
+
 model = Model(vocab, network)
+syntactic_model = Model(vocab, syntactic_network)
 
 sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
 
@@ -56,13 +59,22 @@ def PennTreebank(corpus_path, out_file, meta_file):
 	                    batch_size=BATCH_SIZE,
 	                    collate_fn=collate_fn)
 	embeddings = model.get_embeddings(loader)
+	syntactic_embeddings = syntactic_model.get_embeddings(loader)
 	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
 		for sentence in embeddings:
 			for word_embed in sentence:
 				f.write('\t'.join([str(val) for val in word_embed])+'\n')
+		for sentence in syntactic_embeddings:
+			for word_embed in sentence:
+				f.write('\t'.join([str(val) for val in word_embed])+'\n')
+
 		ff.write('Word\tPOS\n')
 		for sentence, sentence_tags in zip(words, tags):
 			for word, tag in zip(sentence, sentence_tags):
-				ff.write(word + '\t' + tag + '\n')
+				ff.write('original_' + word + '\t' + 'original_' + tag + '\n')
+
+		for sentence, sentence_tags in zip(words, tags):
+			for word, tag in zip(sentence, sentence_tags):
+				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
 PennTreebank('data/dev.conllx', 'untrained_embeddings.tsv', 'untrained_meta.tsv')
