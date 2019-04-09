@@ -72,10 +72,10 @@ def PennTreebank(corpus_path, out_file, meta_file):
 		ff.write('Word\tPOS\n')
 		for sentence, sentence_tags in tqdm(zip(words, tags)):
 			for word, tag in zip(sentence, sentence_tags):
-				ff.write('original_' + word + '\t' + 'original_' + tag + '\n')
+				ff.write('original_' + word + '\t' + tag + '\n')
 
 		for sentence, sentence_tags in tqdm(zip(words, tags)):
 			for word, tag in zip(sentence, sentence_tags):
-				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
+				ff.write('syntactic_' + word + '\t'  + tag + '\n')
 
 PennTreebank('data/dev.conllx', 'untrained_embeddings.tsv', 'untrained_meta.tsv')
