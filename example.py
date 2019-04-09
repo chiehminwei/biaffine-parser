@@ -5,6 +5,7 @@ from parser import BiaffineParser, Model
 from parser.utils import Corpus, TextDataset, Vocab, collate_fn
 import torch
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 
 BATCH_SIZE = 32				# only affects speed, if too big you could OOM
@@ -61,19 +62,19 @@ def PennTreebank(corpus_path, out_file, meta_file):
 	embeddings = model.get_embeddings(loader)
 	syntactic_embeddings = syntactic_model.get_embeddings(loader)
 	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
-		for sentence in embeddings:
+		for sentence in tqdm(embeddings):
 			for word_embed in sentence:
 				f.write('\t'.join([str(val) for val in word_embed])+'\n')
-		for sentence in syntactic_embeddings:
+		for sentence in tqdm(syntactic_embeddings):
 			for word_embed in sentence:
 				f.write('\t'.join([str(val) for val in word_embed])+'\n')
 
 		ff.write('Word\tPOS\n')
-		for sentence, sentence_tags in zip(words, tags):
+		for sentence, sentence_tags in tqdm(zip(words, tags)):
 			for word, tag in zip(sentence, sentence_tags):
 				ff.write('original_' + word + '\t' + 'original_' + tag + '\n')
 
-		for sentence, sentence_tags in zip(words, tags):
+		for sentence, sentence_tags in tqdm(zip(words, tags)):
 			for word, tag in zip(sentence, sentence_tags):
 				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
