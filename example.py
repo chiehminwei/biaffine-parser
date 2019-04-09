@@ -59,23 +59,23 @@ def PennTreebank(corpus_path, out_file, meta_file):
 	loader = DataLoader(dataset=dataset,
 	                    batch_size=BATCH_SIZE,
 	                    collate_fn=collate_fn)
-	embeddings = model.get_embeddings(loader)
-	syntactic_embeddings = syntactic_model.get_embeddings(loader)
+	# embeddings = model.get_embeddings(loader)
+	# syntactic_embeddings = syntactic_model.get_embeddings(loader)
 	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
-		for sentence in tqdm(embeddings):
-			for word_embed in sentence:
-				f.write('\t'.join([str(val) for val in word_embed])+'\n')
-		for sentence in tqdm(syntactic_embeddings):
-			for word_embed in sentence:
-				f.write('\t'.join([str(val) for val in word_embed])+'\n')
+		# for sentence in tqdm(embeddings):
+		# 	for word_embed in sentence:
+		# 		f.write('\t'.join([str(val) for val in word_embed])+'\n')
+		# for sentence in tqdm(syntactic_embeddings):
+		# 	for word_embed in sentence:
+		# 		f.write('\t'.join([str(val) for val in word_embed])+'\n')
 
 		ff.write('Word\tPOS\n')
 		for sentence, sentence_tags in tqdm(zip(words, tags)):
 			for word, tag in zip(sentence, sentence_tags):
-				ff.write('original_' + word + '\t' + tag + '\n')
+				ff.write('original_' + word + '\t' + 'original_' + tag + '\n')
 
 		for sentence, sentence_tags in tqdm(zip(words, tags)):
 			for word, tag in zip(sentence, sentence_tags):
-				ff.write('syntactic_' + word + '\t'  + tag + '\n')
+				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
 PennTreebank('data/dev.conllx', 'untrained_embeddings.tsv', 'untrained_meta.tsv')
