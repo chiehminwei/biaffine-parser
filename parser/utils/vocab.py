@@ -184,6 +184,14 @@ class Vocab(object):
             print('WARNING: The following characters are empty after going through tokenizer:')
             print(empty_words)
         if save_name:
+            try:
+                index = save_name.rfind('/')
+                if index > -1:
+                    save_dir = save_name[:index]
+                    os.makedirs(save_dir)
+            except FileExistsError:
+                # directory already exists
+                pass
             torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical), save_name)
         
         print('Total number of sentences: {}'.format(sent_count))

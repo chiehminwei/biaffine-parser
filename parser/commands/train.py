@@ -26,9 +26,9 @@ class Train(object):
                                help='path to dev file')
         # subparser.add_argument('--ftest', default='data/test.conllx',
         #                        help='path to test file')
-        subparser.add_argument('--ftrain_cache', default='trainset',
+        subparser.add_argument('--ftrain_cache', default='data/binary/trainset',
                                help='path to train file cache')
-        subparser.add_argument('--fdev_cache', default='devset',
+        subparser.add_argument('--fdev_cache', default='data/binary/devset',
                                help='path to dev file cache')
         # subparser.add_argument('--ftest_cache', default='testset',
         #                        help='path to test file cache')
