@@ -68,18 +68,16 @@ def PennTreebank(corpus_path, out_file, meta_file):
 		for sentence in tqdm(original_embeddings):
 			for word_embed in sentence:
 				embeddings.append(torch.FloatTensor(word_embed))
-		embeddings = torch.stack(embeddings)
-		embeddings = F.normalize(embeddings, p=2, dim=1)
-		for embedding in embeddings:
-		 	f.write('\t'.join([str(val) for val in word_embed])+'\n')
-		
 		for sentence in tqdm(syntactic_embeddings):
 			for word_embed in sentence:
 				embeddings2.append(torch.FloatTensor(word_embed))
-		embeddings2 = torch.stack(embeddings2)
-		embeddings2 = F.normalize(embeddings2, p=2, dim=1)
-		for embedding in embeddings2:
-			f.write('\t'.join([str(val) for val in word_embed])+'\n')
+
+		embeddings = torch.stack(embeddings, embeddings2)
+		embeddings = F.normalize(embeddings, p=2, dim=1)
+
+		for embedding in embeddings:
+		 	f.write('\t'.join([str(val) for val in word_embed])+'\n')
+		
 
 		ff.write('Word\tPOS\n')
 		for sentence, sentence_tags in tqdm(zip(words, tags)):
