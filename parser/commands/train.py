@@ -114,13 +114,14 @@ class Train(object):
 
         train_loader = DataLoader(dataset=trainset,
                                   batch_size=Config.batch_size // Config.gradient_accumulation_steps,
-                                  shuffle=False,
-                                  # shuffle=(train_sampler is None),
+                                  num_workers=0,
+                                  shuffle=(train_sampler is None),
                                   # pin_memory=True,
                                   sampler =train_sampler,
                                   collate_fn=collate_fn)
         dev_loader = DataLoader(dataset=devset,
                                 batch_size=Config.batch_size,
+                                num_workers=0,
                                 shuffle=False,
                                 # pin_memory=True,
                                 sampler=dev_sampler,
