@@ -8,6 +8,7 @@ import torch.nn as nn
 from pytorch_pretrained_bert import BertTokenizer
 import numpy as np
 import unicodedata
+import os
 
 
 class Vocab(object):
