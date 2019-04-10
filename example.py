@@ -79,7 +79,7 @@ def PennTreebank(corpus_path, out_file, meta_file):
 		embeddings = F.normalize(embeddings, p=2, dim=1)
 
 		for embedding in embeddings:
-		 	f.write('\t'.join([str(val) for val in word_embed])+'\n')
+		 	f.write('\t'.join([str(val) for val in embedding])+'\n')
 		
 
 		ff.write('Word\tPOS\n')
