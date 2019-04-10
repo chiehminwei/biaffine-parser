@@ -69,7 +69,7 @@ def PennTreebank(corpus_path, out_file, meta_file):
 			for word_embed in sentence:
 				embeddings.append(torch.FloatTensor(word_embed))
 		embeddings = torch.stack(embeddings)
-		embeddings = F.normalize(embeddings, p=2, dim=0)
+		embeddings = F.normalize(embeddings, p=2, dim=1)
 		for embedding in embeddings:
 		 	f.write('\t'.join([str(val) for val in word_embed])+'\n')
 		
@@ -77,7 +77,7 @@ def PennTreebank(corpus_path, out_file, meta_file):
 			for word_embed in sentence:
 				embeddings2.append(torch.FloatTensor(word_embed))
 		embeddings2 = torch.stack(embeddings2)
-		embeddings2 = F.normalize(embeddings2, p=2, dim=0)
+		embeddings2 = F.normalize(embeddings2, p=2, dim=1)
 		for embedding in embeddings2:
 			f.write('\t'.join([str(val) for val in word_embed])+'\n')
 
