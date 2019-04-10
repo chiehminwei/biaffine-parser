@@ -6,6 +6,7 @@ from parser.utils import Corpus, TextDataset, Vocab, collate_fn
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+import torch.nn.functional as F
 
 
 BATCH_SIZE = 32				# only affects speed, if too big you could OOM
@@ -59,15 +60,24 @@ def PennTreebank(corpus_path, out_file, meta_file):
 	loader = DataLoader(dataset=dataset,
 	                    batch_size=BATCH_SIZE,
 	                    collate_fn=collate_fn)
-	# embeddings = model.get_embeddings(loader)
-	# syntactic_embeddings = syntactic_model.get_embeddings(loader)
+	original_embeddings = model.get_embeddings(loader)
+	syntactic_embeddings = syntactic_model.get_embeddings(loader)
 	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
-		# for sentence in tqdm(embeddings):
-		# 	for word_embed in sentence:
-		# 		f.write('\t'.join([str(val) for val in word_embed])+'\n')
-		# for sentence in tqdm(syntactic_embeddings):
-		# 	for word_embed in sentence:
-		# 		f.write('\t'.join([str(val) for val in word_embed])+'\n')
+		embeddings = []
+		embeddings2 = []
+		for sentence in tqdm(original_embeddings):
+			for word_embed in sentence:
+				embeddings.append(word_embed)
+		embeddings = F.normalize(embeddings, p=2, dim=1)
+		for embedding in embeddings:
+		 	f.write('\t'.join([str(val) for val in word_embed])+'\n')
+		
+		for sentence in tqdm(syntactic_embeddings):
+			for word_embed in sentence:
+				embeddings2.append(word_embed)
+		embeddings2 = F.normalize(embeddings2, p=2, dim=1)
+		for embedding in embeddings2:
+			f.write('\t'.join([str(val) for val in word_embed])+'\n')
 
 		ff.write('Word\tPOS\n')
 		for sentence, sentence_tags in tqdm(zip(words, tags)):
