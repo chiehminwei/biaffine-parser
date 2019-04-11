@@ -76,7 +76,7 @@ def PennTreebank(corpus_path, out_file, meta_file):
 		embeddings2 = torch.stack(embeddings2)
 
 		embeddings = torch.cat([embeddings, embeddings2], dim=0)
-		embeddings = F.normalize(embeddings, p=2, dim=1)
+		embeddings = F.normalize(embeddings, p=2, dim=1).tolist()
 
 		for embedding in tqdm(embeddings):
 		 	f.write('\t'.join([str(val) for val in embedding])+'\n')
