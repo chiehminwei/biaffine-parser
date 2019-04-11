@@ -12,8 +12,8 @@ import numpy as np
 
 
 BATCH_SIZE = 32				# only affects speed, if too big you could OOM
-CHECKPOINT_DIR = 'model.pt' # you'll need to change this
-VOCAB_DIR = 'vocab.pt'		# and this
+CHECKPOINT_DIR = 'model.pt' # path to model checkpoint
+VOCAB_DIR = 'vocab.pt'		# path to vocab checkpoint
 
 vocab = torch.load(VOCAB_DIR)
 
@@ -53,10 +53,9 @@ def write_hdf5(input_path, output_path):
 		                    collate_fn=collate_fn)
 		embeddings = model.get_embeddings(loader)
 
-		for index, (sentence, embed) in enumerate(zip(words, embeddings)):
+		for index, (sentence, embed) in tqdm(enumerate(zip(words, embeddings))):
 			dset = fout.create_dataset(str(index), (LAYER_COUNT, len(sentence), FEATURE_COUNT))
 			embed = np.array(embed)
-			print(embed.shape)
 			dset[:,:,:] = embed
 
 
