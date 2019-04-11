@@ -11,7 +11,7 @@ import h5py
 import numpy as np
 
 
-BATCH_SIZE = 32				# only affects speed, if too big you could OOM
+BATCH_SIZE = 8				# only affects speed, if too big you could OOM
 CHECKPOINT_DIR = 'model.pt' # path to model checkpoint
 VOCAB_DIR = 'vocab.pt'		# path to vocab checkpoint
 
