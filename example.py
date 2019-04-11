@@ -45,13 +45,19 @@ def write_hdf5(input_path, output_path, model):
 	FEATURE_COUNT = 768
 	with h5py.File(output_path, 'w') as fout:
 		corpus = Corpus.load(input_path)
+		print('corpus loaded')
 		vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
+		print('vocab loaded')
 		a, b, c, words, tags = vocab.numericalize_tags(corpus)
+		print('vocab numericalized')
 		dataset = TextDataset((a, b, c))
+		print('dataset loaded')
 		loader = DataLoader(dataset=dataset,
 		                    batch_size=BATCH_SIZE,
 		                    collate_fn=collate_fn)
+		print('loader loaded')
 		embeddings = model.get_embeddings(loader)
+		print('embeddings computed')
 
 		for index, (sentence, embed) in tqdm(enumerate(zip(words, embeddings))):
 			dset = fout.create_dataset(str(index), (LAYER_COUNT, len(sentence), FEATURE_COUNT))
@@ -133,6 +139,8 @@ my_syntactic_embeddings = {
 }
 
 for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
+	print(input_path)
+	print(output_path)
 	write_hdf5(input_path, output_path, model=model)
 
 # for input_path, output_path in zip(corpus.values(), my_syntactic_embeddings.values()):
