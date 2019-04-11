@@ -7,6 +7,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import torch.nn.functional as F
+import h5py
 
 
 BATCH_SIZE = 32				# only affects speed, if too big you could OOM
@@ -37,6 +38,26 @@ model = Model(vocab, network)
 syntactic_model = Model(vocab, syntactic_network)
 
 sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
+
+def write_hdf5(input_path, output_path):
+	LAYER_COUNT = 1
+	FEATURE_COUNT = 768
+	with h5py.File(output_path, 'w') as fout:
+		corpus = Corpus.load(input_path)
+		vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
+		a, b, c, words, tags = vocab.numericalize_tags(corpus)
+		dataset = TextDataset((a, b, c))
+		loader = DataLoader(dataset=dataset,
+		                    batch_size=BATCH_SIZE,
+		                    collate_fn=collate_fn)
+		embeddings = model.get_embeddings(loader).tolist()
+
+		word_count = 0
+		for index, sentence in enumerate(words):
+			dset = fout.create_dataset(str(index), (LAYER_COUNT, len(sentence), FEATURE_COUNT))
+			sent_embed = np.array(embeddings[word_count:word_count+len(sentence)])
+			dset[:,:,:] = sent_embed			
+
 
 def example(sentences):
 
@@ -91,4 +112,5 @@ def PennTreebank(corpus_path, out_file, meta_file):
 			for word, tag in zip(sentence, sentence_tags):
 				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
-PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
+# PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
+write_hdf5('data/dummy.conllx', 'data/dummy.hdf5')
