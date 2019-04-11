@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 import torch.nn.functional as F
 import h5py
+import numpy as np
 
 
 BATCH_SIZE = 32				# only affects speed, if too big you could OOM
