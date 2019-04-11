@@ -54,16 +54,11 @@ def write_hdf5(input_path, output_path):
 		embeddings = model.get_embeddings(loader)
 
 		word_count = 0
-		for index, sentence in enumerate(words):
+		for index, (sentence, embed) in enumerate(zip(words, embeddings)):
 			dset = fout.create_dataset(str(index), (LAYER_COUNT, len(sentence), FEATURE_COUNT))
-			sent_embed = np.array(embeddings[word_count:word_count+len(sentence)])
-			print(len(embeddings))
-			print(embeddings[word_count])
-			print(embeddings[word_count+len(sentence)])
-			print(word_count)
-			print(len(sentence))
-			print(sent_embed.shape)
-			dset[:,:,:] = sent_embed			
+			embed = np.array(embed)
+			print(embed.shape)
+			dset[:,:,:] = embed			
 
 
 def example(sentences):
