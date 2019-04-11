@@ -50,7 +50,7 @@ def write_hdf5(input_path, output_path):
 		loader = DataLoader(dataset=dataset,
 		                    batch_size=BATCH_SIZE,
 		                    collate_fn=collate_fn)
-		embeddings = model.get_embeddings(loader).tolist()
+		embeddings = model.get_embeddings(loader)
 
 		word_count = 0
 		for index, sentence in enumerate(words):
