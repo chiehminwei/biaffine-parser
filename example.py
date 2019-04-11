@@ -53,12 +53,11 @@ def write_hdf5(input_path, output_path):
 		                    collate_fn=collate_fn)
 		embeddings = model.get_embeddings(loader)
 
-		word_count = 0
 		for index, (sentence, embed) in enumerate(zip(words, embeddings)):
 			dset = fout.create_dataset(str(index), (LAYER_COUNT, len(sentence), FEATURE_COUNT))
 			embed = np.array(embed)
 			print(embed.shape)
-			dset[:,:,:] = embed			
+			dset[:,:,:] = embed
 
 
 def example(sentences):
@@ -115,4 +114,18 @@ def PennTreebank(corpus_path, out_file, meta_file):
 				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
 # PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
-write_hdf5('data/dummy.conllx', 'data/dummy.hdf5')
+
+corpus = {
+	'train_path': 'data/train.conllx',
+	'dev_path': 'data/dev.conllx',
+	'test_path': 'data/test.conllx'
+}
+
+my_embeddings = {
+	'train_path': 'data/train.bert-layers.hdf5',
+	'dev_path': 'data/dev.bert-layers.hdf5',
+	'test_path': 'data/test.bert-layers.hdf5',
+}
+
+for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
+	write_hdf5(input_path, output_path)
