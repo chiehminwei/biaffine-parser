@@ -40,7 +40,7 @@ syntactic_model = Model(vocab, syntactic_network)
 
 sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
 
-def write_hdf5(input_path, output_path):
+def write_hdf5(input_path, output_path, model):
 	LAYER_COUNT = 1
 	FEATURE_COUNT = 768
 	with h5py.File(output_path, 'w') as fout:
@@ -126,5 +126,15 @@ my_embeddings = {
 	'test_path': 'data/test.bert-layers.hdf5',
 }
 
+my_syntactic_embeddings = {
+	'train_path': 'data/train.bert-layers.hdf5',
+	'dev_path': 'data/dev.bert-layers.hdf5',
+	'test_path': 'data/test.bert-layers.hdf5',
+}
+
 for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
-	write_hdf5(input_path, output_path)
+	write_hdf5(input_path, output_path, model=model)
+
+for input_path, output_path in zip(corpus.values(), my_syntactic_embeddings.values()):
+	write_hdf5(input_path, output_path, model=syntactic_model)
+
