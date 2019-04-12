@@ -36,6 +36,8 @@ class BiaffineParser(nn.Module):
         
         # BERT
         self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
+        # self.bert = BertModel.from_pretrained('bert-base-cased')
+
         self.bert_dropout = SharedDropout(p=params['bert_dropout'])
 
         # the MLP layers

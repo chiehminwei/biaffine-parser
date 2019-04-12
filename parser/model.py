@@ -27,7 +27,7 @@ class Model(object):
         else:
             self.device = torch.device('cpu')
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
-
+        
     def __call__(self, loaders, epochs, patience,
                  lr, betas, epsilon, weight_decay, annealing, file,
                  last_epoch, cloud_address, args, gradient_accumulation_steps=1):

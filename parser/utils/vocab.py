@@ -35,6 +35,7 @@ class Vocab(object):
         self.n_train_words = self.n_words
 
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+        # self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 
     def __repr__(self):
         info = f"{self.__class__.__name__}(\n"

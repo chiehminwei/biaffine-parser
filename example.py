@@ -49,6 +49,7 @@ def write_hdf5(input_path, output_path, model):
 	BATCH_SIZE = 1
 
 	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+	# tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 
 	with h5py.File(output_path, 'w') as fout:
 		for index, line in enumerate(open(input_path)):
@@ -63,10 +64,14 @@ def write_hdf5(input_path, output_path, model):
 								batch_size=BATCH_SIZE)
 			embeddings = model.get_embeddings(loader)
 			embed = np.array(embeddings[0])
+
 			if index < 5:
+				print(len(tokenized_text))
 				print(embed.shape)
 			if index % 1000 == 0:
 				print(index)
+
+			assert len(tokenized_text) == embed.shape[0]
 			
 			dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[0], FEATURE_COUNT))
 			dset[:,:,:] = embed
