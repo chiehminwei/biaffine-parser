@@ -63,9 +63,9 @@ def write_hdf5(input_path, output_path, model):
 			rels_dummy_tensor = torch.tensor([segment_ids]).cuda()
 			segments_tensors = torch.tensor([segment_ids]).cuda()
 
-			print(tokens_tensor)
-			print(rels_dummy_tensor)
-			print(segments_tensors)
+			print(tokens_tensor.shape)
+			print(rels_dummy_tensor.shape)
+			print(segments_tensors.shape)
 
 			dataset = TextDataset((tokens_tensor, rels_dummy_tensor, segments_tensors))
 			loader = DataLoader(dataset=dataset,
