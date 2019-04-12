@@ -32,9 +32,11 @@ params = {
 	'pad_index': vocab.pad_index
 }
 network = BiaffineParser(params)			  # if you want to use the original (not tuned) BERT
-network.to(torch.device('cuda'))
 syntactic_network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
-syntactic_network.to(torch.device('cuda'))
+
+if torch.cuda.is_available():
+	network.to(torch.device('cuda'))
+	syntactic_network.to(torch.device('cuda'))
 
 model = Model(vocab, network)
 syntactic_model = Model(vocab, syntactic_network)
