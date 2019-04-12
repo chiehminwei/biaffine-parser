@@ -175,7 +175,7 @@ my_syntactic_embeddings = {
 for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
 	print(input_path)
 	print(output_path)
-	write_hdf5(input_path, output_path, model=model)
+	write_hdf5(input_path, output_path, model=syntactic_model)
 
 # for input_path, output_path in zip(corpus.values(), my_syntactic_embeddings.values()):
 # 	write_hdf5(input_path, output_path, model=syntactic_model)
