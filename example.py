@@ -58,15 +58,15 @@ def write_hdf5(input_path, output_path, model):
 			segment_ids = [1 for x in tokenized_text]
 
 			# Convert inputs to PyTorch tensors
-    		tokens_tensor = torch.tensor([indexed_tokens])
-    		rels_dummy_tensor = torch.tensor([segment_ids])
-    		segments_tensors = torch.tensor([segment_ids])
+			tokens_tensor = torch.tensor([indexed_tokens])
+			rels_dummy_tensor = torch.tensor([segment_ids])
+			segments_tensors = torch.tensor([segment_ids])
 
-    		dataset = TextDataset((tokens_tensor, rels_dummy_tensor, segments_tensors))
-    		loader = DataLoader(dataset=dataset,
-    							batch_size=B)
-    		embeddings = model.get_embeddings(loader)
-    		dset = fout.create_dataset(str(index), (LAYER_COUNT, len(line.split()), FEATURE_COUNT))
+			dataset = TextDataset((tokens_tensor, rels_dummy_tensor, segments_tensors))
+			loader = DataLoader(dataset=dataset,
+								batch_size=B)
+			embeddings = model.get_embeddings(loader)
+			dset = fout.create_dataset(str(index), (LAYER_COUNT, len(line.split()), FEATURE_COUNT))
 			embed = np.array(embeddings[0])
 			if index < 5:
 				print(embed.shape)
@@ -99,8 +99,8 @@ def example(sentences):
 
 	dataset = TextDataset(vocab.numericalize_sentences(sentences))
 	loader = DataLoader(dataset=dataset,
-	                    batch_size=BATCH_SIZE,
-	                    collate_fn=collate_fn)
+						batch_size=BATCH_SIZE,
+						collate_fn=collate_fn)
 
 	# Three options
 	embeddings = model.get_embeddings(loader)
@@ -115,8 +115,8 @@ def PennTreebank(corpus_path, out_file, meta_file):
 	a, b, c, words, tags = vocab.numericalize_tags(corpus)
 	dataset = TextDataset((a, b, c))
 	loader = DataLoader(dataset=dataset,
-	                    batch_size=BATCH_SIZE,
-	                    collate_fn=collate_fn)
+						batch_size=BATCH_SIZE,
+						collate_fn=collate_fn)
 	original_embeddings = model.get_embeddings(loader)
 	syntactic_embeddings = syntactic_model.get_embeddings(loader)
 	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
@@ -136,7 +136,7 @@ def PennTreebank(corpus_path, out_file, meta_file):
 		embeddings = F.normalize(embeddings, p=2, dim=1).tolist()
 
 		for embedding in tqdm(embeddings):
-		 	f.write('\t'.join([str(val) for val in embedding])+'\n')
+			f.write('\t'.join([str(val) for val in embedding])+'\n')
 		
 
 		ff.write('Word\tPOS\n')
