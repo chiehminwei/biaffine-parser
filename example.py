@@ -56,18 +56,9 @@ def write_hdf5(input_path, output_path, model):
 			line = '[CLS] ' + line + ' [SEP]'
 			tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
 			indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-			segment_ids = [1 for x in tokenized_text]
+			token_start_mask = [1 for x in tokenized_text]			
 
-			# Convert inputs to PyTorch tensors
-			tokens_tensor = torch.tensor([indexed_tokens]).cuda()
-			rels_dummy_tensor = torch.tensor([segment_ids]).cuda()
-			segments_tensors = torch.tensor([segment_ids]).cuda()
-
-			print(tokens_tensor.shape)
-			print(rels_dummy_tensor.shape)
-			print(segments_tensors.shape)
-
-			dataset = TextDataset((tokens_tensor, rels_dummy_tensor, segments_tensors))
+			dataset = TextDataset((indexed_tokens, token_start_mask, token_start_mask))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
 			embeddings = model.get_embeddings(loader)
