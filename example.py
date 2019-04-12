@@ -150,9 +150,9 @@ def PennTreebank(corpus_path, out_file, meta_file):
 # PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
 
 corpus = {
-	'train_path': 'data/train.conllx',
-	'dev_path': 'data/dev.conllx',
-	'test_path': 'data/test.conllx'
+	'train_path': 'data/train',
+	'dev_path': 'data/dev',
+	'test_path': 'data/test'
 }
 
 my_embeddings = {
