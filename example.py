@@ -48,8 +48,8 @@ def write_hdf5(input_path, output_path, model):
 	FEATURE_COUNT = 768
 	BATCH_SIZE = 1
 
-	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
-	# tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+	# tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+	tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 
 	with h5py.File(output_path, 'w') as fout:
 		for index, line in enumerate(open(input_path)):
@@ -175,7 +175,7 @@ my_syntactic_embeddings = {
 for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
 	print(input_path)
 	print(output_path)
-	write_hdf5(input_path, output_path, model=syntactic_model)
+	write_hdf5(input_path, output_path, model=model)
 
 # for input_path, output_path in zip(corpus.values(), my_syntactic_embeddings.values()):
 # 	write_hdf5(input_path, output_path, model=syntactic_model)
