@@ -62,7 +62,7 @@ def write_hdf5(input_path, output_path, model):
 			dataset = TextDataset(([indexed_tokens], [token_start_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
-			embeddings = model.get_embeddings(loader)
+			embeddings = model.get_embeddings(loader, ignore=False)
 			embed = np.array(embeddings[0])
 
 			if index < 5:

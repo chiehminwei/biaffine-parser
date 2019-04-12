@@ -236,16 +236,17 @@ class Model(object):
         return all_arcs, all_rels
 
     @torch.no_grad()
-    def get_embeddings(self, loader):
+    def get_embeddings(self, loader, ignore=True):
         self.network.eval()
 
         all_embeddings = []
         for words, attention_mask, token_start_mask in loader:
-            # ignore [CLS]
-            token_start_mask[:, 0] = 0
-            # ignore [SEP]
-            lens = attention_mask.sum(dim=1) - 1
-            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+            if ignore:
+                # ignore [CLS]
+                token_start_mask[:, 0] = 0
+                # ignore [SEP]
+                lens = attention_mask.sum(dim=1) - 1
+                token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             embed = self.network.get_embeddings(words, attention_mask)
             embed = embed[token_start_mask]
