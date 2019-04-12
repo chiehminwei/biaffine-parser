@@ -58,7 +58,7 @@ def write_hdf5(input_path, output_path, model):
 			indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
 			token_start_mask = [1 for x in tokenized_text]			
 
-			dataset = TextDataset((indexed_tokens, token_start_mask, token_start_mask))
+			dataset = TextDataset(([indexed_tokens], [token_start_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
 			embeddings = model.get_embeddings(loader)
