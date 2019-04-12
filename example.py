@@ -62,10 +62,11 @@ def write_hdf5(input_path, output_path, model):
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
 			embeddings = model.get_embeddings(loader)
-			dset = fout.create_dataset(str(index), (LAYER_COUNT, len(tokenized_text), FEATURE_COUNT))
 			embed = np.array(embeddings[0])
 			if index < 5:
 				print(embed.shape)
+			
+			dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[0], FEATURE_COUNT))
 			dset[:,:,:] = embed
 
 
