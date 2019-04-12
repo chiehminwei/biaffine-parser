@@ -68,6 +68,8 @@ def write_hdf5(input_path, output_path, model):
     		embeddings = model.get_embeddings(loader)
     		dset = fout.create_dataset(str(index), (LAYER_COUNT, len(line.split()), FEATURE_COUNT))
 			embed = np.array(embeddings[0])
+			if index < 5:
+				print(embed.shape)
 			dset[:,:,:] = embed
 
 
