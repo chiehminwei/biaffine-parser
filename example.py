@@ -53,11 +53,11 @@ def write_hdf5(input_path, output_path, model):
 		for index, line in enumerate(open(input_path)):
 			line = line.strip()
 			line = '[CLS] ' + line + ' [SEP]'
-		    tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
-		    indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-		    segment_ids = [1 for x in tokenized_text]
+			tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
+			indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
+			segment_ids = [1 for x in tokenized_text]
 
-		    # Convert inputs to PyTorch tensors
+			# Convert inputs to PyTorch tensors
     		tokens_tensor = torch.tensor([indexed_tokens])
     		rels_dummy_tensor = torch.tensor([segment_ids])
     		segments_tensors = torch.tensor([segment_ids])
