@@ -64,7 +64,7 @@ def write_hdf5(input_path, output_path, model):
 
 			dataset = TextDataset((tokens_tensor, rels_dummy_tensor, segments_tensors))
 			loader = DataLoader(dataset=dataset,
-								batch_size=B)
+								batch_size=BATCH_SIZE)
 			embeddings = model.get_embeddings(loader)
 			dset = fout.create_dataset(str(index), (LAYER_COUNT, len(line.split()), FEATURE_COUNT))
 			embed = np.array(embeddings[0])
