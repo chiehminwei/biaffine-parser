@@ -9,6 +9,7 @@ from tqdm import tqdm
 import torch.nn.functional as F
 import h5py
 import numpy as np
+from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM, WordpieceTokenizer
 
 
 BATCH_SIZE = 8				# only affects speed, if too big you could OOM
@@ -40,29 +41,56 @@ syntactic_model = Model(vocab, syntactic_network)
 
 sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
 
+
+
 def write_hdf5(input_path, output_path, model):
 	LAYER_COUNT = 1
 	FEATURE_COUNT = 768
-	with h5py.File(output_path, 'w') as fout:
-		corpus = Corpus.load(input_path)
-		print('corpus loaded')
-		vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
-		print('vocab loaded')
-		a, b, c, words, tags = vocab.numericalize_tags(corpus)
-		print('vocab numericalized')
-		dataset = TextDataset((a, b, c))
-		print('dataset loaded')
-		loader = DataLoader(dataset=dataset,
-		                    batch_size=BATCH_SIZE,
-		                    collate_fn=collate_fn)
-		print('loader loaded')
-		embeddings = model.get_embeddings(loader)
-		print('embeddings computed')
 
-		for index, (sentence, embed) in tqdm(enumerate(zip(words, embeddings))):
-			dset = fout.create_dataset(str(index), (LAYER_COUNT, len(sentence), FEATURE_COUNT))
-			embed = np.array(embed)
+	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+
+	with h5py.File(output_path, 'w') as fout:
+		for index, line in enumerate(open(input_path)):
+			line = line.strip()
+			line = '[CLS] ' + line + ' [SEP]'
+		    tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
+		    indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
+		    segment_ids = [1 for x in tokenized_text]
+
+		    # Convert inputs to PyTorch tensors
+    		tokens_tensor = torch.tensor([indexed_tokens])
+    		rels_dummy_tensor = torch.tensor([segment_ids])
+    		segments_tensors = torch.tensor([segment_ids])
+
+    		dataset = TextDataset((tokens_tensor, rels_dummy_tensor, segments_tensors))
+    		loader = DataLoader(dataset=dataset,
+    							batch_size=B)
+    		embeddings = model.get_embeddings(loader)
+    		dset = fout.create_dataset(str(index), (LAYER_COUNT, len(line.split()), FEATURE_COUNT))
+			embed = np.array(embeddings[0])
 			dset[:,:,:] = embed
+
+
+
+		# corpus = Corpus.load(input_path)
+		# print('corpus loaded')
+		# vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
+		# print('vocab loaded')
+		# a, b, c, words, tags = vocab.numericalize_tags(corpus)
+		# print('vocab numericalized')
+		# dataset = TextDataset((a, b, c))
+		# print('dataset loaded')
+		# loader = DataLoader(dataset=dataset,
+		#                     batch_size=BATCH_SIZE,
+		#                     collate_fn=collate_fn)
+		# print('loader loaded')
+		# embeddings = model.get_embeddings(loader)
+		# print('embeddings computed')
+
+		# for index, (sentence, embed) in tqdm(enumerate(zip(words, embeddings))):
+		# 	dset = fout.create_dataset(str(index), (LAYER_COUNT, len(sentence), FEATURE_COUNT))
+		# 	embed = np.array(embed)
+		# 	dset[:,:,:] = embed
 
 
 def example(sentences):
