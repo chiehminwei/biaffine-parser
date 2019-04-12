@@ -55,8 +55,8 @@ def write_hdf5(input_path, output_path, model):
 			line = line.strip()
 			line = '[CLS] ' + line + ' [SEP]'
 			tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
-			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
-			token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
+			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text)).cuda()
+			token_start_mask = torch.ByteTensor([1 for x in tokenized_text]).cuda()
 			
 			dataset = TextDataset(([indexed_tokens], [token_start_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
