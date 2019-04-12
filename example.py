@@ -46,6 +46,7 @@ sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
 def write_hdf5(input_path, output_path, model):
 	LAYER_COUNT = 1
 	FEATURE_COUNT = 768
+	BATCH_SIZE = 1
 
 	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
 
@@ -58,9 +59,9 @@ def write_hdf5(input_path, output_path, model):
 			segment_ids = [1 for x in tokenized_text]
 
 			# Convert inputs to PyTorch tensors
-			tokens_tensor = torch.tensor([indexed_tokens])
-			rels_dummy_tensor = torch.tensor([segment_ids])
-			segments_tensors = torch.tensor([segment_ids])
+			tokens_tensor = torch.tensor([indexed_tokens]).cuda()
+			rels_dummy_tensor = torch.tensor([segment_ids]).cuda()
+			segments_tensors = torch.tensor([segment_ids]).cuda()
 
 			dataset = TextDataset((tokens_tensor, rels_dummy_tensor, segments_tensors))
 			loader = DataLoader(dataset=dataset,
