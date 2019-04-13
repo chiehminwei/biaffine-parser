@@ -288,7 +288,6 @@ class Model(object):
                 sent_avg_embeddings = []
                 tmp = None
                 tmp_len = 0
-                # sent_mask + [1] to handle the last word in sentence 
                 # sent_embed = sent_embed.tolist()
                 # sent_att_mask = sent_att_mask.tolist()
                 # sent_mask = sent_mask.tolist()
