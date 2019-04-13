@@ -291,7 +291,7 @@ class Model(object):
                 sent_mask = sent_mask.tolist()
                 for word_embed, word_att_mask, word_mask in zip(sent_embed + [None], sent_att_mask + [0], sent_mask + [1]):
                     if word_mask == 1 or word_att_mask != 1:
-                        if tmp:
+                        if tmp is not None:
                             if tmp_len == 0:
                                 tmp_len = 1
                             sent_avg_embeddings.append(tmp/tmp_len)
@@ -301,7 +301,7 @@ class Model(object):
                         if word_att_mask != 1:
                             break
                     else:
-                        if tmp:
+                        if tmp is not None:
                             word_embed = np.array(word_embed)
                             tmp += word_embed
                             tmp_len += 1
