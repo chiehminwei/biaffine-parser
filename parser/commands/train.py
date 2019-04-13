@@ -171,7 +171,7 @@ class Train(object):
                 device = torch.device('cuda')
             else:
                 device = torch.device('cpu')
-            state = torch.load(args.file, map_location=device)
+            state = torch.load(args.file, map_location='cpu')
             last_epoch = state['last_epoch']
             network = network.load(args.file, args.cloud_address, args.local_rank)
 
