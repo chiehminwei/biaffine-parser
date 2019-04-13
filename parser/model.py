@@ -249,6 +249,7 @@ class Model(object):
                 token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             embed = self.network.get_embeddings(words, attention_mask, return_all=return_all)
+            embed = torch.FloatTensor(embed)
             print(len(embed))
             print(embed[0].shape)
             embed = embed[token_start_mask]
