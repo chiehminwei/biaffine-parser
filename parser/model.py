@@ -248,13 +248,18 @@ class Model(object):
                 lens = attention_mask.sum(dim=1) - 1
                 token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
+            return_all = False
             embed = self.network.get_embeddings(words, attention_mask, return_all=return_all)
-            embed = torch.stack(embed)
+            
             if return_all:
+                embed = torch.stack(embed)
                 embed = embed[:,token_start_mask]
                 print(embed.shape)
                 assert 1 == 2
-            embed = embed[token_start_mask]
+            else:
+                embed = embed[token_start_mask]
+                print(embed.shape)
+                assert 3 == 4
            
             
             # lens for splitting
