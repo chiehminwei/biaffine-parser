@@ -286,6 +286,9 @@ class Model(object):
                 tmp = None
                 tmp_len = 0
                 # sent_mask + [1] to handle the last word in sentence 
+                sent_embed = sent_embed.tolist()
+                sent_att_mask = sent_att_mask.tolist()
+                sent_mask = sent_mask.tolist()
                 for word_embed, word_att_mask, word_mask in zip(sent_embed + [None], sent_att_mask + [0], sent_mask + [1]):
                     if word_mask == 1 or word_att_mask != 1:
                         if tmp:
