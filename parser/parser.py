@@ -170,7 +170,7 @@ class BiaffineParser(nn.Module):
                 device = torch.device('cuda')
             else:
                 device = torch.device('cpu')
-            state = torch.load(fname, map_location=device)
+            state = torch.load(fname, map_location='cpu')
             network = cls(state['params'])
             network.load_state_dict(state['state_dict'])
             network.to(device)

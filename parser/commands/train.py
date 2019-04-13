@@ -155,8 +155,7 @@ class Train(object):
             for k, v in params.items():
                 print(f"  {k}: {v}")
         network = BiaffineParser(params)
-        if torch.cuda.is_available():
-            network = network.cuda()
+
         # if args.local_rank == 0:
         #     print(f"{network}\n")
 
@@ -167,10 +166,6 @@ class Train(object):
             cloud_address = os.path.join(args.cloud_address, args.file)
             # subprocess.call(['gsutil', 'cp', cloud_address, args.file], stdout=FNULL, stderr=subprocess.STDOUT)
         if os.path.isfile(args.file):
-            if torch.cuda.is_available():
-                device = torch.device('cuda')
-            else:
-                device = torch.device('cpu')
             state = torch.load(args.file, map_location='cpu')
             last_epoch = state['last_epoch']
             network = network.load(args.file, args.cloud_address, args.local_rank)
