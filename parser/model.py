@@ -273,15 +273,17 @@ class Model(object):
 
         all_embeddings = []
         for words, attention_mask, token_start_mask in loader:
+            # [batch_size, seq_len, bert_dim]
+            embed = self.network.get_embeddings(words, attention_mask)
+            
             if ignore:
                 # ignore [CLS]
                 token_start_mask[:, 0] = 0
                 # ignore [SEP]
                 lens = attention_mask.sum(dim=1) - 1
                 token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+                attention_mask[torch.arange(len(token_start_mask)), lens] = 0
 
-            # [batch_size, seq_len, bert_dim]
-            embed = self.network.get_embeddings(words, attention_mask)
             for sent_embed, sent_att_mask, sent_mask in zip(embed, attention_mask, token_start_mask):
                 sent_avg_embeddings = []
                 tmp = None
