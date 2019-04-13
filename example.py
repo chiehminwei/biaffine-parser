@@ -55,7 +55,7 @@ def example(sentences):
 	# set return_all=True to return embeddings for all 12 layers, return_all=False to return only last layer
 	# default is ignore=True, return_all=False
 	
-	embeddings = model.get_embeddings(loader, ignore=True, return_all=False, ignore_token_start_mask=True)
+	embeddings = model.get_embeddings(loader, ignore=False, return_all=False, ignore_token_start_mask=True)
 	avg_embeddings = model.get_avg_embeddings(loader)
 
 	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
