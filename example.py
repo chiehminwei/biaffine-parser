@@ -59,13 +59,13 @@ def example(sentences):
 	avg_embeddings = model.get_avg_embeddings(loader)
 
 	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
-	print(tokenizer.tokenize(sentences[0]))
+	print(tokenizer.tokenize(' '.join(sentences[0])))
 	print(embeddings[0].shape)
 	print(avg_embeddings[0].shape)
 	print(embeddings[0][:,:5])
 	print(avg_embeddings[0][:,:5])
 
-	print(tokenizer.tokenize(sentences[1]))
+	print(tokenizer.tokenize(' '.join(sentences[1])))
 	print(embeddings[1].shape)
 	print(avg_embeddings[1].shape)
 	print(embeddings[1][:,:5])
