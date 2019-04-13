@@ -291,21 +291,24 @@ class Model(object):
                 sent_att_mask = sent_att_mask.tolist()
                 sent_mask = sent_mask.tolist()
                 for word_embed, word_att_mask, word_mask in zip(sent_embed, sent_att_mask, sent_mask):
-                    if word_mask == 1 or word_att_mask != 1:
+                    if word_att_mask != 1:
+                        if tmp is not None:
+                            sent_avg_embeddings.append(tmp/tmp_len)
+                        tmp = None
+                        break
+                    if word_mask == 1:
                         if tmp is not None:
                             if tmp_len == 0:
                                 tmp_len = 1
                             sent_avg_embeddings.append(tmp/tmp_len)
                         tmp = np.array(word_embed)
                         tmp_len = 1
-                        if word_att_mask != 1:
-                            break
                     else:
                         if tmp is not None:
                             tmp += np.array(word_embed)
                             tmp_len += 1
 
-                # take care of last word
+                # take care of last word when sentence len == max_seq_len in batch
                 if tmp is not None:
                     sent_avg_embeddings.append(tmp/tmp_len)
 
