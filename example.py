@@ -58,17 +58,20 @@ def example(sentences):
 	embeddings = model.get_embeddings(loader, ignore=True, return_all=False, ignore_token_start_mask=True)
 	avg_embeddings = model.get_avg_embeddings(loader)
 
-	print(len(embeddings))
-	print(len(avg_embeddings))
+	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+	print(tokenizer.tokenize(sentences[0]))
 	print(embeddings[0].shape)
-	print(embeddings[1].shape)
 	print(avg_embeddings[0].shape)
-	print(avg_embeddings[1].shape)
-
 	print(embeddings[0][:,:5])
 	print(avg_embeddings[0][:,:5])
+
+	print(tokenizer.tokenize(sentences[1]))
+	print(embeddings[1].shape)
+	print(avg_embeddings[1].shape)
 	print(embeddings[1][:,:5])
 	print(avg_embeddings[1][:,:5])
+
+	
 
 	# s_arc, s_rel = model.get_matrices(loader)
 	
