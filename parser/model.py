@@ -250,6 +250,7 @@ class Model(object):
 
             embed = self.network.get_embeddings(words, attention_mask, return_all=return_all)
             
+            # need to test for batch size > 1 to solve for all cases
             if return_all:
                 embed = torch.stack(embed)
                 embed = embed[:,token_start_mask] # torch.Size([num_layer, num_word, bert_dim])
@@ -258,8 +259,12 @@ class Model(object):
             
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
-            for sentence_embed in torch.split(embed, lens, dim=-2):
-                all_embeddings.append(sentence_embed.tolist())
+            if return_all:
+                for sentence_embed in torch.split(embed, lens, dim=-2):
+                    all_embeddings.append(sentence_embed.tolist())
+            else:
+                for sentence_embed in torch.split(embed, lens):
+                    all_embeddings.append(sentence_embed.tolist())
 
         return all_embeddings
 

@@ -114,8 +114,12 @@ def example(sentences):
 
 	# Three options
 	embeddings = model.get_embeddings(loader)
-	s_arc, s_rel = model.get_matrices(loader)
-	s_arc, s_rel, embeddings = model.get_everything(loader)
+	print(len(embeddings))
+	print(len(embeddings[0]))
+	print(len(embeddings[0][0]))
+	print(len(embeddings[0][0][0]))
+	# s_arc, s_rel = model.get_matrices(loader)
+	# s_arc, s_rel, embeddings = model.get_everything(loader)
 
 # example(sentences)
 
@@ -178,10 +182,11 @@ my_syntactic_embeddings = {
 	'test_path': 'data/test.bert-layers.hdf5',
 }
 
-for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
-	print(input_path)
-	print(output_path)
-	write_hdf5(input_path, output_path, model=model)
+example(sentences)
+# for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
+# 	print(input_path)
+# 	print(output_path)
+# 	write_hdf5(input_path, output_path, model=model)
 
 # for input_path, output_path in zip(corpus.values(), my_syntactic_embeddings.values()):
 # 	write_hdf5(input_path, output_path, model=syntactic_model)
