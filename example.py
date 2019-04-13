@@ -32,15 +32,14 @@ params = {
 	'pad_index': vocab.pad_index
 }
 network = BiaffineParser(params)			  # if you want to use the original (not tuned) BERT
-# syntactic_network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
-syntactic_model = None
+syntactic_network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
 
 if torch.cuda.is_available():
 	network.to(torch.device('cuda'))
 	# syntactic_network.to(torch.device('cuda'))
 
 model = Model(vocab, network)
-# syntactic_model = Model(vocab, syntactic_network)
+syntactic_model = Model(vocab, syntactic_network)
 
 sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
 
@@ -51,8 +50,8 @@ def write_hdf5(input_path, output_path, model):
 	FEATURE_COUNT = 768
 	BATCH_SIZE = 1
 
-	# tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
-	tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+	# tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 
 	with h5py.File(output_path, 'w') as fout:
 		for index, line in enumerate(open(input_path)):
@@ -83,7 +82,7 @@ def write_hdf5(input_path, output_path, model):
 			dset[:,:,:] = embed
 
 
-
+		# This converts all at once but will OOM
 		# corpus = Corpus.load(input_path)
 		# print('corpus loaded')
 		# vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
@@ -112,17 +111,18 @@ def example(sentences):
 						batch_size=BATCH_SIZE,
 						collate_fn=collate_fn)
 
-	# Three options
-	embeddings = model.get_embeddings(loader)
-	print(len(embeddings))
-	print(len(embeddings[0]))
-	print(len(embeddings[0][0]))
-	print(len(embeddings[0][0][0]))
+	# set ignore=True to not return embeddings for start of sentence and end of sentence tokens
+	# set return_all=True to return embeddings for all 12 layers, return_all=False to return only last layer
+	# default is ignore=True, return_all=False
+	embeddings = model.get_embeddings(loader, ignore=False, return_all=True)
+
 	# s_arc, s_rel = model.get_matrices(loader)
+	
+	# If you get embeddings this way, it is default (ignore=True, return_all=False)
 	# s_arc, s_rel, embeddings = model.get_everything(loader)
 
-# example(sentences)
 
+# This function is for embedding visualization
 def PennTreebank(corpus_path, out_file, meta_file):
 	corpus = Corpus.load(corpus_path)
 	vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
@@ -176,18 +176,7 @@ my_embeddings = {
 	'test_path': 'data/test.bert-layers.hdf5',
 }
 
-my_syntactic_embeddings = {
-	'train_path': 'data/train.bert-layers.hdf5',
-	'dev_path': 'data/dev.bert-layers.hdf5',
-	'test_path': 'data/test.bert-layers.hdf5',
-}
-
-example(sentences)
-# for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
-# 	print(input_path)
-# 	print(output_path)
-# 	write_hdf5(input_path, output_path, model=model)
-
-# for input_path, output_path in zip(corpus.values(), my_syntactic_embeddings.values()):
-# 	write_hdf5(input_path, output_path, model=syntactic_model)
-
+for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
+	print(input_path)
+	print(output_path)
+	write_hdf5(input_path, output_path, model=syntactic_model)
