@@ -72,14 +72,14 @@ def write_hdf5(input_path, output_path, model):
 			embed = np.array(embeddings[0])
 
 			if index < 5:
-				print(len(tokenized_text))
-				print(embed.shape)
+				print('Len of tokens: {}'.format(len(tokenized_text)))
+				print('embed shape: {}'.format(embed.shape))
 			if index % 1000 == 0:
 				print('Processing sentence {}...'.format(index))
 
 			assert len(tokenized_text) == embed.shape[-2]
 			
-			dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[0], FEATURE_COUNT))
+			dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[-2], FEATURE_COUNT))
 			dset[:,:,:] = embed
 
 
