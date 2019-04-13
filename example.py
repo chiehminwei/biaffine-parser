@@ -70,8 +70,8 @@ def write_hdf5(input_path, output_path, model):
 								batch_size=BATCH_SIZE)
 			embeddings = model.get_embeddings(loader, ignore=False, return_all=True)
 			# embed = np.array(embeddings[0])
-			embed = torch.stack(embeddings)
-			
+			embed = np.array(embeddings)
+
 			if index < 5:
 				print(len(tokenized_text))
 				print(embed.shape)
