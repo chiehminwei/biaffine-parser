@@ -250,7 +250,6 @@ class Model(object):
                 # ignore [SEP]
                 lens = attention_mask.sum(dim=1) - 1
                 token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
-
             
             embed = self.network.get_embeddings(words, attention_mask, return_all=return_all)
             
@@ -336,13 +335,13 @@ class Model(object):
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
             for i, sentence_arc in enumerate(torch.split(s_arc, lens)):
-                all_arcs.append(sentence_arc[:,:lens[i]].tolist())
+                all_arcs.append(np.array(sentence_arc[:,:lens[i]].tolist()))
 
             for i, sentence_rel in enumerate(torch.split(s_rel, lens)):
-                all_rels.append(sentence_rel[:,:lens[i]].tolist())    
+                all_rels.append(np.array(sentence_rel[:,:lens[i]].tolist()))
 
-            for sentence_embed in torch.split(embed, lens):
-                all_embeddings.append(sentence_embed.tolist())        
+            for sentence_embed in torch.split(embed, lens, dim=-2):
+                all_embeddings.append(np.array(sentence_embed.tolist()))
 
         return all_arcs, all_rels, all_embeddings
 
@@ -364,10 +363,10 @@ class Model(object):
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
             for i, sentence_arc in enumerate(torch.split(s_arc, lens)):
-                all_arcs.append(sentence_arc[:,:lens[i]].tolist())
+                all_arcs.append(np.array(sentence_arc[:,:lens[i]].tolist()))
 
             for i, sentence_rel in enumerate(torch.split(s_rel, lens)):
-                all_rels.append(sentence_rel[:,:lens[i]].tolist())            
+                all_rels.append(np.array(sentence_rel[:,:lens[i]].tolist()))
 
         return all_arcs, all_rels
 

@@ -31,59 +31,86 @@ params = {
 	'n_rels': vocab.n_rels,
 	'pad_index': vocab.pad_index
 }
-network = BiaffineParser(params)			  # if you want to use the original (not tuned) BERT
+network = BiaffineParser(params)			  			# if you want to use the original BERT
 syntactic_network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
 
 if torch.cuda.is_available():
 	network.to(torch.device('cuda'))
-	# syntactic_network.to(torch.device('cuda'))
+	syntactic_network.to(torch.device('cuda'))
 
 model = Model(vocab, network)
 syntactic_model = Model(vocab, syntactic_network)
 
 sentences = [['Yes', 'yes', 'yes'], ["It's", 'all', 'done', ':)', '.']]
+example(sentences)
+
+# PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
+
+# corpus = {
+# 	'train_path': 'data/train',
+# 	'dev_path': 'data/dev',
+# 	'test_path': 'data/test'
+# }
+
+# my_embeddings = {
+# 	'train_path': 'data/train.bert-layers.hdf5',
+# 	'dev_path': 'data/dev.bert-layers.hdf5',
+# 	'test_path': 'data/test.bert-layers.hdf5',
+# }
+
+# for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
+# 	print(input_path)
+# 	print(output_path)
+# 	write_hdf5(input_path, output_path, model=syntactic_model)
 
 
 def example(sentences):
-
+	'''
+	Demos how to extract embeddings or matrices from sentences.
+	'''
 	dataset = TextDataset(vocab.numericalize_sentences(sentences))
 	loader = DataLoader(dataset=dataset,
 						batch_size=BATCH_SIZE,
 						collate_fn=collate_fn)
 
+	# get_embeddings returns the embedding of the first subword as the embedding for the whole word.
 	# set ignore=True to not return embeddings for start of sentence and end of sentence tokens
 	# set return_all=True to return embeddings for all 12 layers, return_all=False to return only last layer
-	# default is ignore=True, return_all=False
-	
-	embeddings = model.get_embeddings(loader, ignore=True, return_all=False, ignore_token_start_mask=True)
+	# set ignore_token_start_mask=True if you want to return token-level (instead of word-level) embeddings
+	# default is ignore=True, return_all=False, ignore_token_start_mask=False
+	# all the named arguments are optional
+	embeddings = model.get_embeddings(loader, ignore=True, return_all=False, ignore_token_start_mask=False)
+
+	# get_avg_embeddings returns the avg embedding of the subwords as the embedding for the whole word.
+	# It also has a ignore flag that defaults to True. It only supports returning last layer right now.
 	avg_embeddings = model.get_avg_embeddings(loader)
 
-	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+	s_arc, s_rel = model.get_matrices(loader)
 	
-	print(avg_embeddings)
-	
+	# If you get embeddings this way, it is default (ignore=True, return_all=False, not average)
+	# Let me know if you want this to support average or returning all layers too
+	s_arc, s_rel, embeddings = model.get_everything(loader)
 
-	print(tokenizer.tokenize(' '.join(sentences[0])))
-	print(embeddings[0].shape)
-	print(avg_embeddings[0].shape)
-	print(embeddings[0][:,:3])
-	print(avg_embeddings[0][:,:3])
 
-	print(tokenizer.tokenize(' '.join(sentences[1])))
-	print(embeddings[1].shape)
-	print(avg_embeddings[1].shape)
-	print(embeddings[1][:,:3])
-	print(avg_embeddings[1][:,:3])
+	# FOR DEBUGGING
+	# tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+	# print(tokenizer.tokenize(' '.join(sentences[0])))
+	# print(embeddings[0].shape)
+	# print(avg_embeddings[0].shape)
+	# print(embeddings[0][:,:3])
+	# print(avg_embeddings[0][:,:3])
 
-	
+	# print(tokenizer.tokenize(' '.join(sentences[1])))
+	# print(embeddings[1].shape)
+	# print(avg_embeddings[1].shape)
+	# print(embeddings[1][:,:3])
+	# print(avg_embeddings[1][:,:3])
 
-	# s_arc, s_rel = model.get_matrices(loader)
-	
-	# If you get embeddings this way, it is default (ignore=True, return_all=False)
-	# s_arc, s_rel, embeddings = model.get_everything(loader)
 
-# This function is for embedding visualization
 def PennTreebank(corpus_path, out_file, meta_file):
+	'''
+	Extracts embeddings and labels for visualization
+	'''
 	corpus = Corpus.load(corpus_path)
 	vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
 	a, b, c, words, tags = vocab.numericalize_tags(corpus)
@@ -123,6 +150,9 @@ def PennTreebank(corpus_path, out_file, meta_file):
 				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
 def write_hdf5(input_path, output_path, model):
+	'''
+	Extracts embeddings to a format compatible with structural probes
+	'''
 	LAYER_COUNT = 12
 	FEATURE_COUNT = 768
 	BATCH_SIZE = 1
@@ -159,7 +189,7 @@ def write_hdf5(input_path, output_path, model):
 			dset[:,:,:] = embed
 
 
-		# This converts all at once but will OOM
+		# This converts all at once. Works on small datasets, but will OOM on PTB
 		# corpus = Corpus.load(input_path)
 		# print('corpus loaded')
 		# vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
@@ -179,25 +209,3 @@ def write_hdf5(input_path, output_path, model):
 		# 	dset = fout.create_dataset(str(index), (LAYER_COUNT, len(sentence), FEATURE_COUNT))
 		# 	embed = np.array(embed)
 		# 	dset[:,:,:] = embed
-
-
-example(sentences)
-
-# PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
-
-# corpus = {
-# 	'train_path': 'data/train',
-# 	'dev_path': 'data/dev',
-# 	'test_path': 'data/test'
-# }
-
-# my_embeddings = {
-# 	'train_path': 'data/train.bert-layers.hdf5',
-# 	'dev_path': 'data/dev.bert-layers.hdf5',
-# 	'test_path': 'data/test.bert-layers.hdf5',
-# }
-
-# for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
-# 	print(input_path)
-# 	print(output_path)
-# 	write_hdf5(input_path, output_path, model=syntactic_model)
