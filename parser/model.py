@@ -253,6 +253,7 @@ class Model(object):
             print(len(embed))
             print(embed[0].shape)
             embed = embed[token_start_mask]
+            assert 1 == 2
             
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
