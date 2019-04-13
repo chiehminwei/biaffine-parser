@@ -287,19 +287,22 @@ class Model(object):
                 tmp = None
                 tmp_len = 0
                 # sent_mask + [1] to handle the last word in sentence 
+                sent_embed = sent_embed.tolist()
+                sent_att_mask = sent_att_mask.tolist()
+                sent_mask = sent_mask.tolist()
                 for word_embed, word_att_mask, word_mask in zip(sent_embed, sent_att_mask, sent_mask):
                     if word_mask == 1 or word_att_mask != 1:
                         if tmp is not None:
                             if tmp_len == 0:
                                 tmp_len = 1
                             sent_avg_embeddings.append(tmp/tmp_len)
-                        tmp = word_embed
+                        tmp = np.array(word_embed)
                         tmp_len = 1
                         if word_att_mask != 1:
                             break
                     else:
                         if tmp is not None:
-                            tmp += word_embed
+                            tmp += np.array(word_embed)
                             tmp_len += 1
 
                 # take care of last word
