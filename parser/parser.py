@@ -118,7 +118,7 @@ class BiaffineParser(nn.Module):
             embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
             return embed
         else:
-            encoded_layers, _ = self.bert(tokens_tensor, segments_tensors)
+            encoded_layers, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=True)
             return encoded_layers
 
     def get_everything(self, words, mask):
