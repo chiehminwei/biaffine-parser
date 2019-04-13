@@ -293,13 +293,13 @@ class Model(object):
                 # sent_att_mask = sent_att_mask.tolist()
                 # sent_mask = sent_mask.tolist()
                 for word_embed, word_att_mask, word_mask in zip(sent_embed, sent_att_mask, sent_mask):
-                    if word_att_mask != 1:
+                    if word_att_mask.item() != 1:
                         if tmp is not None:
                             # print(tmp[:3], tmp_len)
                             sent_avg_embeddings.append(tmp/tmp_len)
                         tmp = None
                         break
-                    if word_mask == 1:
+                    if word_mask.item() == 1:
                         if tmp is not None:
                             if tmp_len == 0:
                                 tmp_len = 1
