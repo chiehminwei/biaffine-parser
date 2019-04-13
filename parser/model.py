@@ -249,7 +249,7 @@ class Model(object):
                 token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             if ignore_token_start_mask:
-                torch.ones(token_start_mask.size())
+                token_start_mask = torch.ones(token_start_mask.size())
 
             embed = self.network.get_embeddings(words, attention_mask, return_all=return_all)
             
