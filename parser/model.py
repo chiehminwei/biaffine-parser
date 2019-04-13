@@ -263,6 +263,7 @@ class Model(object):
 
             print(len(all_embeddings[0]))
             print(len(all_embeddings[0][0]))
+            print(len(all_embeddings[0][0][0]))
             assert 1 == 2
 
         return all_embeddings
