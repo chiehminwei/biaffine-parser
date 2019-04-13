@@ -58,6 +58,13 @@ def example(sentences):
 	embeddings = model.get_embeddings(loader, ignore=True, return_all=False, ignore_token_start_mask=True)
 	avg_embeddings = model.get_avg_embeddings(loader)
 
+	print(len(embeddings))
+	print(len(avg_embeddings))
+	print(embeddings[0].shape)
+	print(embeddings[1].shape)
+	print(avg_embeddings[0].shape)
+	print(avg_embeddings[1].shape)
+
 	print(embeddings)
 	print(avg_embeddings)
 

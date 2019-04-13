@@ -262,7 +262,7 @@ class Model(object):
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
             for sentence_embed in torch.split(embed, lens, dim=-2):
-                all_embeddings.append(sentence_embed.tolist())
+                all_embeddings.append(np.array(sentence_embed.tolist()))
             
         return all_embeddings
 
