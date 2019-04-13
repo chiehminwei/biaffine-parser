@@ -236,7 +236,7 @@ class Model(object):
         return all_arcs, all_rels
 
     @torch.no_grad()
-    def get_embeddings(self, loader, ignore=True):
+    def get_embeddings(self, loader, ignore=True, return_all=False):
         self.network.eval()
 
         all_embeddings = []
@@ -248,7 +248,7 @@ class Model(object):
                 lens = attention_mask.sum(dim=1) - 1
                 token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
-            embed = self.network.get_embeddings(words, attention_mask)
+            embed = self.network.get_embeddings(words, attention_mask, return_all=return_all)
             embed = embed[token_start_mask]
             
             # lens for splitting

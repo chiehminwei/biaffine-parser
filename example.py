@@ -47,7 +47,7 @@ sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
 
 
 def write_hdf5(input_path, output_path, model):
-	LAYER_COUNT = 1
+	LAYER_COUNT = 12
 	FEATURE_COUNT = 768
 	BATCH_SIZE = 1
 
@@ -68,8 +68,9 @@ def write_hdf5(input_path, output_path, model):
 			dataset = TextDataset(([indexed_tokens], [token_start_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
-			embeddings = model.get_embeddings(loader, ignore=False)
-			embed = np.array(embeddings[0])
+			embeddings = model.get_embeddings(loader, ignore=False, return_all=True)
+			# embed = np.array(embeddings[0])
+			embed = np.array(embeddings)
 
 			if index < 5:
 				print(len(tokenized_text))
