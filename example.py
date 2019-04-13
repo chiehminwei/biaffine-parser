@@ -65,8 +65,10 @@ def example(sentences):
 	print(avg_embeddings[0].shape)
 	print(avg_embeddings[1].shape)
 
-	print(embeddings)
-	print(avg_embeddings)
+	print(embeddings[0][:,5])
+	print(avg_embeddings[0][:,5])
+	print(embeddings[1][:,5])
+	print(avg_embeddings[1][:,5])
 
 	# s_arc, s_rel = model.get_matrices(loader)
 	
