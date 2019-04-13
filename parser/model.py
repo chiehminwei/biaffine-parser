@@ -262,7 +262,8 @@ class Model(object):
                 all_embeddings.append(sentence_embed.tolist())
 
             print(len(all_embeddings))
-            print(all_embeddings[0].shape)
+            print(all_embeddings[0])
+            print(all_embeddings)
             assert 1 == 2
 
         return all_embeddings
