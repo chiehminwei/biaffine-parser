@@ -252,14 +252,18 @@ class Model(object):
             
             if return_all:
                 embed = torch.stack(embed)
-                embed = embed[:,token_start_mask] # torch.Size([12, 12, 768])
+                embed = embed[:,token_start_mask] # torch.Size([num_layer, num_word, bert_dim])
             else:
-                embed = embed[token_start_mask] # torch.Size([12, 768])           
+                embed = embed[token_start_mask] # torch.Size([num_word, bert_dim])           
             
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
             for sentence_embed in torch.split(embed, lens):
                 all_embeddings.append(sentence_embed.tolist())
+
+            print(len(all_embeddings[0]))
+            print(len(all_embeddings[0][0]))
+            assert 1 == 2
 
         return all_embeddings
 
