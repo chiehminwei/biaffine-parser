@@ -295,7 +295,7 @@ class Model(object):
                 for word_embed, word_att_mask, word_mask in zip(sent_embed, sent_att_mask, sent_mask):
                     if word_att_mask != 1:
                         if tmp is not None:
-                            print(tmp[:3], tmp_len)
+                            # print(tmp[:3], tmp_len)
                             sent_avg_embeddings.append(tmp/tmp_len)
                         tmp = None
                         break
@@ -313,7 +313,7 @@ class Model(object):
 
                 # take care of last word when sentence len == max_seq_len in batch
                 if tmp is not None:
-                    print(tmp[:3], tmp_len)
+                    # print(tmp[:3], tmp_len)
                     sent_avg_embeddings.append(tmp/tmp_len)
 
                 all_embeddings.append(np.array(sent_avg_embeddings))

@@ -56,6 +56,7 @@ def example(sentences):
 	# default is ignore=True, return_all=False
 	
 	embeddings = model.get_embeddings(loader, ignore=False, return_all=False, ignore_token_start_mask=True)
+	embeddings_ignore = model.get_embeddings(loader, ignore=True, return_all=False, ignore_token_start_mask=True)
 	avg_embeddings = model.get_avg_embeddings(loader)
 
 	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
@@ -63,12 +64,14 @@ def example(sentences):
 	print(embeddings[0].shape)
 	print(avg_embeddings[0].shape)
 	print(embeddings[0][:,:3])
+	print(embeddings_ignore[0][:,:3])
 	print(avg_embeddings[0][:,:3])
 
 	print(tokenizer.tokenize(' '.join(sentences[1])))
 	print(embeddings[1].shape)
 	print(avg_embeddings[1].shape)
 	print(embeddings[1][:,:3])
+	print(embeddings_ignore[1][:,:3])
 	print(avg_embeddings[1][:,:3])
 
 	
