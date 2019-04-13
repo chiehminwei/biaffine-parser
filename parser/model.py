@@ -261,11 +261,6 @@ class Model(object):
             for sentence_embed in torch.split(embed, lens):
                 all_embeddings.append(sentence_embed.tolist())
 
-            print(len(all_embeddings[0]))
-            print(len(all_embeddings[0][0]))
-            print(len(all_embeddings[0][0][0]))
-            assert 1 == 2
-
         return all_embeddings
 
     @torch.no_grad()
