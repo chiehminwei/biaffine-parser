@@ -295,12 +295,14 @@ class Model(object):
                             if tmp_len == 0:
                                 tmp_len = 1
                             sent_avg_embeddings.append(tmp/tmp_len)
+                        word_embed = np.array(word_embed)
                         tmp = word_embed
                         tmp_len = 1
                         if word_att_mask != 1:
                             break
                     else:
                         if tmp:
+                            word_embed = np.array(word_embed)
                             tmp += word_embed
                             tmp_len += 1
                 all_embeddings.append(sent_avg_embeddings)
