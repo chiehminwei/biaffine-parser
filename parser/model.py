@@ -250,6 +250,8 @@ class Model(object):
 
             embed = self.network.get_embeddings(words, attention_mask, return_all=return_all)
             embed = torch.stack(embed)
+            print(token_start_mask.shape)
+            
             print(len(embed))
             print(embed[0].shape)
             embed = embed[token_start_mask]
