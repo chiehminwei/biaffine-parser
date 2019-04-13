@@ -241,6 +241,9 @@ class Model(object):
 
         all_embeddings = []
         for words, attention_mask, token_start_mask in loader:
+            if ignore_token_start_mask:
+                token_start_mask = attention_mask.clone()
+
             if ignore:
                 # ignore [CLS]
                 token_start_mask[:, 0] = 0
@@ -248,9 +251,7 @@ class Model(object):
                 lens = attention_mask.sum(dim=1) - 1
                 token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
-            if ignore_token_start_mask:
-                token_start_mask = attention_mask
-
+            
             embed = self.network.get_embeddings(words, attention_mask, return_all=return_all)
             
             if return_all:
