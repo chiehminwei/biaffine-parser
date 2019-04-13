@@ -69,7 +69,6 @@ def write_hdf5(input_path, output_path, model):
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
 			embeddings = model.get_embeddings(loader, ignore=False, return_all=True)
-			# embed = np.array(embeddings[0])
 			embed = np.array(embeddings[0])
 
 			if index < 5:
