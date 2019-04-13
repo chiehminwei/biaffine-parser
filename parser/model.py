@@ -236,7 +236,7 @@ class Model(object):
         return all_arcs, all_rels
 
     @torch.no_grad()
-    def get_embeddings(self, loader, ignore=True, return_all=False):
+    def get_embeddings(self, loader, ignore=True, return_all=False, ignore_token_start_mask=False):
         self.network.eval()
 
         all_embeddings = []
@@ -247,6 +247,9 @@ class Model(object):
                 # ignore [SEP]
                 lens = attention_mask.sum(dim=1) - 1
                 token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+
+            if ignore_token_start_mask:
+                torch.ones(token_start_mask)
 
             embed = self.network.get_embeddings(words, attention_mask, return_all=return_all)
             
@@ -261,8 +264,45 @@ class Model(object):
             for sentence_embed in torch.split(embed, lens, dim=-2):
                 all_embeddings.append(sentence_embed.tolist())
             
-
         return all_embeddings
+
+    @torch.no_grad()
+    def get_avg_embeddings(self, loader, ignore=True):
+        self.network.eval()
+
+        all_embeddings = []
+        for words, attention_mask, token_start_mask in loader:
+            if ignore:
+                # ignore [CLS]
+                token_start_mask[:, 0] = 0
+                # ignore [SEP]
+                lens = attention_mask.sum(dim=1) - 1
+                token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+
+            # [batch_size, seq_len, bert_dim]
+            embed = self.network.get_embeddings(words, attention_mask)
+            for sent_embed, sent_att_mask, sent_mask in zip(embed, attention_mask, token_start_mask):
+                sent_avg_embeddings = []
+                tmp = None
+                tmp_len = 0
+                # sent_mask + [1] to handle the last word in sentence 
+                for word_embed, word_att_mask, word_mask in zip(sent_embed + [None], sent_att_mask + [0], sent_mask + [1]):
+                    if word_mask == 1 or word_att_mask != 1:
+                        if tmp:
+                            if tmp_len == 0:
+                                tmp_len = 1
+                            sent_avg_embeddings.append(tmp/tmp_len)
+                        tmp = word_embed
+                        tmp_len = 1
+                        if word_att_mask != 1:
+                            break
+                    else:
+                        if tmp:
+                            tmp += word_embed
+                            tmp_len += 1
+                all_embeddings.append(sent_avg_embeddings)
+
+        return all_embeddings            
 
     @torch.no_grad()
     def get_everything(self, loader):

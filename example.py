@@ -44,6 +44,67 @@ syntactic_model = Model(vocab, syntactic_network)
 sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
 
 
+def example(sentences):
+
+	dataset = TextDataset(vocab.numericalize_sentences(sentences))
+	loader = DataLoader(dataset=dataset,
+						batch_size=BATCH_SIZE,
+						collate_fn=collate_fn)
+
+	# set ignore=True to not return embeddings for start of sentence and end of sentence tokens
+	# set return_all=True to return embeddings for all 12 layers, return_all=False to return only last layer
+	# default is ignore=True, return_all=False
+	
+	embeddings = model.get_embeddings(loader, ignore=True, return_all=False, ignore_token_start_mask=True)
+	avg_embeddings = model.get_avg_embeddings(loader)
+
+	print(embeddings)
+	print(avg_embeddings)
+
+	# s_arc, s_rel = model.get_matrices(loader)
+	
+	# If you get embeddings this way, it is default (ignore=True, return_all=False)
+	# s_arc, s_rel, embeddings = model.get_everything(loader)
+
+# This function is for embedding visualization
+def PennTreebank(corpus_path, out_file, meta_file):
+	corpus = Corpus.load(corpus_path)
+	vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
+	a, b, c, words, tags = vocab.numericalize_tags(corpus)
+	dataset = TextDataset((a, b, c))
+	loader = DataLoader(dataset=dataset,
+						batch_size=BATCH_SIZE,
+						collate_fn=collate_fn)
+	original_embeddings = model.get_embeddings(loader)
+	syntactic_embeddings = syntactic_model.get_embeddings(loader)
+	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
+		embeddings = []
+		embeddings2 = []
+		for sentence in tqdm(original_embeddings):
+			for word_embed in sentence:
+				embeddings.append(torch.FloatTensor(word_embed))
+		for sentence in tqdm(syntactic_embeddings):
+			for word_embed in sentence:
+				embeddings2.append(torch.FloatTensor(word_embed))
+
+		embeddings = torch.stack(embeddings)
+		embeddings2 = torch.stack(embeddings2)
+
+		embeddings = torch.cat([embeddings, embeddings2], dim=0)
+		embeddings = F.normalize(embeddings, p=2, dim=1).tolist()
+
+		for embedding in tqdm(embeddings):
+			f.write('\t'.join([str(val) for val in embedding])+'\n')
+		
+
+		ff.write('Word\tPOS\n')
+		for sentence, sentence_tags in tqdm(zip(words, tags)):
+			for word, tag in zip(sentence, sentence_tags):
+				ff.write('original_' + word + '\t' + 'original_' + tag + '\n')
+
+		for sentence, sentence_tags in tqdm(zip(words, tags)):
+			for word, tag in zip(sentence, sentence_tags):
+				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
 def write_hdf5(input_path, output_path, model):
 	LAYER_COUNT = 12
@@ -104,79 +165,23 @@ def write_hdf5(input_path, output_path, model):
 		# 	dset[:,:,:] = embed
 
 
-def example(sentences):
-
-	dataset = TextDataset(vocab.numericalize_sentences(sentences))
-	loader = DataLoader(dataset=dataset,
-						batch_size=BATCH_SIZE,
-						collate_fn=collate_fn)
-
-	# set ignore=True to not return embeddings for start of sentence and end of sentence tokens
-	# set return_all=True to return embeddings for all 12 layers, return_all=False to return only last layer
-	# default is ignore=True, return_all=False
-	embeddings = model.get_embeddings(loader, ignore=False, return_all=True)
-
-	# s_arc, s_rel = model.get_matrices(loader)
-	
-	# If you get embeddings this way, it is default (ignore=True, return_all=False)
-	# s_arc, s_rel, embeddings = model.get_everything(loader)
-
-
-# This function is for embedding visualization
-def PennTreebank(corpus_path, out_file, meta_file):
-	corpus = Corpus.load(corpus_path)
-	vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
-	a, b, c, words, tags = vocab.numericalize_tags(corpus)
-	dataset = TextDataset((a, b, c))
-	loader = DataLoader(dataset=dataset,
-						batch_size=BATCH_SIZE,
-						collate_fn=collate_fn)
-	original_embeddings = model.get_embeddings(loader)
-	syntactic_embeddings = syntactic_model.get_embeddings(loader)
-	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
-		embeddings = []
-		embeddings2 = []
-		for sentence in tqdm(original_embeddings):
-			for word_embed in sentence:
-				embeddings.append(torch.FloatTensor(word_embed))
-		for sentence in tqdm(syntactic_embeddings):
-			for word_embed in sentence:
-				embeddings2.append(torch.FloatTensor(word_embed))
-
-		embeddings = torch.stack(embeddings)
-		embeddings2 = torch.stack(embeddings2)
-
-		embeddings = torch.cat([embeddings, embeddings2], dim=0)
-		embeddings = F.normalize(embeddings, p=2, dim=1).tolist()
-
-		for embedding in tqdm(embeddings):
-			f.write('\t'.join([str(val) for val in embedding])+'\n')
-		
-
-		ff.write('Word\tPOS\n')
-		for sentence, sentence_tags in tqdm(zip(words, tags)):
-			for word, tag in zip(sentence, sentence_tags):
-				ff.write('original_' + word + '\t' + 'original_' + tag + '\n')
-
-		for sentence, sentence_tags in tqdm(zip(words, tags)):
-			for word, tag in zip(sentence, sentence_tags):
-				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
+example(sentences)
 
 # PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
 
-corpus = {
-	'train_path': 'data/train',
-	'dev_path': 'data/dev',
-	'test_path': 'data/test'
-}
+# corpus = {
+# 	'train_path': 'data/train',
+# 	'dev_path': 'data/dev',
+# 	'test_path': 'data/test'
+# }
 
-my_embeddings = {
-	'train_path': 'data/train.bert-layers.hdf5',
-	'dev_path': 'data/dev.bert-layers.hdf5',
-	'test_path': 'data/test.bert-layers.hdf5',
-}
+# my_embeddings = {
+# 	'train_path': 'data/train.bert-layers.hdf5',
+# 	'dev_path': 'data/dev.bert-layers.hdf5',
+# 	'test_path': 'data/test.bert-layers.hdf5',
+# }
 
-for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
-	print(input_path)
-	print(output_path)
-	write_hdf5(input_path, output_path, model=syntactic_model)
+# for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
+# 	print(input_path)
+# 	print(output_path)
+# 	write_hdf5(input_path, output_path, model=syntactic_model)
