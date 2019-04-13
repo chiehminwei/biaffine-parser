@@ -305,7 +305,7 @@ class Model(object):
                             word_embed = np.array(word_embed)
                             tmp += word_embed
                             tmp_len += 1
-                all_embeddings.append(sent_avg_embeddings)
+                all_embeddings.append(np.array(sent_avg_embeddings))
 
         return all_embeddings            
 
