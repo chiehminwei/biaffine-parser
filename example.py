@@ -41,7 +41,7 @@ if torch.cuda.is_available():
 model = Model(vocab, network)
 syntactic_model = Model(vocab, syntactic_network)
 
-sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)']]
+sentences = [['Yes', 'yes', 'yes', '.'], ["It's", 'all', 'done', ':)', '.']]
 
 
 def example(sentences):
