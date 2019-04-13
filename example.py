@@ -62,14 +62,14 @@ def example(sentences):
 	print(tokenizer.tokenize(' '.join(sentences[0])))
 	print(embeddings[0].shape)
 	print(avg_embeddings[0].shape)
-	print(embeddings[0][:,:5])
-	print(avg_embeddings[0][:,:5])
+	print(embeddings[0][:,:3])
+	print(avg_embeddings[0][:,:3])
 
 	print(tokenizer.tokenize(' '.join(sentences[1])))
 	print(embeddings[1].shape)
 	print(avg_embeddings[1].shape)
-	print(embeddings[1][:,:5])
-	print(avg_embeddings[1][:,:5])
+	print(embeddings[1][:,:3])
+	print(avg_embeddings[1][:,:3])
 
 	
 
