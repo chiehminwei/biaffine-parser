@@ -75,9 +75,9 @@ def write_hdf5(input_path, output_path, model):
 				print(len(tokenized_text))
 				print(embed.shape)
 			if index % 1000 == 0:
-				print(index)
+				print('Processing sentence {}...'.format(index))
 
-			assert len(tokenized_text) == embed.shape[0]
+			assert len(tokenized_text) == embed.shape[-2]
 			
 			dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[0], FEATURE_COUNT))
 			dset[:,:,:] = embed
