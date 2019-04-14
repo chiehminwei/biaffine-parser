@@ -176,6 +176,8 @@ def write_hdf5(input_path, output_path, model):
 					else:
 						token_start_mask.append(1)
 				token_start_mask = torch.ByteTensor(token_start_mask)
+				if index < 5:
+					print('token_start_mask ', token_start_mask)
 
 			if torch.cuda.is_available():
 				indexed_tokens = indexed_tokens.cuda()

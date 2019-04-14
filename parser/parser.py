@@ -130,6 +130,12 @@ class BiaffineParser(nn.Module):
         #     words = x_.mul(1-self.word_dropout_p).long()  
         
         # get outputs from bert
+        encoded_layers, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=True)
+        if return_all:
+            embed_to_return = encoded_layers
+        else:
+            embed_to_return = encoded_layers[:,layer_index]
+        
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
         x = embed
 
@@ -156,7 +162,7 @@ class BiaffineParser(nn.Module):
 
     @classmethod
     def load(cls, fname, cloud_address=None, local_rank=0):
-        print("I'm loading now haha. This is {}".format(local_rank))
+        # print("I'm loading now haha. This is {}".format(local_rank))
         # Copy from cloud if there's no saved checkpoint
         if not os.path.isfile(fname):
             if cloud_address:
@@ -173,21 +179,22 @@ class BiaffineParser(nn.Module):
             network = cls(state['params'])
             network.load_state_dict(state['state_dict'])
             network.to(device)
-            print('Loaded model from checkpoint')
+            print('Loaded model from checkpoint (local rank {})'.format(local_rank))
         else:
             raise IOError('Local checkpoint does not exists. Failed to load model.')
 
         return network
 
-    def save(self, fname, epoch, cloud_address, local_rank=0):
+    def save(self, fname, epoch, cloud_address, optimizer, local_rank=0):
         state = {
             'params': self.params,
             'state_dict': self.state_dict(),
             'last_epoch': epoch,
+            'optimizer': optimizer.state_dict(),
         }
         torch.save(state, fname)
-        print("I'm saving now haha. This is {}".format(local_rank))
+        print("Model saved (local rank {})".format(local_rank))
         # Save a copy to cloud as well
-        FNULL = open(os.devnull, 'w')
-        cloud_address = os.path.join(cloud_address, fname)
+        # FNULL = open(os.devnull, 'w')
+        # cloud_address = os.path.join(cloud_address, fname)
         # subprocess.call(['gsutil', 'cp', fname, cloud_address], stdout=FNULL, stderr=subprocess.STDOUT)

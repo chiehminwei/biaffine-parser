@@ -165,6 +165,8 @@ class Train(object):
             FNULL = open(os.devnull, 'w')
             cloud_address = os.path.join(args.cloud_address, args.file)
             # subprocess.call(['gsutil', 'cp', cloud_address, args.file], stdout=FNULL, stderr=subprocess.STDOUT)
+        
+        state = None
         if os.path.isfile(args.file):
             state = torch.load(args.file, map_location='cpu')
             last_epoch = state['last_epoch']
@@ -184,6 +186,13 @@ class Train(object):
         # args.lr = args.lr*float(args.batch_size*args.world_size)/256.
 
         model = Model(vocab, network)
+        if os.path.isfile(args.file):
+            try:
+                print('Resume training for optimizer')
+                model.optimizer.load_state_dict(state['optimizer'])
+            else:
+                print('Optimizer failed to load')
+
 
         model(loaders=(train_loader, dev_loader, dev_loader),
               epochs=Config.epochs,
