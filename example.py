@@ -34,9 +34,9 @@ params = {
 network = BiaffineParser(params)			  			# if you want to use the original BERT
 syntactic_network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
 
-if torch.cuda.is_available():
-	network.to(torch.device('cuda'))
-	syntactic_network.to(torch.device('cuda'))
+# if torch.cuda.is_available():
+# 	network.to(torch.device('cuda'))
+# 	syntactic_network.to(torch.device('cuda'))
 
 model = Model(vocab, network)
 syntactic_model = Model(vocab, syntactic_network)
@@ -180,9 +180,10 @@ def write_hdf5(input_path, output_path, model):
 					print('sum token start mask ', np.array(token_start_mask).sum())
 				token_start_mask = torch.ByteTensor(token_start_mask)
 
-			if torch.cuda.is_available():
-				indexed_tokens = indexed_tokens.cuda()
-				token_start_mask = token_start_mask.cuda()	
+			# if torch.cuda.is_available():
+			# 	indexed_tokens = indexed_tokens.cuda()
+			# 	token_start_mask = token_start_mask.cuda()	
+			# 	attention_mask = attention_mask.cuda()
 			
 			dataset = TextDataset(([indexed_tokens], [attention_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
