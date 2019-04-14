@@ -171,11 +171,11 @@ def write_hdf5(input_path, output_path, model):
 				token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
 			else:
 				token_start_mask = []
-				for token in tokenized_text:
-					if token.startswith('##'):
-						token_start_mask.append(0)
-					else:
-						token_start_mask.append(1)
+				for word in line.split():
+					tokens = tokenizer.tokenize(word)
+					if tokens:
+						token_start_mask.extend([1]+[0]*(len(tokens)-1))
+
 				token_start_mask = torch.ByteTensor(token_start_mask)
 				if index < 5:
 					print('token_start_mask ', token_start_mask)
