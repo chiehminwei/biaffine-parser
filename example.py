@@ -172,6 +172,8 @@ def write_hdf5(input_path, output_path, model):
 					token_start_mask.append(1)
 			token_start_mask = torch.ByteTensor(token_start_mask)
 
+			token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
+
 			if torch.cuda.is_available():
 				indexed_tokens = indexed_tokens.cuda()
 				token_start_mask = token_start_mask.cuda()	
