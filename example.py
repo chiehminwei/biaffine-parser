@@ -164,7 +164,7 @@ def write_hdf5(input_path, output_path, model):
 			# tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
 			tokenized_text = tokenizer.tokenize(line)
 			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
-			
+			attention_mask = [1 for x in tokenized_text]
 			
 			all_tokens = False
 			if all_tokens:
@@ -184,7 +184,7 @@ def write_hdf5(input_path, output_path, model):
 				indexed_tokens = indexed_tokens.cuda()
 				token_start_mask = token_start_mask.cuda()	
 			
-			dataset = TextDataset(([indexed_tokens], [token_start_mask], [token_start_mask]))
+			dataset = TextDataset(([indexed_tokens], [attention_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
 			# first token
