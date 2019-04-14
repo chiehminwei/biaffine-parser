@@ -58,11 +58,6 @@ my_embeddings = {
 	'test_path': 'data/test.bert-layers.hdf5',
 }
 
-for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
-	print(input_path)
-	print(output_path)
-	write_hdf5(input_path, output_path, model=syntactic_model)
-
 
 def example(sentences):
 	'''
@@ -222,3 +217,9 @@ def write_hdf5(input_path, output_path, model):
 		# 	dset = fout.create_dataset(str(index), (LAYER_COUNT, len(sentence), FEATURE_COUNT))
 		# 	embed = np.array(embed)
 		# 	dset[:,:,:] = embed
+
+for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
+	print(input_path)
+	print(output_path)
+	write_hdf5(input_path, output_path, model=syntactic_model)
+
