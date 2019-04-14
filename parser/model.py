@@ -247,8 +247,8 @@ class Model(object):
                 token_start_mask = attention_mask.clone()
  
             if ignore:
-                 print(token_start_mask.sum(dim=-1))
-                 
+                print(token_start_mask.sum(dim=-1))
+
                 # ignore [CLS]
                 token_start_mask[:, 0] = 0
                 # ignore [SEP]
