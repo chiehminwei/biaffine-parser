@@ -41,27 +41,27 @@ if torch.cuda.is_available():
 model = Model(vocab, network)
 syntactic_model = Model(vocab, syntactic_network)
 
-sentences = [['Yes', 'yes', 'yes'], ["It's", 'all', 'done', ':)', '.']]
-example(sentences)
+# sentences = [['Yes', 'yes', 'yes'], ["It's", 'all', 'done', ':)', '.']]
+# example(sentences)
 
 # PennTreebank('data/dev.conllx', 'embeddings.tsv', 'meta.tsv')
 
-# corpus = {
-# 	'train_path': 'data/train',
-# 	'dev_path': 'data/dev',
-# 	'test_path': 'data/test'
-# }
+corpus = {
+	'train_path': 'data/train',
+	'dev_path': 'data/dev',
+	'test_path': 'data/test'
+}
 
-# my_embeddings = {
-# 	'train_path': 'data/train.bert-layers.hdf5',
-# 	'dev_path': 'data/dev.bert-layers.hdf5',
-# 	'test_path': 'data/test.bert-layers.hdf5',
-# }
+my_embeddings = {
+	'train_path': 'data/train.bert-layers.hdf5',
+	'dev_path': 'data/dev.bert-layers.hdf5',
+	'test_path': 'data/test.bert-layers.hdf5',
+}
 
-# for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
-# 	print(input_path)
-# 	print(output_path)
-# 	write_hdf5(input_path, output_path, model=syntactic_model)
+for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
+	print(input_path)
+	print(output_path)
+	write_hdf5(input_path, output_path, model=syntactic_model)
 
 
 def example(sentences):
@@ -75,19 +75,21 @@ def example(sentences):
 
 	# get_embeddings returns the embedding of the first subword as the embedding for the whole word.
 	# set ignore=True to not return embeddings for start of sentence and end of sentence tokens
-	# set return_all=True to return embeddings for all 12 layers, return_all=False to return only last layer
+	# set return_all=True to return embeddings for all 12 layers [batch_size, num_layer, num_word, hidden_dim], 
+	#     return_all=False to return only layer_index layer
 	# set ignore_token_start_mask=True if you want to return token-level (instead of word-level) embeddings
-	# default is ignore=True, return_all=False, ignore_token_start_mask=False
+	# default is layer_index=-1, ignore=True, return_all=False, ignore_token_start_mask=False
 	# all the named arguments are optional
-	embeddings = model.get_embeddings(loader, ignore=True, return_all=False, ignore_token_start_mask=False)
-
+	embeddings = model.get_embeddings(loader, layer_index=8, return_all=False, ignore=True, ignore_token_start_mask=False)
+	    
+	
 	# get_avg_embeddings returns the avg embedding of the subwords as the embedding for the whole word.
 	# It also has a ignore flag that defaults to True. It only supports returning last layer right now.
-	avg_embeddings = model.get_avg_embeddings(loader)
+	avg_embeddings = model.get_avg_embeddings(loader, ignore=True)
 
 	s_arc, s_rel = model.get_matrices(loader)
 	
-	# If you get embeddings this way, it is default (ignore=True, return_all=False, not average)
+	# If you get embeddings this way, it is default (ignore=True, return_all=False, not average, last layer)
 	# Let me know if you want this to support average or returning all layers too
 	s_arc, s_rel, embeddings = model.get_everything(loader)
 
@@ -166,7 +168,15 @@ def write_hdf5(input_path, output_path, model):
 			line = '[CLS] ' + line + ' [SEP]'
 			tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
 			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
-			token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
+			
+			token_start_mask = []
+			for token in tokenized_text:
+				if token.startswith('##'):
+					token_start_mask.append(0)
+				else:
+					token_start_mask.append(1)
+			token_start_mask = torch.ByteTensor(token_start_mask)
+
 			if torch.cuda.is_available():
 				indexed_tokens = indexed_tokens.cuda()
 				token_start_mask = token_start_mask.cuda()	
@@ -174,7 +184,10 @@ def write_hdf5(input_path, output_path, model):
 			dataset = TextDataset(([indexed_tokens], [token_start_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
+			# first token
 			embeddings = model.get_embeddings(loader, ignore=False, return_all=True)
+			# all tokens
+			# embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=True)
 			embed = np.array(embeddings[0])
 
 			if index % 1000 == 0:

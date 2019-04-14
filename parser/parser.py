@@ -112,23 +112,22 @@ class BiaffineParser(nn.Module):
 
         return s_arc, s_rel
 
-    def get_embeddings(self, words, mask, return_all=False):
+    def get_embeddings(self, words, mask, layer_index=-1, return_all=False):
         # get outputs from bert
-        if not return_all:
-            embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
-            return embed
-        else:
-            encoded_layers, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=True)
+        encoded_layers, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=True)
+        if return_all:
             return encoded_layers
+        else:
+            return encoded_layers[:,layer_index]
 
-    def get_everything(self, words, mask):
+    def get_everything(self, words, mask, layer_index=-1, return_all=False):
         # get the mask and lengths of given batch
         lens = mask.sum(dim=1)
         
         # word dropout
-        if self.training:
-            x_ = self.word_dropout(words.float())
-            words = x_.mul(1-self.word_dropout_p).long()  
+        # if self.training:
+        #     x_ = self.word_dropout(words.float())
+        #     words = x_.mul(1-self.word_dropout_p).long()  
         
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
