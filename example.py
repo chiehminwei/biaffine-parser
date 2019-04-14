@@ -180,9 +180,9 @@ def write_hdf5(input_path, output_path, model):
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
 			# first token
-			embeddings = model.get_embeddings(loader, ignore=False, return_all=True)
+			# embeddings = model.get_embeddings(loader, ignore=False, return_all=True)
 			# all tokens
-			# embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=True)
+			embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=True)
 			embed = np.array(embeddings[0])
 
 			if index % 1000 == 0:
