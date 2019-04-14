@@ -166,7 +166,7 @@ def write_hdf5(input_path, output_path, model):
 			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
 			
 			
-			all_tokens = True
+			all_tokens = False
 			if all_tokens:
 				token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
 			else:
