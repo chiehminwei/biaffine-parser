@@ -172,9 +172,6 @@ def write_hdf5(input_path, output_path, model):
 			else:
 				token_start_mask = []
 				for token in tokenized_text:
-					if token == '[CLS]' or token == '[SEP]':
-						token_start_mask.append(0)
-						continue
 					if token.startswith('##'):
 						token_start_mask.append(0)
 					else:

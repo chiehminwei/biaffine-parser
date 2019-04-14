@@ -185,12 +185,13 @@ class BiaffineParser(nn.Module):
 
         return network
 
-    def save(self, fname, epoch, cloud_address, optimizer, local_rank=0):
+    def save(self, fname, epoch, cloud_address, optimizer, max_metric, local_rank=0):
         state = {
             'params': self.params,
             'state_dict': self.state_dict(),
             'last_epoch': epoch,
             'optimizer': optimizer.state_dict(),
+            'max_metric': max_metric,
         }
         torch.save(state, fname)
         print("Model saved (local rank {})".format(local_rank))

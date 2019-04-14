@@ -160,6 +160,7 @@ class Train(object):
         #     print(f"{network}\n")
 
         last_epoch = 0
+        max_metric = 0.0
         # Start training from checkpoint if one exists
         if not os.path.isfile(args.file):
             FNULL = open(os.devnull, 'w')
@@ -188,6 +189,7 @@ class Train(object):
         model = Model(vocab, network)
         if os.path.isfile(args.file):
             try:
+                max_metric = state['max_metric']
                 print('Resume training for optimizer')
                 model.optimizer.load_state_dict(state['optimizer'])
             else:
@@ -206,4 +208,5 @@ class Train(object):
               last_epoch=last_epoch,
               cloud_address=args.cloud_address,
               args=args,
-              gradient_accumulation_steps=Config.gradient_accumulation_steps)
+              gradient_accumulation_steps=Config.gradient_accumulation_steps,
+              max_metric=max_metric)

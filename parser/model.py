@@ -30,11 +30,11 @@ class Model(object):
         
     def __call__(self, loaders, epochs, patience,
                  lr, betas, epsilon, weight_decay, annealing, file,
-                 last_epoch, cloud_address, args, gradient_accumulation_steps=1):
+                 last_epoch, cloud_address, args, gradient_accumulation_steps=1, max_metric=0.0):
 
         self.gradient_accumulation_steps = gradient_accumulation_steps
         total_time = timedelta()
-        max_e, max_metric = 0, 0.0
+        max_e, max_metric = last_epoch, max_metric
         train_loader, dev_loader, test_loader = loaders
         self.optimizer = BertAdam(params=self.network.parameters(),
                                   lr=lr, b1=betas[0], b2=betas[1],
@@ -67,6 +67,7 @@ class Model(object):
             # test_loss, test_metric = self.evaluate(test_loader)
             # if args.local_rank == 0:
             #     print(f"{'test:':<6} Loss: {test_loss:.4f} {test_metric}")
+
             t = datetime.now() - start
             if args.local_rank == 0:
                 print(f"{t}s elapsed\n")
@@ -75,11 +76,12 @@ class Model(object):
             # save the model if it is the best so far
             if args.local_rank == 0:
                 if dev_metric > max_metric:
-                    if args.distributed or torch.cuda.device_count() > 1:
-                        self.network.module.save(file, epoch, cloud_address, self.optimizer, args.local_rank)
-                    else:
-                        self.network.save(file, epoch, cloud_address, self.optimizer)
                     max_e, max_metric = epoch, dev_metric
+                    if args.distributed or torch.cuda.device_count() > 1:
+                        self.network.module.save(file, epoch, cloud_address, self.optimizer, max_metric, args.local_rank)
+                    else:
+                        self.network.save(file, epoch, cloud_address, self.optimizer, max_e, max_metric)
+                    
                 elif epoch - max_e >= patience:
                     break
         if args.local_rank == 0:
