@@ -177,8 +177,6 @@ def write_hdf5(input_path, output_path, model):
 						token_start_mask.extend([1]+[0]*(len(tokens)-1))
 
 				token_start_mask = torch.ByteTensor(token_start_mask)
-				if index < 5:
-					print('token_start_mask ', token_start_mask)
 
 			if torch.cuda.is_available():
 				indexed_tokens = indexed_tokens.cuda()
@@ -196,6 +194,8 @@ def write_hdf5(input_path, output_path, model):
 			if index % 1000 == 0:
 				print('Processing sentence {}...'.format(index))
 			if index < 5:
+				print(tokenized_text)
+				print('token_start_mask ', token_start_mask)
 				print('Len of tokens: {}'.format(len(tokenized_text)))
 				print('Len of original: ', len(line.split()))
 				print('embed shape: {}\n'.format(embed.shape))
