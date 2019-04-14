@@ -164,15 +164,18 @@ def write_hdf5(input_path, output_path, model):
 			tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
 			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
 			
-			token_start_mask = []
-			for token in tokenized_text:
-				if token.startswith('##'):
-					token_start_mask.append(0)
-				else:
-					token_start_mask.append(1)
-			token_start_mask = torch.ByteTensor(token_start_mask)
-
-			token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
+			
+			all_tokens = True
+			if all_tokens:
+				token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
+			else:
+				token_start_mask = []
+				for token in tokenized_text:
+					if token.startswith('##'):
+						token_start_mask.append(0)
+					else:
+						token_start_mask.append(1)
+				token_start_mask = torch.ByteTensor(token_start_mask)
 
 			if torch.cuda.is_available():
 				indexed_tokens = indexed_tokens.cuda()
@@ -184,7 +187,7 @@ def write_hdf5(input_path, output_path, model):
 			# first token
 			# embeddings = model.get_embeddings(loader, ignore=False, return_all=True)
 			# all tokens
-			embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=True)
+			embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=all_tokens)
 			embed = np.array(embeddings[0])
 
 			if index % 1000 == 0:
@@ -193,7 +196,10 @@ def write_hdf5(input_path, output_path, model):
 				print('Len of tokens: {}'.format(len(tokenized_text)))
 				print('embed shape: {}\n'.format(embed.shape))
 			
-			assert len(tokenized_text) == embed.shape[-2]
+			if all_tokens:
+				assert len(tokenized_text) == embed.shape[-2]
+			else:
+				assert len(line.split()) == embed.shape[-2]
 			
 			dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[-2], FEATURE_COUNT))
 			dset[:,:,:] = embed
