@@ -155,6 +155,8 @@ class Train(object):
             for k, v in params.items():
                 print(f"  {k}: {v}")
         network = BiaffineParser(params)
+        if torch.cuda.is_available():
+          network.to(torch.device('cuda'))
 
         # if args.local_rank == 0:
         #     print(f"{network}\n")
