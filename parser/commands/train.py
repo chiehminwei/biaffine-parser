@@ -192,7 +192,7 @@ class Train(object):
                 max_metric = state['max_metric']
                 print('Resume training for optimizer')
                 model.optimizer.load_state_dict(state['optimizer'])
-            else:
+            except:
                 print('Optimizer failed to load')
 
 
