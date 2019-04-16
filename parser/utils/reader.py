@@ -76,7 +76,7 @@ class Corpus(object):
     @classmethod
     def load(cls, fname):
         start, sentences = 0, []
-        with open(fname, 'r') as f:
+        with open(fname, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
         for i, line in enumerate(lines):
