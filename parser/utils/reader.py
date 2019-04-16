@@ -77,7 +77,7 @@ class Corpus(object):
     def load(cls, fname):
         start, sentences = 0, []
         with open(fname, 'r') as f:
-            lines = [line for line in f]
+            lines = f.readlines()
 
         for i, line in enumerate(lines):
             if line[0] == '#':
