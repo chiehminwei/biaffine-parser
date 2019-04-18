@@ -146,7 +146,7 @@ def PennTreebank(corpus_path, out_file, meta_file):
 			for word, tag in zip(sentence, sentence_tags):
 				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
-def write_hdf5(input_path, output_path, model):
+def write_hdf5(input_path, output_path, model, all_tokens):
 	'''
 	Extracts embeddings to a format compatible with structural probes
 	'''
@@ -161,18 +161,17 @@ def write_hdf5(input_path, output_path, model):
 		for index, line in enumerate(open(input_path)):
 			line = line.strip()
 			line = '[CLS] ' + line + ' [SEP]'
-			# tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
-			tokenized_text = tokenizer.tokenize(line)
+			tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
+			# tokenized_text = tokenizer.tokenize(line)
 			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
 			attention_mask = torch.ByteTensor([1 for x in tokenized_text])
 			
-			all_tokens = True
 			if all_tokens:
 				token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
 			else:
 				token_start_mask = []
 				for word in line.split():
-					tokens = tokenizer.tokenize(word)
+					tokens = tokenizer.wordpiece_tokenizer.tokenize(word)
 					if tokens:
 						token_start_mask.extend([1]+[0]*(len(tokens)-1))
 				if index < 5:
@@ -233,5 +232,5 @@ def write_hdf5(input_path, output_path, model):
 for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
 	print(input_path)
 	print(output_path)
-	write_hdf5(input_path, output_path, model=syntactic_model)
+	write_hdf5(input_path, output_path, model=syntactic_model, all_tokens = True)
 
