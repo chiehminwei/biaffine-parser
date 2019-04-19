@@ -153,16 +153,18 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 	LAYER_COUNT = 12
 	FEATURE_COUNT = 768
 	BATCH_SIZE = 1
+	word_piece = False
 
 	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
 	# tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-
+	if word_piece:
+		tokenizer = tokenizer.wordpiece_tokenizer
+	
 	with h5py.File(output_path, 'w') as fout:
 		for index, line in enumerate(open(input_path)):
 			line = line.strip()
 			line = '[CLS] ' + line + ' [SEP]'
-			tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
-			# tokenized_text = tokenizer.tokenize(line)
+			tokenized_text = tokenizer.tokenize(line)
 			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
 			attention_mask = torch.ByteTensor([1 for x in tokenized_text])
 			
@@ -171,7 +173,7 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			else:
 				token_start_mask = []
 				for word in line.split():
-					tokens = tokenizer.wordpiece_tokenizer.tokenize(word)
+					tokens = tokenizer.tokenize(word)
 					if tokens:
 						token_start_mask.extend([1]+[0]*(len(tokens)-1))
 				if index < 5:
