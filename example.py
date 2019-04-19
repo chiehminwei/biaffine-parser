@@ -163,7 +163,7 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			line = line.strip()
 			line = '[CLS] ' + line + ' [SEP]'
 			if word_piece:
-				tokenizer = tokenizer.wordpiece_tokenizer.tokenize(line)
+				tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
 			else:
 				tokenized_text = tokenizer.tokenize(line)
 			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
