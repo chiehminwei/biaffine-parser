@@ -152,7 +152,7 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 	'''
 	LAYER_COUNT = 1
 	BATCH_SIZE = 1
-	word_piece = True
+	word_piece = False
 
 	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
 	
