@@ -269,6 +269,22 @@ class Model(object):
         return all_embeddings
 
     @torch.no_grad()
+    def get_concat_embeddings(self, loader):
+        self.network.eval()
+
+        all_embeddings = []
+        for words, attention_mask, token_start_mask in loader:    
+            embed = self.network.get_concat_embeddings(words, attention_mask)
+            embed = embed[token_start_mask]   # [num_word, bert_dim]      
+            
+            # lens for splitting
+            lens = token_start_mask.sum(dim=1).tolist()
+            for sentence_embed in torch.split(embed, lens, dim=-2):
+                all_embeddings.append(np.array(sentence_embed.tolist()))
+            
+        return all_embeddings
+
+    @torch.no_grad()
     def get_avg_embeddings(self, loader, ignore=True):
         self.network.eval()
 

@@ -120,6 +120,15 @@ class BiaffineParser(nn.Module):
         else:
             return encoded_layers[:,layer_index]
 
+    def get_concat_embeddings(self, words, mask):
+        # get outputs from bert
+        x, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
+        arc_h = self.mlp_arc_h(x)
+        arc_d = self.mlp_arc_d(x)
+        rel_h = self.mlp_rel_h(x)
+        rel_d = self.mlp_rel_d(x)
+        return torch.cat((arc_h, arc_d, rel_h, rel_d), -1)
+
     def get_everything(self, words, mask, layer_index=-1, return_all=False):
         # get the mask and lengths of given batch
         lens = mask.sum(dim=1)

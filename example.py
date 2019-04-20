@@ -156,7 +156,6 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 	word_piece = True
 
 	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
-	# tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 	
 	with h5py.File(output_path, 'w') as fout:
 		for index, line in enumerate(open(input_path)):
@@ -193,7 +192,8 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			dataset = TextDataset(([indexed_tokens], [attention_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
-			embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=all_tokens)
+			# embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=all_tokens)
+			embeddings = model.get_concat_embeddings(loader)
 			embed = np.array(embeddings[0])
 
 			if index % 1000 == 0:
