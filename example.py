@@ -151,7 +151,6 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 	Extracts embeddings to a format compatible with structural probes
 	'''
 	LAYER_COUNT = 1
-	FEATURE_COUNT = 1200
 	BATCH_SIZE = 1
 	word_piece = True
 
@@ -211,7 +210,7 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			else:
 				assert len(line.split()) - 2 == embed.shape[-2]
 			
-			dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[-2], FEATURE_COUNT))
+			dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[-2], embed.shape[-1]))
 			dset[:,:,:] = embed
 
 
