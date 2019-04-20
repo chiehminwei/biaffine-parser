@@ -118,7 +118,7 @@ class BiaffineParser(nn.Module):
         if return_all:
             return encoded_layers
         else:
-            return encoded_layers[:,layer_index]
+            return encoded_layers[layer_index]
 
     def get_concat_embeddings(self, words, mask):
         # get outputs from bert
