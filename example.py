@@ -238,5 +238,5 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
 	print(input_path)
 	print(output_path)
-	write_hdf5(input_path, output_path, model=syntactic_model, all_tokens=False)
+	write_hdf5(input_path, output_path, model=model, all_tokens=False)
 
