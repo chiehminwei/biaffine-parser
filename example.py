@@ -69,7 +69,7 @@ def example(sentences):
 						collate_fn=collate_fn)
 
 	# get_embeddings returns the embedding of the first subword as the embedding for the whole word.
-	# set ignore=True to not return embeddings for start of sentence and end of sentence tokens
+	# set ignore=True to not return embeddings for start-of-sentence ([CLS]) and end-of-sentence ([SEP]) tokens
 	# set return_all=True to return embeddings for all 12 layers [batch_size, num_layer, num_word, hidden_dim], 
 	#     return_all=False to return only layer_index layer
 	# set ignore_token_start_mask=True if you want to return token-level (instead of word-level) embeddings
@@ -79,8 +79,8 @@ def example(sentences):
 	    
 	
 	# get_avg_embeddings returns the avg embedding of the subwords as the embedding for the whole word.
-	# It also has a ignore flag that defaults to True. It only supports returning last layer right now.
-	avg_embeddings = model.get_avg_embeddings(loader, ignore=True)
+	# It also has a ignore flag that defaults to True.
+	avg_embeddings = model.get_avg_embeddings(loader, layer_index=8, ignore=True)
 
 	s_arc, s_rel = model.get_matrices(loader)
 	
@@ -192,9 +192,9 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			dataset = TextDataset(([indexed_tokens], [attention_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
-			# embeddings = model.get_avg_embeddings(loader, ignore=True, layer_index=8)
-			# embeddings = model.get_avg_concat_embeddings(loader, ignore=True)
-			embeddings = model.get_embeddings(loader, layer_index=8, ignore=True)
+			embeddings = model.get_avg_embeddings(loader, layer_index=8)
+			# embeddings = model.get_avg_concat_embeddings(loader)
+			# embeddings = model.get_embeddings(loader, layer_index=8)
 			
 			embed = np.array(embeddings[0])
 
