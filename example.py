@@ -150,7 +150,7 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 	'''
 	Extracts embeddings to a format compatible with structural probes
 	'''
-	LAYER_COUNT = 12
+	LAYER_COUNT = 1
 	FEATURE_COUNT = 1200
 	BATCH_SIZE = 1
 	word_piece = True
