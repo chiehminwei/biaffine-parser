@@ -193,7 +193,7 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
 			# embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=all_tokens)
-			embeddings = model.get_avg_embeddings(loader, ignore=True, layer_index=7)
+			embeddings = model.get_avg_embeddings(loader, ignore=True, layer_index=8)
 			# embeddings = model.get_concat_embeddings(loader)
 			embed = np.array(embeddings[0])
 
@@ -239,5 +239,5 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
 	print(input_path)
 	print(output_path)
-	write_hdf5(input_path, output_path, model=model, all_tokens=False)
+	write_hdf5(input_path, output_path, model=syntactic_model, all_tokens=False)
 
