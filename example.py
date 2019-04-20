@@ -152,7 +152,7 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 	'''
 	LAYER_COUNT = 1
 	BATCH_SIZE = 1
-	word_piece = False
+	word_piece = False # Use word_piece tokenizer instead of full tokenizer
 
 	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
 	
@@ -167,9 +167,10 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
 			attention_mask = torch.ByteTensor([1 for x in tokenized_text])
 			
-			if all_tokens:
+			if all_tokens: # return subword-level embedding rather than word-level embedding
 				token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
 			else:
+				# construct token_start_mask to get word-level embedding
 				token_start_mask = []
 				for word in line.split():
 					if word_piece:
@@ -192,7 +193,7 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
 			# embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=all_tokens)
-			embeddings = model.get_avg_embeddings(loader, ignore=True, layer_index=8)
+			embeddings = model.get_avg_embeddings(loader, ignore=True, layer_index=7)
 			# embeddings = model.get_concat_embeddings(loader)
 			embed = np.array(embeddings[0])
 
