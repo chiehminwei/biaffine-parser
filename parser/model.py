@@ -285,13 +285,13 @@ class Model(object):
         return all_embeddings
 
     @torch.no_grad()
-    def get_avg_embeddings(self, loader, ignore=True):
+    def get_avg_embeddings(self, loader, ignore=True, layer_index=-1):
         self.network.eval()
 
         all_embeddings = []
         for words, attention_mask, token_start_mask in loader:
             # [batch_size, seq_len, bert_dim]
-            embed = self.network.get_embeddings(words, attention_mask)
+            embed = self.network.get_embeddings(words, attention_mask, layer_index)
             
             if ignore:
                 # ignore [CLS]
