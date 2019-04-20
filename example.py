@@ -192,9 +192,9 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			dataset = TextDataset(([indexed_tokens], [attention_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
-			# embeddings = model.get_embeddings(loader, ignore=False, return_all=True, ignore_token_start_mask=all_tokens)
-			embeddings = model.get_avg_embeddings(loader, ignore=True, layer_index=8)
-			# embeddings = model.get_concat_embeddings(loader)
+			# embeddings = model.get_avg_embeddings(loader, ignore=True, layer_index=8)
+			embeddings = model.get_avg_concat_embeddings(loader, ignore=True)
+			
 			embed = np.array(embeddings[0])
 
 			if index % 1000 == 0:
