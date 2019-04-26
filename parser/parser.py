@@ -75,6 +75,7 @@ class BiaffineParser(nn.Module):
         
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
+        del _
         x = embed
 
         if debug:
@@ -115,6 +116,7 @@ class BiaffineParser(nn.Module):
     def get_embeddings(self, words, mask, layer_index=-1, return_all=False):
         # get outputs from bert
         encoded_layers, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=True)
+        del _
         if return_all:
             return encoded_layers
         else:
@@ -123,6 +125,7 @@ class BiaffineParser(nn.Module):
     def get_concat_embeddings(self, words, mask):
         # get outputs from bert
         x, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
+        del _
         arc_h = self.mlp_arc_h(x)
         arc_d = self.mlp_arc_d(x)
         rel_h = self.mlp_rel_h(x)
@@ -140,12 +143,14 @@ class BiaffineParser(nn.Module):
         
         # get outputs from bert
         encoded_layers, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=True)
+        del _
         if return_all:
             embed_to_return = encoded_layers
         else:
             embed_to_return = encoded_layers[:,layer_index]
         
         embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
+        del _
         x = embed
 
         # bert dropout
