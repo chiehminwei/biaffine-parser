@@ -156,66 +156,79 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 
 	# tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
 	tokenizer = BertTokenizer.from_pretrained('bert-base-cased', do_lower_case=False)
-	
-	with h5py.File(output_path, 'w') as fout:
-		for index, line in enumerate(open(input_path)):
-			line = line.strip()
-			line = '[CLS] ' + line + ' [SEP]'
-			if word_piece:
-				tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
-			else:
-				tokenized_text = tokenizer.tokenize(line)
-			indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
-			attention_mask = torch.ByteTensor([1 for x in tokenized_text])
-			
-			if all_tokens: # return subword-level embedding rather than word-level embedding
-				token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
-			else:
-				# construct token_start_mask to get word-level embedding
-				token_start_mask = []
-				for word in line.split():
-					if word_piece:
-						tokens = tokenizer.wordpiece_tokenizer.tokenize(word)
-					else:
-						tokens = tokenizer.tokenize(word)
-					if tokens:
-						token_start_mask.extend([1]+[0]*(len(tokens)-1))
-				if index < 5:
-					print('len token start mask ', len(token_start_mask))
-					print('sum token start mask ', np.array(token_start_mask).sum())
-				token_start_mask = torch.ByteTensor(token_start_mask)
 
-			if torch.cuda.is_available():
-				indexed_tokens = indexed_tokens.cuda()
-				token_start_mask = token_start_mask.cuda()	
-				attention_mask = attention_mask.cuda()
-			
-			dataset = TextDataset(([indexed_tokens], [attention_mask], [token_start_mask]))
-			loader = DataLoader(dataset=dataset,
-								batch_size=BATCH_SIZE)
-			# embeddings = model.get_avg_embeddings(loader, layer_index=8)
-			# embeddings = model.get_avg_concat_embeddings(loader)
-			# embeddings = model.get_embeddings(loader, layer_index=8)
-			embeddings = model.get_embeddings(loader, return_all=True)
-			
+	fouts = []
+	for layer_index in range(LAYER_COUNT):
+		fout = h5py.File(output_path + str(layer_index), 'w')
+		fouts.append(fout)
+
+	
+	# with h5py.File(output_path, 'w') as fout:
+	for index, line in enumerate(open(input_path)):
+		line = line.strip()
+		line = '[CLS] ' + line + ' [SEP]'
+		if word_piece:
+			tokenized_text = tokenizer.wordpiece_tokenizer.tokenize(line)
+		else:
+			tokenized_text = tokenizer.tokenize(line)
+		indexed_tokens = torch.tensor(tokenizer.convert_tokens_to_ids(tokenized_text))
+		attention_mask = torch.ByteTensor([1 for x in tokenized_text])
+		
+		if all_tokens: # return subword-level embedding rather than word-level embedding
+			token_start_mask = torch.ByteTensor([1 for x in tokenized_text])
+		else:
+			# construct token_start_mask to get word-level embedding
+			token_start_mask = []
+			for word in line.split():
+				if word_piece:
+					tokens = tokenizer.wordpiece_tokenizer.tokenize(word)
+				else:
+					tokens = tokenizer.tokenize(word)
+				if tokens:
+					token_start_mask.extend([1]+[0]*(len(tokens)-1))
+			if index < 5:
+				print('len token start mask ', len(token_start_mask))
+				print('sum token start mask ', np.array(token_start_mask).sum())
+			token_start_mask = torch.ByteTensor(token_start_mask)
+
+		if torch.cuda.is_available():
+			indexed_tokens = indexed_tokens.cuda()
+			token_start_mask = token_start_mask.cuda()	
+			attention_mask = attention_mask.cuda()
+		
+		dataset = TextDataset(([indexed_tokens], [attention_mask], [token_start_mask]))
+		loader = DataLoader(dataset=dataset,
+							batch_size=BATCH_SIZE)
+		# embeddings = model.get_avg_embeddings(loader, layer_index=8)
+		# embeddings = model.get_avg_concat_embeddings(loader)
+		# embeddings = model.get_embeddings(loader, layer_index=8)
+		# embeddings = model.get_embeddings(loader, return_all=True)
+		for layer_index in range(LAYER_COUNT):
+			fout = fouts[layer_index]
+			embeddings = model.get_embeddings(loader, layer_index=layer_index)
 			embed = np.array(embeddings[0])
 
-			if index % 1000 == 0:
-				print('Processing sentence {}...'.format(index))
-			if index < 5:
-				print(tokenized_text)
-				print('token_start_mask ', token_start_mask)
-				print('Len of tokens: {}'.format(len(tokenized_text)))
-				print('Len of original: ', len(line.split()))
-				print('embed shape: {}\n'.format(embed.shape))
-			
-			if all_tokens:
-				assert len(tokenized_text) == embed.shape[-2]
-			else:
-				assert len(line.split()) - 2 == embed.shape[-2]
-			
-			dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[-2], embed.shape[-1]))
+			dset = fout.create_dataset(str(index), (1, embed.shape[-2], embed.shape[-1]))
 			dset[:,:,:] = embed
+		
+		# embed = np.array(embeddings[0])
+
+		if index % 1000 == 0:
+			print('Processing sentence {}...'.format(index))
+		# if index < 5:
+		# 	print(tokenized_text)
+		# 	print('token_start_mask ', token_start_mask)
+		# 	print('Len of tokens: {}'.format(len(tokenized_text)))
+		# 	print('Len of original: ', len(line.split()))
+		# 	print('embed shape: {}\n'.format(embed.shape))
+		
+		# if all_tokens:
+		# 	assert len(tokenized_text) == embed.shape[-2]
+		# else:
+		# 	assert len(line.split()) - 2 == embed.shape[-2]
+		
+		# dset = fout.create_dataset(str(index), (LAYER_COUNT, embed.shape[-2], embed.shape[-1]))
+		# dset[:,:,:] = embed
 
 
 		# This converts all at once. Works on small datasets, but will OOM on PTB
