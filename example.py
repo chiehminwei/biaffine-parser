@@ -150,11 +150,12 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 	'''
 	Extracts embeddings to a format compatible with structural probes
 	'''
-	LAYER_COUNT = 1
+	LAYER_COUNT = 12
 	BATCH_SIZE = 1
 	word_piece = False # Use word_piece tokenizer instead of full tokenizer
 
-	tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+	# tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+	tokenizer = BertTokenizer.from_pretrained('bert-base-cased', do_lower_case=False)
 	
 	with h5py.File(output_path, 'w') as fout:
 		for index, line in enumerate(open(input_path)):
@@ -192,9 +193,10 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 			dataset = TextDataset(([indexed_tokens], [attention_mask], [token_start_mask]))
 			loader = DataLoader(dataset=dataset,
 								batch_size=BATCH_SIZE)
-			embeddings = model.get_avg_embeddings(loader, layer_index=8)
+			# embeddings = model.get_avg_embeddings(loader, layer_index=8)
 			# embeddings = model.get_avg_concat_embeddings(loader)
 			# embeddings = model.get_embeddings(loader, layer_index=8)
+			embeddings = model.get_embeddings(loader, return_all=True)
 			
 			embed = np.array(embeddings[0])
 
@@ -240,5 +242,5 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 for input_path, output_path in zip(corpus.values(), my_embeddings.values()):
 	print(input_path)
 	print(output_path)
-	write_hdf5(input_path, output_path, model=syntactic_model, all_tokens=False)
+	write_hdf5(input_path, output_path, model=model, all_tokens=False)
 
