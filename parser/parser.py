@@ -35,8 +35,8 @@ class BiaffineParser(nn.Module):
         # self.word_dropout_p = params['word_dropout']
         
         # BERT
-        self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
-        # self.bert = BertModel.from_pretrained('bert-base-cased')
+        # self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
+        self.bert = BertModel.from_pretrained('bert-base-cased')
 
         self.bert_dropout = SharedDropout(p=params['bert_dropout'])
 
