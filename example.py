@@ -32,14 +32,14 @@ params = {
 	'pad_index': vocab.pad_index
 }
 network = BiaffineParser(params)			  			# if you want to use the original BERT
-syntactic_network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
+# syntactic_network = BiaffineParser.load(CHECKPOINT_DIR) # if you want to use the tuned BERT
 
 if torch.cuda.is_available():
 	network.to(torch.device('cuda'))
-	syntactic_network.to(torch.device('cuda'))
+	# syntactic_network.to(torch.device('cuda'))
 
 model = Model(vocab, network)
-syntactic_model = Model(vocab, syntactic_network)
+# syntactic_model = Model(vocab, syntactic_network)
 
 # sentences = [['Yes', 'yes', 'yes'], ["It's", 'all', 'done', ':)', '.']]
 # example(sentences)
@@ -104,47 +104,47 @@ def example(sentences):
 	# print(avg_embeddings[1][:,:3])
 
 
-def PennTreebank(corpus_path, out_file, meta_file):
-	'''
-	Extracts embeddings and labels for visualization
-	'''
-	corpus = Corpus.load(corpus_path)
-	vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
-	a, b, c, words, tags = vocab.numericalize_tags(corpus)
-	dataset = TextDataset((a, b, c))
-	loader = DataLoader(dataset=dataset,
-						batch_size=BATCH_SIZE,
-						collate_fn=collate_fn)
-	original_embeddings = model.get_embeddings(loader)
-	syntactic_embeddings = syntactic_model.get_embeddings(loader)
-	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
-		embeddings = []
-		embeddings2 = []
-		for sentence in tqdm(original_embeddings):
-			for word_embed in sentence:
-				embeddings.append(torch.FloatTensor(word_embed))
-		for sentence in tqdm(syntactic_embeddings):
-			for word_embed in sentence:
-				embeddings2.append(torch.FloatTensor(word_embed))
+# def PennTreebank(corpus_path, out_file, meta_file):
+# 	'''
+# 	Extracts embeddings and labels for visualization
+# 	'''
+# 	corpus = Corpus.load(corpus_path)
+# 	vocab = Vocab.from_corpus(corpus=corpus, min_freq=2)
+# 	a, b, c, words, tags = vocab.numericalize_tags(corpus)
+# 	dataset = TextDataset((a, b, c))
+# 	loader = DataLoader(dataset=dataset,
+# 						batch_size=BATCH_SIZE,
+# 						collate_fn=collate_fn)
+# 	original_embeddings = model.get_embeddings(loader)
+# 	syntactic_embeddings = syntactic_model.get_embeddings(loader)
+# 	with open(out_file, 'w') as f, open(meta_file, 'w') as ff:
+# 		embeddings = []
+# 		embeddings2 = []
+# 		for sentence in tqdm(original_embeddings):
+# 			for word_embed in sentence:
+# 				embeddings.append(torch.FloatTensor(word_embed))
+# 		for sentence in tqdm(syntactic_embeddings):
+# 			for word_embed in sentence:
+# 				embeddings2.append(torch.FloatTensor(word_embed))
 
-		embeddings = torch.stack(embeddings)
-		embeddings2 = torch.stack(embeddings2)
+# 		embeddings = torch.stack(embeddings)
+# 		embeddings2 = torch.stack(embeddings2)
 
-		embeddings = torch.cat([embeddings, embeddings2], dim=0)
-		embeddings = F.normalize(embeddings, p=2, dim=1).tolist()
+# 		embeddings = torch.cat([embeddings, embeddings2], dim=0)
+# 		embeddings = F.normalize(embeddings, p=2, dim=1).tolist()
 
-		for embedding in tqdm(embeddings):
-			f.write('\t'.join([str(val) for val in embedding])+'\n')
+# 		for embedding in tqdm(embeddings):
+# 			f.write('\t'.join([str(val) for val in embedding])+'\n')
 		
 
-		ff.write('Word\tPOS\n')
-		for sentence, sentence_tags in tqdm(zip(words, tags)):
-			for word, tag in zip(sentence, sentence_tags):
-				ff.write('original_' + word + '\t' + 'original_' + tag + '\n')
+# 		ff.write('Word\tPOS\n')
+# 		for sentence, sentence_tags in tqdm(zip(words, tags)):
+# 			for word, tag in zip(sentence, sentence_tags):
+# 				ff.write('original_' + word + '\t' + 'original_' + tag + '\n')
 
-		for sentence, sentence_tags in tqdm(zip(words, tags)):
-			for word, tag in zip(sentence, sentence_tags):
-				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
+# 		for sentence, sentence_tags in tqdm(zip(words, tags)):
+# 			for word, tag in zip(sentence, sentence_tags):
+# 				ff.write('syntactic_' + word + '\t' + 'syntactic_' + tag + '\n')
 
 def write_hdf5(input_path, output_path, model, all_tokens):
 	'''
