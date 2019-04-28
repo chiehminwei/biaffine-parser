@@ -203,11 +203,15 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 		# embeddings = model.get_avg_concat_embeddings(loader)
 		# embeddings = model.get_embeddings(loader, layer_index=8)
 		# embeddings = model.get_embeddings(loader, return_all=True)
+		
+		embeddings = model.get_embeddings(loader, return_all=True)
+		embeddings = np.array(embeddings[0])
+		embed = embeddings
+
 		for layer_index in range(LAYER_COUNT):
 			fout = fouts[layer_index]
-			embeddings = model.get_embeddings(loader, layer_index=layer_index)
-			embed = np.array(embeddings[0])
-
+			embed = embeddings[layer_index]
+			
 			dset = fout.create_dataset(str(index), (1, embed.shape[-2], embed.shape[-1]))
 			dset[:,:,:] = embed
 		
