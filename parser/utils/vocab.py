@@ -178,13 +178,22 @@ class Vocab(object):
 
         if offending_set: 
             print('WARNING: The following non-symbol characters are unknown to BERT:')
-            print(offending_set)
+            try:
+                print(offending_set)
+            except:
+                pass
         if symbol_set:
-            print('WARNING: The following symbol characters are unknown to BERT:')            
-            print(symbol_set)
+            print('WARNING: The following symbol characters are unknown to BERT:')
+            try:         
+                print(symbol_set)
+            except:
+                pass
         if empty_words:
             print('WARNING: The following characters are empty after going through tokenizer:')
-            print(empty_words)
+            try:
+                print(empty_words)
+            except:
+                pass
         if save_name:
             try:
                 index = save_name.rfind('/')
