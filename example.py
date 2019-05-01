@@ -85,9 +85,8 @@ def example(sentences):
 
 	s_arc, s_rel = model.get_matrices(loader)
 	
-	# If you get embeddings this way, it is default (ignore=True, return_all=False, not average, last layer)
-	# Let me know if you want this to support average or returning all layers too
-	s_arc, s_rel, embeddings = model.get_everything(loader)
+	# Don't use this this doesn't work
+	# s_arc, s_rel, embeddings = model.get_everything(loader)
 
 
 	# FOR DEBUGGING
