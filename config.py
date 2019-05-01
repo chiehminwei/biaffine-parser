@@ -21,7 +21,7 @@ class Config(object):
     decay_steps = 5000
 
     # [Run]
-    batch_size = 8
+    batch_size = 2
     epochs = 1000
     patience = 100
     gradient_accumulation_steps = 1
