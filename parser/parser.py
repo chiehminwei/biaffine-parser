@@ -31,7 +31,7 @@ class WeightedLayer(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        nn.init.zeros_(self.weight)
+        nn.init.xavier_normal_(self.weight)
 
     def forward(self, layers):
         weighted_layers = layers * self.weight
