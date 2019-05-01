@@ -92,6 +92,8 @@ class BiaffineParser(nn.Module):
         #     words = x_.mul(1-self.word_dropout_p).long()  
         
         # get outputs from bert
+        print(words)
+        print(mask)
         embed, _ = self.bert(words, attention_mask=mask)
         print(type(embed))
         del _
