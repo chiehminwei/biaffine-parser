@@ -155,6 +155,7 @@ class Model(object):
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
         self.network.eval()
+        print(self.network.weigted_layer.weight.data)
 
         loss, metric = 0, AttachmentMethod()
         for i, batch in enumerate(loader):
