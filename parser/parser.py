@@ -24,10 +24,23 @@ def length_to_mask(length, max_len=None, dtype=None):
         mask = torch.as_tensor(mask, dtype=dtype, device=length.device)
     return mask
 
+class WeightedLayer(nn.Module):
+    def __init__(self, num_layers):
+        super(WeightedLayer, self).__init__()
+        self.weight = torch.nn.Parameter(torch.Tensor(num_layers, 1, 1, 1))
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        nn.init.zeros_(self.weight)
+
+    def forward(self, layers):
+        weighted_layers = layers * self.weight
+        weighted_sum = torch.sum(weighted_layers, dim=0)
+        return weighted_sum
 
 class BiaffineParser(nn.Module):
 
-    def __init__(self, params):
+    def __init__(self, params, freeze_embeddings=True):
         super(BiaffineParser, self).__init__()
 
         self.params = params
@@ -35,8 +48,11 @@ class BiaffineParser(nn.Module):
         # self.word_dropout_p = params['word_dropout']
         
         # BERT
-        self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
-        # self.bert = BertModel.from_pretrained('bert-base-cased')
+        # self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
+        self.bert = BertModel.from_pretrained('bert-base-cased')
+        if freeze_embeddings:
+            for param in self.bert.parameters():
+                param.requires_grad = False
 
         self.bert_dropout = SharedDropout(p=params['bert_dropout'])
 
@@ -63,6 +79,8 @@ class BiaffineParser(nn.Module):
                                  bias_x=True,
                                  bias_y=True)
         self.pad_index = params['pad_index']
+
+        self.weighted_layer = WeightedLayer(12)
         
     def forward(self, words, mask, debug=False):
         # get the mask and lengths of given batch
@@ -74,9 +92,14 @@ class BiaffineParser(nn.Module):
         #     words = x_.mul(1-self.word_dropout_p).long()  
         
         # get outputs from bert
-        embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
+        embed, _ = self.bert(words, attention_mask=mask)
+        print(type(embed))
         del _
-        x = embed
+        embed = torch.stack(embed)
+        print(embed.shape)
+        x = self.weighted_layer(embed)
+        print(x.shape)
+        assert 1 == 2
 
         if debug:
             print('words', words.shape)
