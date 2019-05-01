@@ -14,9 +14,6 @@ from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM, W
 
 BATCH_SIZE = 8				# only affects speed, if too big you could OOM
 CHECKPOINT_DIR = 'model.pt' # path to model checkpoint
-VOCAB_DIR = 'vocab.pt'		# path to vocab checkpoint
-
-# vocab = torch.load(VOCAB_DIR)
 vocab = Vocab([], [], [])
 
 # what's in the params won't affect embeddings, they're just here so that my initialization code doesn't break
@@ -260,4 +257,3 @@ def write_hdf5(input_path, output_path, model, all_tokens):
 # 	print(input_path)
 # 	print(output_path)
 # 	write_hdf5(input_path, output_path, model=model, all_tokens=False)
-example([['Why', 'the', 'fuck', 'is', 'Chloe', 'still', 'in', 'my', 'mind', '?'], ['Such', 'BS', 'bruh']])
