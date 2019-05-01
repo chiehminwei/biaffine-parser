@@ -42,6 +42,7 @@ class BiaffineParser(nn.Module):
 
     def __init__(self, params, freeze_embeddings=True):
         super(BiaffineParser, self).__init__()
+        freeze_embeddings = False
 
         self.params = params
         # self.word_dropout = nn.Dropout(p=params['word_dropout'])
