@@ -94,8 +94,9 @@ class BiaffineParser(nn.Module):
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask)
         del _
-        embed = torch.stack(embed)
-        x = self.weighted_layer(embed)
+        # embed = torch.stack(embed)
+        # x = self.weighted_layer(embed)
+        x = embed[-1]
         
         if debug:
             print('words', words.shape)
