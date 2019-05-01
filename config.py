@@ -12,7 +12,7 @@ class Config(object):
     mlp_dropout = 0.33
 
     # [Optimizer]
-    lr = 2e-3
+    lr = 5e-2
     beta_1 = 0.9
     beta_2 = 0.9
     epsilon = 1e-12

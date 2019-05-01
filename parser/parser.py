@@ -42,7 +42,6 @@ class BiaffineParser(nn.Module):
 
     def __init__(self, params, freeze_embeddings=True):
         super(BiaffineParser, self).__init__()
-        freeze_embeddings = False
 
         self.params = params
         # self.word_dropout = nn.Dropout(p=params['word_dropout'])
@@ -95,9 +94,8 @@ class BiaffineParser(nn.Module):
         # get outputs from bert
         embed, _ = self.bert(words, attention_mask=mask)
         del _
-        # embed = torch.stack(embed)
-        # x = self.weighted_layer(embed)
-        x = embed[-1]
+        embed = torch.stack(embed)
+        x = self.weighted_layer(embed)
         
         if debug:
             print('words', words.shape)
