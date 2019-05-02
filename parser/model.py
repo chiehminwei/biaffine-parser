@@ -42,8 +42,8 @@ class Model(object):
                                   max_grad_norm=5.0)
         # self.optimizer = optim.Adam(params=self.network.parameters(),
         #                             lr=lr, betas=betas, eps=epsilon)
-        # self.scheduler = optim.lr_scheduler.LambdaLR(optimizer=self.optimizer,
-        #                                              lr_lambda=annealing)
+        self.scheduler = optim.lr_scheduler.LambdaLR(optimizer=self.optimizer,
+                                                     lr_lambda=annealing)
         if args.local_rank == 0:
             print('***Started training at {}***'.format(datetime.now()))
         
@@ -73,14 +73,23 @@ class Model(object):
                 print(f"{t}s elapsed\n")
             total_time += t       
 
-            # save the model if it is the best so far
+            # Save checkpoint
             if args.local_rank == 0:
+                # Save latest every two epoch
+                if epoch % 2 == 0:
+                    epoch_file = 'checkpoints/model_epoch{}.pt'.format(epoch)
+                    if args.distributed or torch.cuda.device_count() > 1:
+                        self.network.module.save(epoch_file, epoch, cloud_address, self.optimizer, dev_metric, args.local_rank)
+                    else:
+                        self.network.save(epoch_file, epoch, cloud_address, self.optimizer, dev_metric)
+
+                # Save best
                 if dev_metric > max_metric:
                     max_e, max_metric = epoch, dev_metric
                     if args.distributed or torch.cuda.device_count() > 1:
                         self.network.module.save(file, epoch, cloud_address, self.optimizer, max_metric, args.local_rank)
                     else:
-                        self.network.save(file, epoch, cloud_address, self.optimizer, max_e, max_metric)
+                        self.network.save(file, epoch, cloud_address, self.optimizer, max_metric)
                     
                 elif epoch - max_e >= patience:
                     break
