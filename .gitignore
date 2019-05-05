@@ -1,4 +1,5 @@
 # ignore data files
+training
 data
 debugging
 debugging*
