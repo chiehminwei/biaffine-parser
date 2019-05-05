@@ -51,7 +51,7 @@ if __name__ == '__main__':
     if args.save_log_to_file:
         print('Logging to file!')
         args.logdir.mkdir(parents=True, exist_ok=True)
-        logging.basicConfig(filename="logs/log", filemode='w', format=log_format, level=logging.INFO)
+        logging.basicConfig(filename="wtfwtfwtf", filemode='w', format=log_format, level=logging.INFO)
     else:
         print('Logging to console!')
         logging.basicConfig(format=log_format, level=logging.INFO)
