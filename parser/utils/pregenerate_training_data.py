@@ -165,7 +165,7 @@ def create_instances_from_document(
         word_end_mask.append(1)
 
         if len(tokens) > max_seq_length:
-            print('Skipping sentence longer than max_seq_length {}.'.format(max_seq_length))
+            # print('Skipping sentence longer than max_seq_length {}.'.format(max_seq_length))
             exceeding_count += 1
             continue
 
