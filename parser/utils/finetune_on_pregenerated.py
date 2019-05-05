@@ -139,9 +139,9 @@ class PregeneratedDataset(Dataset):
         return (torch.tensor(self.input_ids[item].astype(np.int64)),
                 torch.tensor(self.arc_ids[item].astype(np.int64)),
                 torch.tensor(self.rel_ids[item].astype(np.int64)),
-                torch.tensor(self.input_masks[item].astype(np.int64)),
-                torch.tensor(self.word_start_masks[item].astype(np.int64)),
-                torch.tensor(self.word_end_masks[item].astype(np.int64)),
+                torch.ByteTensor(self.input_masks[item].astype(np.int64)),
+                torch.ByteTensor(self.word_start_masks[item].astype(np.int64)),
+                torch.ByteTensor(self.word_end_masks[item].astype(np.int64)),
                 torch.tensor(self.lm_label_ids[item].astype(np.int64)))
 
 
