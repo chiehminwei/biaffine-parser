@@ -102,8 +102,7 @@ class Model(object):
             
             # Forward-pass
             s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, lm_label_ids)
-            if args.local_rank == 0:
-                print('lm_loss', lm_loss.shape, lm_loss)            
+            lm_loss = torch.sum(lm_loss)
             
             word_start_masks[:, 0] = 0  # ignore [CLS]
             lens = input_masks.sum(dim=1) - 1 # ignore [SEP]
@@ -114,8 +113,8 @@ class Model(object):
 
             # Get loss
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-            
             loss += lm_loss
+            
             if data_parallel:
                 loss = loss.mean() # mean() to average on multi-gpu.
             if self.gradient_accumulation_steps > 1:
