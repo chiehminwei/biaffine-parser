@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader, Dataset, RandomSampler
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm
 
-from pytorch_pretrained_bert.modeling import BertForPreTraining
+from pytorch_pretrained_bert.modeling import BertForPreTraining, BertForMaskedLM
 from pytorch_pretrained_bert.tokenization import BertTokenizer
 from pytorch_pretrained_bert.optimization import BertAdam, WarmupLinearSchedule
 
@@ -255,7 +255,7 @@ def main():
         num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size()
 
     # Prepare model
-    model = BertForPreTraining.from_pretrained(args.bert_model)
+    model = BertForMaskedLM.from_pretrained(args.bert_model)
     if args.fp16:
         model.half()
     model.to(device)
@@ -321,8 +321,10 @@ def main():
         with tqdm(total=len(train_dataloader), desc=f"Epoch {epoch}") as pbar:
             for step, batch in enumerate(train_dataloader):
                 batch = tuple(t.to(device) for t in batch)
-                input_ids, input_mask, segment_ids, lm_label_ids, is_next = batch
-                loss = model(input_ids, segment_ids, input_mask, lm_label_ids, is_next)
+                # input_ids, input_mask, segment_ids, lm_label_ids, is_next = batch
+                input_ids, arc_ids, rel_ids, input_mask, word_start_masks, word_end_masks, lm_label_ids = batch 
+                loss = model(input_ids, input_mask, lm_label_ids)
+                # loss = model(input_ids, segment_ids, input_mask, lm_label_ids, is_next)
                 print('loss', loss.shape, loss)
                 assert 1 == 2
                 if n_gpu > 1:
