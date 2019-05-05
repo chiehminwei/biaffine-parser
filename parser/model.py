@@ -207,7 +207,7 @@ class Model(object):
 
         return pred_arcs, pred_rels
 
-        @torch.no_grad()
+    @torch.no_grad()
     def get_embeddings(self, loader, layer_index=-1, return_all=False, ignore=True, ignore_token_start_mask=False):
         self.network.eval()
 
