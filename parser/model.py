@@ -101,7 +101,7 @@ class Model(object):
             input_ids, arc_ids, rel_ids, input_masks, word_start_masks, word_end_masks, lm_label_ids = batch 
             
             # Forward-pass
-            s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, masked_lm_labels)
+            s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, lm_label_ids)
             word_start_masks[:, 0] = 0  # ignore [CLS]
             lens = attention_mask.sum(dim=1) - 1 # ignore [SEP]
             word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
