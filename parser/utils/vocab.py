@@ -14,7 +14,7 @@ import os
 class Vocab(object):
     PAD = '<PAD>'
 
-    def __init__(self, words, chars, rels):
+    def __init__(self, words, chars, rels, bert_model, do_lower_case):
         self.pad_index = 0
 
         self.words = [self.PAD] + sorted(words)
@@ -34,8 +34,7 @@ class Vocab(object):
         self.n_rels = len(self.rels)
         self.n_train_words = self.n_words
 
-        # self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased', do_lower_case=False)
+        self.tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=do_lower_case)
 
     def __repr__(self):
         info = f"{self.__class__.__name__}(\n"
@@ -375,11 +374,11 @@ class Vocab(object):
         return words_numerical, attention_mask, token_start_mask, words_total, tags_total
 
     @classmethod
-    def from_corpus(cls, corpus, min_freq=1):
+    def from_corpus(cls, corpus, min_freq=1, bert_model='bert-base-cased'):
         words = Counter(word for seq in corpus.words for word in seq)
         words = list(word for word, freq in words.items() if freq >= min_freq)
         chars = list({char for seq in corpus.words for char in ''.join(seq)})
         rels = list({rel for seq in corpus.rels for rel in seq})
-        vocab = cls(words, chars, rels)
+        vocab = cls(words, chars, rels, bert_model)
 
         return vocab

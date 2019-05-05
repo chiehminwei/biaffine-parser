@@ -2,165 +2,135 @@
 
 from parser.metric import AttachmentMethod
 from parser.parser import BiaffineParser
+from parser.utils import PregeneratedDataset
 
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from pytorch_pretrained_bert import BertAdam
-from pytorch_pretrained_bert import BertTokenizer
-
-from datetime import datetime, timedelta
-from tqdm import tqdm
-
+from torch.utils.data import DataLoader, Dataset, RandomSampler
+from torch.utils.data.distributed import DistributedSampler
+from pytorch_pretrained_bert import BertAdam, BertTokenizer
 import numpy as np
 
-class Model(object):
+from pathlib import Path
+from tqdm import tqdm
+from datetime import datetime, timedelta
+import logging
 
+
+class Model(object):
     def __init__(self, vocab, network):
         super(Model, self).__init__()
-
         self.vocab = vocab
         self.network = network
         self.criterion = nn.CrossEntropyLoss()
-        if torch.cuda.is_available():
-            self.device = torch.device('cuda')
-        else:
-            self.device = torch.device('cpu')
-        # self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
         
-    def __call__(self, loaders, epochs, patience,
-                 lr, betas, epsilon, weight_decay, annealing, file,
-                 last_epoch, cloud_address, args, gradient_accumulation_steps=1, max_metric=0.0):
+    def __call__(self, dev_loader, epochs, num_data_epochs, patience, lr, t_total, last_epoch, 
+                 cloud_address, args, batch_size, gradient_accumulation_steps=1, max_metric=0.0):
 
         self.gradient_accumulation_steps = gradient_accumulation_steps
+        self.device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         total_time = timedelta()
         max_e, max_metric = last_epoch, max_metric
-        train_loader, dev_loader, test_loader = loaders
-        self.optimizer = BertAdam(params=self.network.parameters(),
-                                  lr=lr, b1=betas[0], b2=betas[1],
-                                  e=epsilon, weight_decay=weight_decay,
-                                  max_grad_norm=5.0)
-        # self.optimizer = optim.Adam(params=self.network.parameters(),
-        #                             lr=lr, betas=betas, eps=epsilon)
-        self.scheduler = optim.lr_scheduler.LambdaLR(optimizer=self.optimizer,
-                                                     lr_lambda=annealing)
+
+        # Prepare optimizer
+        param_optimizer = list(self.network.named_parameters())
+        no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+        optimizer_grouped_parameters = [
+            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
+             'weight_decay': 0.01},
+            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+        ]
+
+        self.optimizer = BertAdam(optimizer_grouped_parameters,
+                             lr=lr,
+                             warmup=args.warmup_proportion,
+                             t_total=t_total)
+
+        tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+
         if args.local_rank == 0:
-            print('***Started training at {}***'.format(datetime.now()))
+            logging.info('***Started training at {}***'.format(datetime.now()))            
         
         for epoch in range(last_epoch + 1, epochs + 1):
             start = datetime.now()
-            # train one epoch and update the parameters
-            if args.local_rank == 0:
-                print(f"Epoch {epoch} / {epochs}:")
+
+            epoch_dataset = PregeneratedDataset(epoch=epoch, training_path=args.pregenerated_data, tokenizer=tokenizer,
+                                            num_data_epochs=num_data_epochs, reduce_memory=args.reduce_memory)
             if args.distributed:
-                train_loader.sampler.set_epoch(epoch)
-            self.train(train_loader, distirbuted=args.distributed)
+                train_sampler = DistributedSampler(epoch_dataset)
+            else:
+                train_sampler = RandomSampler(epoch_dataset)
             
-            # train_loss, train_metric = self.evaluate(train_loader)
-            # if args.local_rank == 0:
-            #     print(f"{'train:':<6} Loss: {train_loss:.4f} {train_metric}")
+            train_dataloader = DataLoader(epoch_dataset, sampler=train_sampler, batch_size=batch_size//gradient_accumulation_steps)
+            stats = {'tr_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
+            with tqdm(total=len(train_dataloader), desc=f"Epoch {epoch}") as pbar:
+                self.train(train_dataloader, pbar, stats data_parallel=bool(torch.cuda.device_count() > 1 and not args.no_cuda and not args.distributed))
             
             dev_loss, dev_metric = self.evaluate(dev_loader)
-            if args.local_rank == 0:
-                print(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")
-
-            # test_loss, test_metric = self.evaluate(test_loader)
-            # if args.local_rank == 0:
-            #     print(f"{'test:':<6} Loss: {test_loss:.4f} {test_metric}")
-
             t = datetime.now() - start
+            total_time += t            
             if args.local_rank == 0:
-                print(f"{t}s elapsed\n")
-            total_time += t       
-
-            # Save checkpoint
+                logging.info(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")            
+                logging.info(f"{t}s elapsed\n")
+            
             if args.local_rank == 0:
-                # Save latest every two epoch
-                if epoch % 2 == 0:
-                    epoch_file = 'checkpoints/model_epoch{}.pt'.format(epoch)
-                    if args.distributed or torch.cuda.device_count() > 1:
-                        self.network.module.save(epoch_file, epoch, cloud_address, self.optimizer, dev_metric, args.local_rank)
-                    else:
-                        self.network.save(epoch_file, epoch, cloud_address, self.optimizer, dev_metric)
+                model_to_save = self.network.module if hasattr(self.network, 'module') else self.network  # Only save the model itself
+                if epoch % 2 == 0: # Save latest every two epochs
+                    output_model_file = args.checkpoint_dir / "model_epoch{}.pt".format(epoch)
+                    model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, dev_metric)
 
-                # Save best
-                if dev_metric > max_metric:
+                if dev_metric > max_metric: # Save best
+                    output_model_file = args.checkpoint_dir / "model_best.pt"
                     max_e, max_metric = epoch, dev_metric
-                    if args.distributed or torch.cuda.device_count() > 1:
-                        self.network.module.save(file, epoch, cloud_address, self.optimizer, max_metric, args.local_rank)
-                    else:
-                        self.network.save(file, epoch, cloud_address, self.optimizer, max_metric)
-                    
-                elif epoch - max_e >= patience:
+                    model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, max_metric)
+
+                elif epoch - max_e >= patience: # Early stopping
                     break
+
         if args.local_rank == 0:
-            print('***Finished training at {}***'.format(datetime.now()))
-            self.network = BiaffineParser.load(file, cloud_address)
-            loss, metric = self.evaluate(test_loader)
-            print(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
-            print(f"the score of test at epoch {max_e} is {metric.score:.2%}")
-            print(f"mean time of each epoch is {total_time / epoch}s")
-            print(f"{total_time}s elapsed")
+            logging.info('***Finished training at {}***'.format(datetime.now()))
+            logging.info(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
+            logging.info(f"mean time of each epoch is {total_time / epoch}s")
+            logging.info(f"{total_time}s elapsed")
 
-    def train(self, loader, distirbuted=False):
+    def train(self, loader, pbar, stats, data_parallel=False):
         self.network.train()
-        step = 0
-        if not distirbuted:
-            loader = tqdm(loader)
-
-        for batch in loader:
+        for step, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
-            words, attention_mask, token_start_mask, arcs, rels = batch
+
+            input_ids, arc_ids, rel_ids, input_masks, word_start_masks, word_end_masks, lm_label_ids = batch 
             
-            # try: 
-            s_arc, s_rel = self.network(words, attention_mask)
-            # ignore [CLS]
-            token_start_mask[:, 0] = 0
-            # ignore [SEP]
-            lens = attention_mask.sum(dim=1) - 1
-            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+            # Forward-pass
+            s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, masked_lm_labels)
+            word_start_masks[:, 0] = 0  # ignore [CLS]
+            lens = attention_mask.sum(dim=1) - 1 # ignore [SEP]
+            word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
             
-            gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
-            s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]            
+            gold_arcs, gold_rels = arcs[word_start_masks], rels[word_start_masks]
+            s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
 
-            loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-
-            # except:
-            #     for sentence in words:
-            #         print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
-                
-            #     print('***DEBUGGING PARSER START***')
-            #     self.network.eval()
-            #     self.network(words, attention_mask, debug=True)
-            #     print('***DEBUGGING PARSER END***')
-
-            #     print('words', words.shape)
-            #     print('arcs', arcs.shape)
-            #     print('rels', rels.shape)
-            #     print('attention_mask', attention_mask.shape)
-            #     print('token_start_mask', token_start_mask.shape)
-
-            #     print('s_arc', s_arc.shape)
-            #     print('s_rel', s_rel.shape)
-            #     print('gold_arcs', gold_arcs.shape)
-            #     print('gold_rels', gold_rels.shape)
-
-                
-            #     raise RuntimeError('training failed.')
-            
-            
+            # Get loss
+            loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels) + lm_loss
+            if data_parallel:
+                loss = loss.mean() # mean() to average on multi-gpu.
             if self.gradient_accumulation_steps > 1:
                 loss = loss / self.gradient_accumulation_steps
-            
             loss.backward()
             
+            # Handle tqdm
+            stats['tr_loss'] += loss.item()
+            stats['nb_tr_examples'] += input_ids.size(0)
+            stats['nb_tr_steps'] += 1
+            pbar.update(1)
+            mean_loss = stats['tr_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
+            pbar.set_postfix_str(f"Loss: {mean_loss:.5f}")
+
+            # Step optimizer
             if (step + 1) % self.gradient_accumulation_steps == 0:
                 nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
                 self.optimizer.step()
-                # self.scheduler.step()
                 self.optimizer.zero_grad()
-            step += 1
-  
+
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
         self.network.eval()
@@ -170,7 +140,6 @@ class Model(object):
             batch = tuple(t.to(self.device) for t in batch)
             words, attention_mask, token_start_mask, arcs, rels = batch
 
-            # try:
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
@@ -190,30 +159,6 @@ class Model(object):
             
             loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
-
-            # except:
-            #     for sentence in words:
-            #         print(self.tokenizer.convert_ids_to_tokens(sentence.detach().to(torch.device("cpu")).numpy()))
-                
-            #     print('***DEBUGGING PARSER START***')
-            #     self.network.eval()
-            #     self.network(words, attention_mask, debug=True)
-            #     print('***DEBUGGING PARSER END***')
-
-            #     print('words', words.shape)
-            #     print('arcs', arcs.shape)
-            #     print('rels', rels.shape)
-            #     print('attention_mask', attention_mask.shape)
-            #     print('token_start_mask', token_start_mask.shape)
-
-            #     print('s_arc', s_arc.shape)
-            #     print('s_rel', s_rel.shape)
-            #     print('gold_arcs', gold_arcs.shape)
-            #     print('gold_rels', gold_rels.shape)
-            #     print('pred_arcs', pred_arcs.shape)
-            #     print('pred_rels', pred_rels.shape)
-                
-            #     raise RuntimeError('evaluation failed.')
 
         loss /= len(loader)
 
@@ -246,7 +191,22 @@ class Model(object):
 
         return all_arcs, all_rels
 
-    @torch.no_grad()
+    def get_loss(self, s_arc, s_rel, gold_arcs, gold_rels):
+        s_rel = s_rel[torch.arange(len(s_rel)), gold_arcs]
+
+        arc_loss = self.criterion(s_arc, gold_arcs)
+        rel_loss = self.criterion(s_rel, gold_rels)
+        loss = arc_loss + rel_loss
+
+        return loss
+
+    def decode(self, s_arc, s_rel):
+        pred_arcs = s_arc.argmax(dim=-1)
+        pred_rels = s_rel[torch.arange(len(s_rel)), pred_arcs].argmax(dim=-1)
+
+        return pred_arcs, pred_rels
+
+        @torch.no_grad()
     def get_embeddings(self, loader, layer_index=-1, return_all=False, ignore=True, ignore_token_start_mask=False):
         self.network.eval()
 
@@ -275,6 +235,57 @@ class Model(object):
             for sentence_embed in torch.split(embed, lens, dim=-2):
                 all_embeddings.append(np.array(sentence_embed.tolist()))
             
+        return all_embeddings
+
+    @torch.no_grad()
+    def get_avg_embeddings(self, loader, ignore=True, layer_index=-1):
+        self.network.eval()
+
+        all_embeddings = []
+        for words, attention_mask, token_start_mask in loader:
+            # [batch_size, seq_len, bert_dim]
+            embed = self.network.get_embeddings(words, attention_mask, layer_index)
+            
+            if ignore:
+                # ignore [CLS]
+                token_start_mask[:, 0] = 0
+                # ignore [SEP]
+                lens = attention_mask.sum(dim=1) - 1
+                token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+                # need to take care of attention as well since we later rely on attention to do averaging
+                attention_mask[torch.arange(len(token_start_mask)), lens] = 0
+
+            for sent_embed, sent_att_mask, sent_mask in zip(embed, attention_mask, token_start_mask):
+                sent_avg_embeddings = []
+                tmp = None
+                tmp_len = 0
+                sent_embed = sent_embed.tolist()
+                sent_att_mask = sent_att_mask.tolist()
+                sent_mask = sent_mask.tolist()
+                for word_embed, word_att_mask, word_mask in zip(sent_embed, sent_att_mask, sent_mask):
+                    if word_att_mask != 1:
+                        if tmp is not None:
+                            sent_avg_embeddings.append(tmp/tmp_len)
+                        tmp = None
+                        break
+                    if word_mask == 1:
+                        if tmp is not None:
+                            if tmp_len == 0:
+                                tmp_len = 1
+                            sent_avg_embeddings.append(tmp/tmp_len)
+                        tmp = np.array(word_embed)
+                        tmp_len = 1
+                    else:
+                        if tmp is not None:
+                            tmp += np.array(word_embed)
+                            tmp_len += 1
+
+                # take care of last word when sentence len == max_seq_len in batch
+                if tmp is not None:
+                    sent_avg_embeddings.append(tmp/tmp_len)
+
+                all_embeddings.append(np.array(sent_avg_embeddings))
+
         return all_embeddings
 
     @torch.no_grad()
@@ -342,58 +353,7 @@ class Model(object):
 
                 all_embeddings.append(np.array(sent_avg_embeddings))
 
-        return all_embeddings  
-
-    @torch.no_grad()
-    def get_avg_embeddings(self, loader, ignore=True, layer_index=-1):
-        self.network.eval()
-
-        all_embeddings = []
-        for words, attention_mask, token_start_mask in loader:
-            # [batch_size, seq_len, bert_dim]
-            embed = self.network.get_embeddings(words, attention_mask, layer_index)
-            
-            if ignore:
-                # ignore [CLS]
-                token_start_mask[:, 0] = 0
-                # ignore [SEP]
-                lens = attention_mask.sum(dim=1) - 1
-                token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
-                # need to take care of attention as well since we later rely on attention to do averaging
-                attention_mask[torch.arange(len(token_start_mask)), lens] = 0
-
-            for sent_embed, sent_att_mask, sent_mask in zip(embed, attention_mask, token_start_mask):
-                sent_avg_embeddings = []
-                tmp = None
-                tmp_len = 0
-                sent_embed = sent_embed.tolist()
-                sent_att_mask = sent_att_mask.tolist()
-                sent_mask = sent_mask.tolist()
-                for word_embed, word_att_mask, word_mask in zip(sent_embed, sent_att_mask, sent_mask):
-                    if word_att_mask != 1:
-                        if tmp is not None:
-                            sent_avg_embeddings.append(tmp/tmp_len)
-                        tmp = None
-                        break
-                    if word_mask == 1:
-                        if tmp is not None:
-                            if tmp_len == 0:
-                                tmp_len = 1
-                            sent_avg_embeddings.append(tmp/tmp_len)
-                        tmp = np.array(word_embed)
-                        tmp_len = 1
-                    else:
-                        if tmp is not None:
-                            tmp += np.array(word_embed)
-                            tmp_len += 1
-
-                # take care of last word when sentence len == max_seq_len in batch
-                if tmp is not None:
-                    sent_avg_embeddings.append(tmp/tmp_len)
-
-                all_embeddings.append(np.array(sent_avg_embeddings))
-
-        return all_embeddings            
+        return all_embeddings         
 
     @torch.no_grad()
     def get_everything(self, loader):
@@ -447,18 +407,3 @@ class Model(object):
                 all_rels.append(np.array(sentence_rel[:,:lens[i]].tolist()))
 
         return all_arcs, all_rels
-
-    def get_loss(self, s_arc, s_rel, gold_arcs, gold_rels):
-        s_rel = s_rel[torch.arange(len(s_rel)), gold_arcs]
-
-        arc_loss = self.criterion(s_arc, gold_arcs)
-        rel_loss = self.criterion(s_rel, gold_rels)
-        loss = arc_loss + rel_loss
-
-        return loss
-
-    def decode(self, s_arc, s_rel):
-        pred_arcs = s_arc.argmax(dim=-1)
-        pred_rels = s_rel[torch.arange(len(s_rel)), pred_arcs].argmax(dim=-1)
-
-        return pred_arcs, pred_rels

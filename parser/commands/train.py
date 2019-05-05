@@ -13,6 +13,10 @@ import os
 import subprocess
 from datetime import datetime, timedelta
 
+from pathlib import Path
+import logging
+import json
+
 
 class Train(object):
 
@@ -20,195 +24,168 @@ class Train(object):
         subparser = parser.add_parser(
             name, help='Train a model.'
         )
+        parser.add_argument('--pregenerated_data', type=Path, required=True)
+        parser.add_argument("--bert_model", type=str, required=True,
+                        choices=["bert-base-uncased", "bert-large-uncased", "bert-base-cased",
+                                 "bert-base-multilingual", "bert-base-chinese"])
+        parser.add_argument("--do_lower_case", action="store_true")
+        parser.add_argument("--reduce_memory", action="store_true",
+                            help="Store training data as on-disc memmaps to massively reduce memory usage")
+        parser.add_argument("--resume_training", action="store_true")
+        parser.add_argument("--warmup_proportion",
+                            default=0.1,
+                            type=float,
+                            help="Proportion of training to perform linear learning rate warmup for. "
+                                 "E.g., 0.1 = 10%% of training.")
         subparser.add_argument('--ftrain', default='data/train.conllx',
-                               help='path to train file')
+                               help='path to raw train file')
         subparser.add_argument('--fdev', default='data/dev.conllx',
-                               help='path to dev file')
-        # subparser.add_argument('--ftest', default='data/test.conllx',
-        #                        help='path to test file')
-        subparser.add_argument('--ftrain_cache', default='data/binary/trainset',
-                               help='path to train file cache')
+                               help='path to raw dev file')
         subparser.add_argument('--fdev_cache', default='data/binary/devset',
                                help='path to dev file cache')
-        # subparser.add_argument('--ftest_cache', default='testset',
-        #                        help='path to test file cache')
         subparser.set_defaults(func=self)
 
         return subparser
 
     def __call__(self, args):
 
-        if args.local_rank == 0:
-            print("***Start preprocessing the data at {}***".format(datetime.now()))
-        
-        train = Corpus.load(args.ftrain)
-        dev = Corpus.load(args.fdev)
-        # test = Corpus.load(args.ftest)
+        assert args.pregenerated_data.is_dir(), \
+        "--pregenerated_data should point to the folder of files made by pregenerate_training_data.py!"
 
+        samples_per_epoch = []
+        for i in range(Config.epochs):
+            epoch_file = args.pregenerated_data / f"epoch_{i}.json"
+            metrics_file = args.pregenerated_data / f"epoch_{i}_metrics.json"
+            if epoch_file.is_file() and metrics_file.is_file():
+                metrics = json.loads(metrics_file.read_text())
+                samples_per_epoch.append(metrics['num_training_examples'])
+            else:
+                if i == 0:
+                    exit("No training data was found!")
+                print(f"Warning! There are fewer epochs of pregenerated data ({i}) than training epochs ({Config.epochs}).")
+                print("This script will loop over the available data, but training diversity may be negatively impacted.")
+                num_data_epochs = i
+                break
+        else:
+            num_data_epochs = Config.epochs
+
+        if args.checkpoint_dir.is_dir() and list(args.checkpoint_dir.iterdir()):
+            logging.warning(f"Output directory ({args.checkpoint_dir}) already exists and is not empty!")
+        args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+
+        total_train_examples = 0
+        for i in range(Config.epochs):
+            # The modulo takes into account the fact that we may loop over limited epochs of data
+            total_train_examples += samples_per_epoch[i % len(samples_per_epoch)]
+
+        num_train_optimization_steps = int(
+            total_train_examples / Config.batch_size / Config.gradient_accumulation_steps)
+        if args.distributed:
+            num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size()
+
+        train = Corpus.load(args.ftrain)
+        dev = Corpus.load(args.fdev)        
         if not os.path.isfile(args.vocab):
-            FNULL = open(os.devnull, 'w')
-            cloud_address = os.path.join(args.cloud_address, args.vocab)
-            # subprocess.call(['gsutil', 'cp', cloud_address, args.vocab],
-            #                 stdout=FNULL, stderr=subprocess.STDOUT)
-        if not os.path.isfile(args.vocab):
-            vocab = Vocab.from_corpus(corpus=train, min_freq=2)
+            vocab = Vocab.from_corpus(corpus=train, min_freq=2, bert_model=args.bert_model, do_lower_case=args.do_lower_case)
             torch.save(vocab, args.vocab)
-            FNULL = open(os.devnull, 'w')
-            cloud_address = os.path.join(args.cloud_address, args.vocab)
-            # subprocess.call(['gsutil', 'cp', args.vocab, cloud_address],
-            #                 stdout=FNULL, stderr=subprocess.STDOUT)
         else:
             vocab = torch.load(args.vocab)
 
         if args.local_rank == 0:
-            print(vocab)
-
-            print("Load the dataset.")
-
-        if not os.path.isfile(args.ftrain_cache):
-            if args.local_rank == 0:
-                print('Loading trainset from scratch.')
-            trainset = TextDataset(vocab.numericalize(train, args.ftrain_cache))
-        else:
-            if args.local_rank == 0:
-                print('Loading trainset from checkpoint.')
-            trainset = TextDataset(torch.load(args.ftrain_cache))
-
-        if args.local_rank == 0:
-                print('***Trainset loaded at {}***'.format(datetime.now()))
+            logging.info(vocab)
 
         if not os.path.isfile(args.fdev_cache):
             if args.local_rank == 0:
-                print('Loading devset from scratch.')
+                logging.info('Loading devset from scratch.')
             devset = TextDataset(vocab.numericalize(dev, args.fdev_cache))
         else:
             if args.local_rank == 0:
-                print('Loading devset from checkpoint.')
+                logging.info('Loading devset from checkpoint.')
             devset = TextDataset(torch.load(args.fdev_cache))
         if args.local_rank == 0:
-                print('***Devset loaded at {}***'.format(datetime.now()))
+            logging.info('***Devset loaded at {}***'.format(datetime.now()))
 
-        # if not os.path.isfile(args.ftest_cache):
-        #     if args.local_rank == 0:
-        #         print('Loading testset from scratch.')
-        #     testset = TextDataset(vocab.numericalize(test, args.ftest_cache))
-        # else:
-        #     if args.local_rank == 0:
-        #         print('Loading testset from checkpoint.')
-        #     testset = TextDataset(torch.load(args.ftest_cache))
-        # if args.local_rank == 0:
-        #     print('***Testset loaded at {}***'.format(datetime.now()))
-
-        
-        # set the data loaders
-        train_sampler = None
-        dev_sampler = None
-        # test_sampler = None
-        
+        # set up dev loader
+        dev_sampler = None        
         if args.distributed:
-            if args.local_rank == 0:
-                print('Building distributed samplers.')
-            train_sampler = DistributedSampler(trainset)
             dev_sampler = DistributedSampler(devset)
-            # test_sampler = DistributedSampler(testset)
-
-        train_loader = DataLoader(dataset=trainset,
-                                  batch_size=Config.batch_size // Config.gradient_accumulation_steps,
-                                  num_workers=0,
-                                  shuffle=(train_sampler is None),
-                                  # pin_memory=True,
-                                  sampler =train_sampler,
-                                  collate_fn=collate_fn)
         dev_loader = DataLoader(dataset=devset,
                                 batch_size=Config.batch_size,
                                 num_workers=0,
                                 shuffle=False,
-                                # pin_memory=True,
                                 sampler=dev_sampler,
                                 collate_fn=collate_fn)
-        # test_loader = DataLoader(dataset=testset,
-        #                          batch_size=Config.batch_size,
-        #                          shuffle=False,
-        #                          pin_memory=True,
-        #                          sampler=test_sampler,
-        #                          collate_fn=collate_fn)
 
         if args.local_rank == 0:
-            print(f"  size of trainset: {len(trainset)}")
-            print(f"  size of devset: {len(devset)}")
-            # print(f"  size of testset: {len(testset)}")
+            logging.info(f"  Num train examples = {total_train_examples}")
+            logging.info("  Batch size = %d", Config.batch_size)
+            logging.info("  Num steps = %d", num_train_optimization_steps)
 
-            print("Create the model.")
         params = {
-            'n_words': vocab.n_train_words,
-            'n_chars': vocab.n_chars,
-            'word_dropout': Config.word_dropout,
             'n_bert_hidden': Config.n_bert_hidden,
             'bert_dropout': Config.bert_dropout,
             'n_mlp_arc': Config.n_mlp_arc,
             'n_mlp_rel': Config.n_mlp_rel,
             'mlp_dropout': Config.mlp_dropout,
             'n_rels': vocab.n_rels,
-            'pad_index': vocab.pad_index
+            'bert_model': args.bert_model,
         }
         if args.local_rank == 0:
             for k, v in params.items():
-                print(f"  {k}: {v}")
+                logging.info(f"  {k}: {v}")
         network = BiaffineParser(params)
-        if torch.cuda.is_available():
+        if torch.cuda.is_available() and not args.no_cuda:
           network.to(torch.device('cuda'))
 
-        # if args.local_rank == 0:
-        #     print(f"{network}\n")
+        if args.local_rank == 0:
+            logging.info(f"{network}\n")
 
         last_epoch = 0
         max_metric = 0.0
+
         # Start training from checkpoint if one exists
-        if not os.path.isfile(args.file):
-            FNULL = open(os.devnull, 'w')
-            cloud_address = os.path.join(args.cloud_address, args.file)
-            # subprocess.call(['gsutil', 'cp', cloud_address, args.file], stdout=FNULL, stderr=subprocess.STDOUT)
-        
         state = None
-        if os.path.isfile(args.file):
+        if args.resume_training and os.path.isfile(args.file):
+            logging.info('Resume training from checkpoint.')
             state = torch.load(args.file, map_location='cpu')
             last_epoch = state['last_epoch']
             network = network.load(args.file, args.cloud_address, args.local_rank)
 
+        n_gpu = torch.cuda.device_count()
         if args.distributed:
-            from apex.parallel import DistributedDataParallel
-            if args.local_rank == 0:
-                print("Using {} GPUs for distributed parallel training.".format(torch.cuda.device_count()))
+            n_gpu = 1
+            try:
+                from apex.parallel import DistributedDataParallel
+            except ImportError:
+                logging.exception("Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training.")
+                raise ImportError(
+                    "Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training.")
+            logging.info('Distirbuted training enabled.')
             network = DistributedDataParallel(network)
 
-        elif torch.cuda.device_count() > 1:
-            print('Using {} GPUs for data parallel training'.format(torch.cuda.device_count()))
+        elif n_gpu > 1 and not args.no_cuda:
+            logging.info('Using {} GPUs for data parallel training'.format(torch.cuda.device_count()))
             network = torch.nn.DataParallel(network)
 
-        # Scale learning rate based on global batch size ????????
-        # args.lr = args.lr*float(args.batch_size*args.world_size)/256.
-
         model = Model(vocab, network)
-        if os.path.isfile(args.file):
+        if args.resume_training and os.path.isfile(args.file):
             try:
+                logging.info('Resume training for optimizer')
                 max_metric = state['max_metric']
-                print('Resume training for optimizer')
                 model.optimizer.load_state_dict(state['optimizer'])
             except:
-                print('Optimizer failed to load')
+                logging.warning('Optimizer failed to load')
 
 
-        model(loaders=(train_loader, dev_loader, dev_loader),
+        model(dev_loader=dev_loader,
               epochs=Config.epochs,
+              num_data_epochs=num_data_epochs,
               patience=Config.patience,
               lr=Config.lr,
-              betas=(Config.beta_1, Config.beta_2),
-              epsilon=Config.epsilon,
-              weight_decay=Config.weight_decay,
-              annealing=lambda x: Config.decay ** (x / Config.decay_steps),
-              file=args.file,
+              t_total=num_train_optimization_steps,
               last_epoch=last_epoch,
               cloud_address=args.cloud_address,
               args=args,
+              batch_size=Config.batch_size,
               gradient_accumulation_steps=Config.gradient_accumulation_steps,
               max_metric=max_metric)

@@ -2,13 +2,15 @@
 
 from parser.modules import MLP, Biaffine
 from parser.modules.dropout import SharedDropout
-from pytorch_pretrained_bert import BertTokenizer, BertModel
+from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
 
 import torch
 import torch.nn as nn
+from torch.nn import CrossEntropyLoss
 
 import subprocess
 import os
+import logging
 
 
 def length_to_mask(length, max_len=None, dtype=None):
@@ -31,13 +33,12 @@ class BiaffineParser(nn.Module):
         super(BiaffineParser, self).__init__()
 
         self.params = params
-        # self.word_dropout = nn.Dropout(p=params['word_dropout'])
-        # self.word_dropout_p = params['word_dropout']
         
         # BERT
-        # self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
-        self.bert = BertModel.from_pretrained('bert-base-cased')
-
+        lm = BertForMaskedLM.from_pretrained(params['bert_model'])
+        self.bert = lm.bert
+        self.cls = lm.cls
+        self.config = lm.config
         self.bert_dropout = SharedDropout(p=params['bert_dropout'])
 
         # the MLP layers
@@ -62,25 +63,20 @@ class BiaffineParser(nn.Module):
                                  n_out=params['n_rels'],
                                  bias_x=True,
                                  bias_y=True)
-        self.pad_index = params['pad_index']
         
-    def forward(self, words, mask, debug=False):
+    def forward(self, input_ids, mask, masked_lm_labels=None):
         # get the mask and lengths of given batch
         lens = mask.sum(dim=1)
-        
-        # no word dropout for now
-        # if self.training:
-        #     x_ = self.word_dropout(words.float())
-        #     words = x_.mul(1-self.word_dropout_p).long()  
-        
-        # get outputs from bert
-        embed, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=False)
-        del _
-        x = embed
 
-        if debug:
-            print('words', words.shape)
-            print('bert output', x.shape)
+        # get outputs from bert
+        sequence_output, _ = self.bert(input_ids, attention_mask=mask, output_all_encoded_layers=False)
+        del _
+
+        # Dependency parsing
+        x = sequence_output
+
+        logging.debug('input_ids', input_ids.shape)
+        logging.debug('bert output', x.shape)
 
         # bert dropout
         x = self.bert_dropout(x)
@@ -90,12 +86,11 @@ class BiaffineParser(nn.Module):
         arc_d = self.mlp_arc_d(x)
         rel_h = self.mlp_rel_h(x)
         rel_d = self.mlp_rel_d(x)
-
-        if debug:
-            print('arc_h', arc_h.shape)
-            print('arc_d', arc_d.shape)
-            print('rel_h', rel_h.shape)
-            print('rel_d', rel_d.shape)
+        
+        logging.debug('arc_h', arc_h.shape)
+        logging.debug('arc_d', arc_d.shape)
+        logging.debug('rel_h', rel_h.shape)
+        logging.debug('rel_d', rel_d.shape)
 
         # get arc and rel scores from the bilinear attention
         # [batch_size, seq_len, seq_len]
@@ -104,14 +99,20 @@ class BiaffineParser(nn.Module):
         s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
 
         if debug:
-            print('s_arc', s_arc.shape)
-            print('s_rel', s_rel.shape)
+            logging.debug('s_arc', s_arc.shape)
+            logging.debug('s_rel', s_rel.shape)
 
         # set the scores that exceed the length of each sentence to -inf
-        len_mask = length_to_mask(lens, max_len=words.shape[-1], dtype=torch.uint8)
+        len_mask = length_to_mask(lens, max_len=input_ids.shape[-1], dtype=torch.uint8)
         s_arc.masked_fill_((1 - len_mask).unsqueeze(1), float('-inf'))
 
-        return s_arc, s_rel
+        if masked_lm_labels is None:
+            return s_arc, s_rel
+        else: # Masked LM
+            prediction_scores = self.cls(sequence_output)
+            loss_fct = CrossEntropyLoss(ignore_index=-1)
+            masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), masked_lm_labels.view(-1))
+            return s_arc, s_rel, masked_lm_loss
 
     def get_embeddings(self, words, mask, layer_index=-1, return_all=False):
         # get outputs from bert
@@ -135,11 +136,6 @@ class BiaffineParser(nn.Module):
     def get_everything(self, words, mask, layer_index=-1, return_all=False):
         # get the mask and lengths of given batch
         lens = mask.sum(dim=1)
-        
-        # word dropout
-        # if self.training:
-        #     x_ = self.word_dropout(words.float())
-        #     words = x_.mul(1-self.word_dropout_p).long()  
         
         # get outputs from bert
         encoded_layers, _ = self.bert(words, attention_mask=mask, output_all_encoded_layers=True)
@@ -176,7 +172,6 @@ class BiaffineParser(nn.Module):
 
     @classmethod
     def load(cls, fname, cloud_address=None, local_rank=0):
-        # print("I'm loading now haha. This is {}".format(local_rank))
         # Copy from cloud if there's no saved checkpoint
         if not os.path.isfile(fname):
             if cloud_address:
@@ -193,7 +188,7 @@ class BiaffineParser(nn.Module):
             network = cls(state['params'])
             network.load_state_dict(state['state_dict'])
             network.to(device)
-            print('Loaded model from checkpoint (local rank {})'.format(local_rank))
+            logging.info('Loaded model from checkpoint (local rank {})'.format(local_rank))
         else:
             raise IOError('Local checkpoint does not exists. Failed to load model.')
 
@@ -208,7 +203,8 @@ class BiaffineParser(nn.Module):
             'max_metric': max_metric,
         }
         torch.save(state, fname)
-        print("Model saved (local rank {})".format(local_rank))
+        logging.info("Model saved.")
+
         # Save a copy to cloud as well
         # FNULL = open(os.devnull, 'w')
         # cloud_address = os.path.join(cloud_address, fname)
