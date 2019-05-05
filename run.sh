@@ -1,2 +1,2 @@
 #!/bin/bash
-python create_datasets.py -c=gs://udontwantcloud && CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 run.py train
+python create_datasets.py && CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 run.py train --checkpoint_dir checkpoints --pregenerated_data training --bert_model bert-base-uncased --save_log_to_file --reduce_memory

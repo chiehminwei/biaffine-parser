@@ -33,18 +33,25 @@ if __name__ == '__main__':
         subparser.add_argument('--vocab', '-v', default='vocab.pt',
                                help='path to vocabulary file')
         subparser.add_argument('--cloud_address', '-c',
-                               default='gs://no_cloud_by_default/',
+                               default="you dont want to use this bro trust me too annoying",
                                help='path to Google Cloud Storage')
         subparser.add_argument('--local_rank', '-l', default=0, type=int,
                          help='local rank for distributed training')
         subparser.add_argument("--no_cuda",
                             action='store_true',
-                            help="Whether not to use CUDA when available")
-        subparser.add_argument('--logdir', '-log', default='logs/log', type=str,
+                            help="Whether to use CUDA when available")
+        subparser.add_argument("--save_log_to_file",
+                            action='store_true',
+                            help="Whether to log to file")
+        subparser.add_argument('--logdir', default='logs', type=Path,
                                help='Directory to save log')
     args = parser.parse_args()
     log_format = '%(asctime)-10s: %(message)s'
-    logging.basicConfig(filename=args.logdir, filemode='w', format=log_format, level=logging.INFO)
+    if args.save_log_to_file:
+        args.logdir.mkdir(parents=True, exist_ok=True)
+        logging.basicConfig(filename=args.logdir / "log", filemode='w', format=log_format, level=logging.INFO)
+    else:
+        logging.basicConfig(format=log_format, level=logging.INFO)
     
     # FOR DISTRIBUTED:  If we are running under torch.distributed.launch,
     # the 'WORLD_SIZE' environment variable will also be set automatically.
