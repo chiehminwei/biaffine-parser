@@ -139,23 +139,23 @@ class Model(object):
         for i, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
             
-            words, arcs, rels, attention_mask, token_start_mask, word_end_masks, lm_label_ids = batch 
+            input_ids, arc_ids, rel_ids, input_masks, word_start_masks, word_end_masks, lm_label_ids = batch 
             
             # ignore [CLS]
-            token_start_mask[:, 0] = 0
+            word_start_masks[:, 0] = 0
             # ignore [SEP]
-            lens = attention_mask.sum(dim=1) - 1
-            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+            lens = input_masks.sum(dim=1) - 1
+            word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
 
             # ignore all punctuation if specified
             if not include_punct:
-                puncts = words.new_tensor([punct for punct in self.vocab.puncts])
-                token_start_mask &= words.unsqueeze(-1).ne(puncts).all(-1)
+                puncts = input_ids.new_tensor([punct for punct in self.vocab.puncts])
+                word_start_masks &= input_ids.unsqueeze(-1).ne(puncts).all(-1)
 
-            s_arc, s_rel = self.network(words, attention_mask)
-            s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
+            s_arc, s_rel = self.network(input_ids, input_masks)
+            s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]
             
-            gold_arcs, gold_rels = arcs[token_start_mask], rels[token_start_mask]
+            gold_arcs, gold_rels = arc_ids[token_start_mask], rel_ids[token_start_mask]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
             
             loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
