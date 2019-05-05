@@ -108,8 +108,9 @@ class PregeneratedDataset(Dataset):
             word_end_masks = np.zeros(shape=(num_samples, seq_len), dtype=np.bool)
             lm_label_ids = np.full(shape=(num_samples, seq_len), dtype=np.int32, fill_value=-1)
         logging.info(f"Loading training examples for epoch {epoch}")
+        i = 0
         with data_file.open() as f:
-            for i, line in enumerate(tqdm(f, total=num_samples, desc="Training examples")):
+            for line in f:
                 line = line.strip()
                 example = json.loads(line)
                 features = convert_example_to_features(example, tokenizer, seq_len)
@@ -120,8 +121,9 @@ class PregeneratedDataset(Dataset):
                 word_start_masks[i] = features.word_start_mask
                 word_end_masks[i] = features.word_end_mask                
                 lm_label_ids[i] = features.lm_label_ids
+                i += 1
         assert i == num_samples - 1  # Assert that the sample count metric was true
-        logging.info("Loading complete!")
+        # logging.info("Loading complete!")
         self.num_samples = num_samples
         self.seq_len = seq_len
         self.input_ids = input_ids
