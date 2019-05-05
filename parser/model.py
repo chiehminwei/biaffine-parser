@@ -138,8 +138,9 @@ class Model(object):
         loss, metric = 0, AttachmentMethod()
         for i, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
-            words, attention_mask, token_start_mask, arcs, rels = batch
-
+            
+            words, arcs, rels, attention_mask, token_start_mask, word_end_masks, lm_label_ids = batch 
+            
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
