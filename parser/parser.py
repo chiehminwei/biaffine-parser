@@ -109,7 +109,7 @@ class BiaffineParser(nn.Module):
             return s_arc, s_rel
         else: # Masked LM
             prediction_scores = self.cls(sequence_output)
-            loss_fct = CrossEntropyLoss(ignore_index=-1)
+            loss_fct = CrossEntropyLoss(ignore_index=-1, reduction='mean')
             masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), masked_lm_labels.view(-1))
             return s_arc, s_rel, masked_lm_loss
 
