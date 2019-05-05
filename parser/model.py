@@ -103,9 +103,8 @@ class Model(object):
             # Forward-pass
             s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, lm_label_ids)
             if args.local_rank == 0:
-                print('s_arc', s_arc.shape)
-                print('s_rel', s_rel.shape)
-
+                print('lm_loss', lm_loss.shape, lm_loss)            
+            
             word_start_masks[:, 0] = 0  # ignore [CLS]
             lens = input_masks.sum(dim=1) - 1 # ignore [SEP]
             word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
@@ -114,23 +113,7 @@ class Model(object):
             s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
 
             # Get loss
-            if args.local_rank == 0:
-                print('input_ids', input_ids.shape)
-                print('arc_ids', arc_ids.shape)
-                print('rel_ids', rel_ids.shape)
-                print('input_masks', input_masks.shape)
-                print('word_start_masks', word_start_masks.shape)
-                print('word_end_masks', word_end_masks.shape)
-                print('lm_label_ids', lm_label_ids.shape)
-
-                print('lm_loss', lm_loss.shape)
-                print('s_arc', s_arc.shape)
-                print('s_rel', s_rel.shape)
-                print('gold_arcs', gold_arcs.shape)
-                print('gold_rels', gold_rels.shape)
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-            if args.local_rank == 0:
-                print('loss', loss.shape)
             
             loss += lm_loss
             if data_parallel:
