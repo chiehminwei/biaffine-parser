@@ -14,7 +14,7 @@ class Config(object):
     lr = 1e-5
 
     # [Run]
-    batch_size = 32
+    batch_size = 8
     epochs = 60
     patience = 15
     gradient_accumulation_steps = 1
