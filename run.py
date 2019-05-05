@@ -19,11 +19,6 @@ if __name__ == '__main__':
     )
     parser.add_argument('--local_rank', '-l', default=0, type=int,
                          help='local rank for distributed training')
-    parser.add_argument("--save_log_to_file",
-                            action='store_true',
-                            help="Whether to log to file")
-    parser.add_argument('--logdir', default='logs', type=Path,
-                               help='Directory to save log')
 
     subparsers = parser.add_subparsers(title='Commands')
     subcommands = {
@@ -45,6 +40,11 @@ if __name__ == '__main__':
         subparser.add_argument("--no_cuda",
                             action='store_true',
                             help="Whether to use CUDA when available")
+        subparser.add_argument("--save_log_to_file",
+                            action='store_true',
+                            help="Whether to log to file")
+        subparser.add_argument('--logdir', default='logs', type=Path,
+                                   help='Directory to save log')
         
     args = parser.parse_args()
     log_format = '%(asctime)-10s: %(message)s'
