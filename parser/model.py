@@ -103,7 +103,7 @@ class Model(object):
             # Forward-pass
             s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, lm_label_ids)
             word_start_masks[:, 0] = 0  # ignore [CLS]
-            lens = attention_mask.sum(dim=1) - 1 # ignore [SEP]
+            lens = input_masks.sum(dim=1) - 1 # ignore [SEP]
             word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
             
             gold_arcs, gold_rels = arcs[word_start_masks], rels[word_start_masks]
