@@ -132,13 +132,14 @@ class Train(object):
         }
         if args.local_rank == 0:
             for k, v in params.items():
-                logging.info(f"  {k}: {v}")
+                if args.local_rank == 0:
+                    logging.info(f"  {k}: {v}")
         network = BiaffineParser(params)
         if torch.cuda.is_available() and not args.no_cuda:
           network.to(torch.device('cuda'))
 
-        if args.local_rank == 0:
-            logging.info(f"{network}\n")
+        # if args.local_rank == 0:
+        #     logging.info(f"{network}\n")
 
         last_epoch = 0
         max_metric = 0.0
@@ -146,7 +147,8 @@ class Train(object):
         # Start training from checkpoint if one exists
         state = None
         if args.resume_training and os.path.isfile(args.file):
-            logging.info('Resume training from checkpoint.')
+            if args.local_rank == 0:
+                logging.info('Resume training from checkpoint.')
             state = torch.load(args.file, map_location='cpu')
             last_epoch = state['last_epoch']
             network = network.load(args.file, args.cloud_address, args.local_rank)
@@ -160,17 +162,20 @@ class Train(object):
                 logging.exception("Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training.")
                 raise ImportError(
                     "Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training.")
-            logging.info('Distirbuted training enabled.')
+            if args.local_rank == 0:
+                logging.info('Distirbuted training enabled.')
             network = DistributedDataParallel(network)
 
         elif n_gpu > 1 and not args.no_cuda:
-            logging.info('Using {} GPUs for data parallel training'.format(torch.cuda.device_count()))
+            if args.local_rank == 0:
+                logging.info('Using {} GPUs for data parallel training'.format(torch.cuda.device_count()))
             network = torch.nn.DataParallel(network)
 
         model = Model(vocab, network)
         if args.resume_training and os.path.isfile(args.file):
             try:
-                logging.info('Resume training for optimizer')
+                if args.local_rank == 0:
+                    logging.info('Resume training for optimizer')
                 max_metric = state['max_metric']
                 model.optimizer.load_state_dict(state['optimizer'])
             except:

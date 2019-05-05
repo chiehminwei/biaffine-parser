@@ -64,7 +64,7 @@ class Model(object):
             train_dataloader = DataLoader(epoch_dataset, sampler=train_sampler, batch_size=batch_size//gradient_accumulation_steps)
             stats = {'tr_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
             with tqdm(total=len(train_dataloader), desc=f"Epoch {epoch}") as pbar:
-                self.train(train_dataloader, pbar, stats, data_parallel=bool(torch.cuda.device_count() > 1 and not args.no_cuda and not args.distributed))
+                self.train(train_dataloader, pbar, stats, args, data_parallel=bool(torch.cuda.device_count() > 1 and not args.no_cuda and not args.distributed))
             
             dev_loss, dev_metric = self.evaluate(dev_loader)
             t = datetime.now() - start
@@ -93,7 +93,7 @@ class Model(object):
             logging.info(f"mean time of each epoch is {total_time / epoch}s")
             logging.info(f"{total_time}s elapsed")
 
-    def train(self, loader, pbar, stats, data_parallel=False):
+    def train(self, loader, pbar, stats, args=None, data_parallel=False):
         self.network.train()
         for step, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
@@ -110,7 +110,17 @@ class Model(object):
             s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
 
             # Get loss
-            loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels) + lm_loss
+            if args.local_rank == 0:
+                logging.info('lm_loss', lm_loss.shape)
+                logging.info('s_arc', s_arc.shape)
+                logging.info('s_rel', s_rel.shape)
+                logging.info('gold_arcs', gold_arcs.shape)
+                logging.info('gold_rels', gold_rels.shape)
+            loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            if args.local_rank == 0:
+                logging.info('loss', loss.shape)
+            
+            loss += lm_loss
             if data_parallel:
                 loss = loss.mean() # mean() to average on multi-gpu.
             if self.gradient_accumulation_steps > 1:
