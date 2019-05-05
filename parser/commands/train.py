@@ -24,15 +24,15 @@ class Train(object):
         subparser = parser.add_parser(
             name, help='Train a model.'
         )
-        parser.add_argument('--pregenerated_data', type=Path, required=True)
-        parser.add_argument("--bert_model", type=str, required=True,
+        subparser.add_argument('--pregenerated_data', type=Path, required=True)
+        subparser.add_argument("--bert_model", type=str, required=True,
                         choices=["bert-base-uncased", "bert-large-uncased", "bert-base-cased",
                                  "bert-base-multilingual", "bert-base-chinese"])
-        parser.add_argument("--do_lower_case", action="store_true")
-        parser.add_argument("--reduce_memory", action="store_true",
+        subparser.add_argument("--do_lower_case", action="store_true")
+        subparser.add_argument("--reduce_memory", action="store_true",
                             help="Store training data as on-disc memmaps to massively reduce memory usage")
-        parser.add_argument("--resume_training", action="store_true")
-        parser.add_argument("--warmup_proportion",
+        subparser.add_argument("--resume_training", action="store_true")
+        subparser.add_argument("--warmup_proportion",
                             default=0.1,
                             type=float,
                             help="Proportion of training to perform linear learning rate warmup for. "
