@@ -229,7 +229,7 @@ def main():
                     start = i + 1
             docs.add_document(doc)
 
-        rel_dict = {rel: i for i, rel in enumerate(sorted(rels))}
+        rel_dict = {rel: i for i, rel in enumerate(sorted([rel for rel in rels]))}
         print(rel_dict)
         assert 1 == 2
 
