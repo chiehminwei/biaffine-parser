@@ -375,7 +375,7 @@ class Vocab(object):
         return words_numerical, attention_mask, token_start_mask, words_total, tags_total
 
     @classmethod
-    def from_corpus(cls, corpus, min_freq=1, bert_model, do_lower_case):
+    def from_corpus(cls, corpus, bert_model, do_lower_case, min_freq=1):
         words = Counter(word for seq in corpus.words for word in seq)
         words = list(word for word, freq in words.items() if freq >= min_freq)
         chars = list({char for seq in corpus.words for char in ''.join(seq)})
