@@ -130,7 +130,7 @@ class Model(object):
                 print('gold_rels', gold_rels.shape)
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             if args.local_rank == 0:
-                logging.info('loss', loss.shape)
+                print('loss', loss.shape)
             
             loss += lm_loss
             if data_parallel:
