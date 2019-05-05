@@ -324,6 +324,7 @@ def main():
                 input_ids, input_mask, segment_ids, lm_label_ids, is_next = batch
                 loss = model(input_ids, segment_ids, input_mask, lm_label_ids, is_next)
                 print('loss', loss.shape, loss)
+                assert 1 == 2
                 if n_gpu > 1:
                     loss = loss.mean() # mean() to average on multi-gpu.
                 if args.gradient_accumulation_steps > 1:
