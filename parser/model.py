@@ -111,11 +111,11 @@ class Model(object):
 
             # Get loss
             if args.local_rank == 0:
-                logging.info('lm_loss', lm_loss.shape)
-                logging.info('s_arc', s_arc.shape)
-                logging.info('s_rel', s_rel.shape)
-                logging.info('gold_arcs', gold_arcs.shape)
-                logging.info('gold_rels', gold_rels.shape)
+                print('lm_loss', lm_loss.shape)
+                print('s_arc', s_arc.shape)
+                print('s_rel', s_rel.shape)
+                print('gold_arcs', gold_arcs.shape)
+                print('gold_rels', gold_rels.shape)
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             if args.local_rank == 0:
                 logging.info('loss', loss.shape)
