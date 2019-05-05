@@ -165,12 +165,12 @@ class Model(object):
 
         return loss, metric
 
+    # Not fixed yet don't use
     @torch.no_grad()
     def predict(self, loader):
         self.network.eval()
 
         all_arcs, all_rels = [], []
-        # for words, attention_mask, token_start_mask, arcs, rels in tqdm(loader):
         for words, attention_mask, token_start_mask, arcs, rels in loader:
             # ignore [CLS]
             token_start_mask[:, 0] = 0
