@@ -231,9 +231,7 @@ def main():
             docs.add_document(doc)
 
         rel_dict = {rel: i for i, rel in enumerate(sorted(rels))}
-        print(rel_dict)
-        assert 1 == 2
-
+        
         args.output_dir.mkdir(exist_ok=True)
         for epoch in trange(args.epochs_to_generate, desc="Epoch"):
             epoch_filename = args.output_dir / f"epoch_{epoch}.json"
