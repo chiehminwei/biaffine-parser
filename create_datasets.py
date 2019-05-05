@@ -32,6 +32,10 @@ parser.add_argument('--vocab', '-v', default='vocab.pt',
 parser.add_argument('--cloud_address', '-c',
                     default='gs://no_you_dont_want_cloud_bro',
                     help='path to Google Cloud Storage')
+parser.add_argument("--bert_model", type=str, required=True,
+                choices=["bert-base-uncased", "bert-large-uncased", "bert-base-cased",
+                         "bert-base-multilingual", "bert-base-chinese"])
+parser.add_argument("--do_lower_case", action="store_true")
 
 # parser.set_defaults(func=self)
 args = parser.parse_args()
@@ -42,14 +46,14 @@ train = Corpus.load(args.ftrain)
 dev = Corpus.load(args.fdev)
 # test = Corpus.load(args.ftest)
 
-if not os.path.isfile(args.vocab):
-    FNULL = open(os.devnull, 'w')
-    cloud_address = os.path.join(args.cloud_address, args.vocab)
+# if not os.path.isfile(args.vocab):
+#     FNULL = open(os.devnull, 'w')
+#     cloud_address = os.path.join(args.cloud_address, args.vocab)
     # subprocess.call(['gsutil', 'cp', cloud_address, args.vocab],
     #                 stdout=FNULL, stderr=subprocess.STDOUT)
 if not os.path.isfile(args.vocab):
     print("***Loading vocab from scratch.")
-    vocab = Vocab.from_corpus(corpus=train, min_freq=2)
+    vocab = Vocab.from_corpus(corpus=train, min_freq=2, bert_model=args.bert_model, do_lower_case=args.do_lower_case)
     torch.save(vocab, args.vocab)
     FNULL = open(os.devnull, 'w')
     cloud_address = os.path.join(args.cloud_address, args.vocab)

@@ -9,6 +9,7 @@ from pytorch_pretrained_bert import BertTokenizer
 import numpy as np
 import unicodedata
 import os
+import logging
 
 
 class Vocab(object):
@@ -89,24 +90,24 @@ class Vocab(object):
                     continue
                 
                 # take care of some idiosyncracies
-                if word == '`':
-                    word = "'"
-                if word == '``':
-                    word = '"'
-                if word == "''":
-                    word = '"'
-                if word == "non-``":
-                    word = 'non-"'
-                word = word.replace('“', '"')
-                word = word.replace('”', '"')
-                word = word.replace("`", "'")
-                word = word.replace("’", "'")
-                word = word.replace("‘", "'")
-                word = word.replace("'", "'")
-                word = word.replace("´", "'")
-                word = word.replace("…", "...")
-                word = word.replace("–", "-")
-                word = word.replace('—', '-')
+                # if word == '`':
+                #     word = "'"
+                # if word == '``':
+                #     word = '"'
+                # if word == "''":
+                #     word = '"'
+                # if word == "non-``":
+                #     word = 'non-"'
+                # word = word.replace('“', '"')
+                # word = word.replace('”', '"')
+                # word = word.replace("`", "'")
+                # word = word.replace("’", "'")
+                # word = word.replace("‘", "'")
+                # word = word.replace("'", "'")
+                # word = word.replace("´", "'")
+                # word = word.replace("…", "...")
+                # word = word.replace("–", "-")
+                # word = word.replace('—', '-')
 
 
                 tokens = self.tokenizer.tokenize(word)                
@@ -152,14 +153,14 @@ class Vocab(object):
             len_token_starts = len(token_starts)
             len_attentions = len(attentions)
             if not (len_sentence_token_ids == len_sentence_arc_ids == len_sentence_rel_ids == len_token_starts == len_attentions):
-                print(words)
-                print(arcs)
-                print(rels)
-                print('len_sentence_token_ids: ', len_sentence_token_ids)
-                print('len_sentence_arc_ids', len_sentence_arc_ids)
-                print('len_sentence_rel_ids', len_sentence_rel_ids)
-                print('len_token_starts', len_token_starts)
-                print('len_attentions', len_attentions)
+                logging.debug(words)
+                logging.debug(arcs)
+                logging.debug(rels)
+                logging.debug('len_sentence_token_ids: ', len_sentence_token_ids)
+                logging.debug('len_sentence_arc_ids', len_sentence_arc_ids)
+                logging.debug('len_sentence_rel_ids', len_sentence_rel_ids)
+                logging.debug('len_token_starts', len_token_starts)
+                logging.debug('len_attentions', len_attentions)
                 raise RuntimeError("Lengths don't match up.")
 
             # Skip too long sentences
@@ -176,21 +177,21 @@ class Vocab(object):
             attention_mask.append(torch.ByteTensor(attentions))
 
         if offending_set: 
-            print('WARNING: The following non-symbol characters are unknown to BERT:')
+            logging.warning('WARNING: The following non-symbol characters are unknown to BERT:')
             try:
-                print(offending_set)
+                logging.warning(offending_set)
             except:
                 pass
         if symbol_set:
-            print('WARNING: The following symbol characters are unknown to BERT:')
+            logging.warning('WARNING: The following symbol characters are unknown to BERT:')
             try:         
-                print(symbol_set)
+                logging.warning(symbol_set)
             except:
                 pass
         if empty_words:
-            print('WARNING: The following characters are empty after going through tokenizer:')
+            logging.warning('WARNING: The following characters are empty after going through tokenizer:')
             try:
-                print(empty_words)
+                logging.warning(empty_words)
             except:
                 pass
         if save_name:
@@ -204,8 +205,8 @@ class Vocab(object):
                 pass
             torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical), save_name)
         
-        print('Total number of sentences: {}'.format(sent_count))
-        print('Number of sentences exceeding max seq length of 128: {}'.format(exceeding_count))
+        logging.info('Total number of sentences: {}'.format(sent_count))
+        logging.info('Number of sentences exceeding max seq length of 128: {}'.format(exceeding_count))
 
         return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
@@ -374,11 +375,11 @@ class Vocab(object):
         return words_numerical, attention_mask, token_start_mask, words_total, tags_total
 
     @classmethod
-    def from_corpus(cls, corpus, min_freq=1, bert_model='bert-base-cased'):
+    def from_corpus(cls, corpus, min_freq=1, bert_model, do_lower_case):
         words = Counter(word for seq in corpus.words for word in seq)
         words = list(word for word, freq in words.items() if freq >= min_freq)
         chars = list({char for seq in corpus.words for char in ''.join(seq)})
         rels = list({rel for seq in corpus.rels for rel in seq})
-        vocab = cls(words, chars, rels, bert_model)
+        vocab = cls(words, chars, rels, bert_model, do_lower_case)
 
         return vocab
