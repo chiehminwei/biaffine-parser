@@ -114,7 +114,7 @@ class Model(object):
             # Get loss
             loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             loss += lm_loss
-            
+
             if data_parallel:
                 loss = loss.mean() # mean() to average on multi-gpu.
             if self.gradient_accumulation_steps > 1:
@@ -143,7 +143,7 @@ class Model(object):
         for i, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
             
-            input_ids, arc_ids, rel_ids, input_masks, word_start_masks, word_end_masks, lm_label_ids = batch 
+            input_ids, input_masks, word_start_masks, arc_ids, rel_ids = batch
             
             # ignore [CLS]
             word_start_masks[:, 0] = 0
@@ -159,7 +159,7 @@ class Model(object):
             s_arc, s_rel = self.network(input_ids, input_masks)
             s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]
             
-            gold_arcs, gold_rels = arc_ids[token_start_mask], rel_ids[token_start_mask]
+            gold_arcs, gold_rels = arc_ids[word_start_masks], rel_ids[word_start_masks]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
             
             loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
