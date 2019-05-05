@@ -217,7 +217,8 @@ def main():
     with DocumentDatabase(reduce_memory=args.reduce_memory) as docs:
         rels = set()
         with args.train_corpus.open() as f:
-            doc = []            
+            doc = []
+            start = 0
             lines = f.readlines()
             for i, line in tqdm(enumerate(lines), desc="Loading Dataset"):
                 if line[0] == '#':
