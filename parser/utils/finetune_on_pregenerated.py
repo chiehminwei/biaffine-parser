@@ -107,7 +107,7 @@ class PregeneratedDataset(Dataset):
             word_start_masks = np.zeros(shape=(num_samples, seq_len), dtype=np.bool)
             word_end_masks = np.zeros(shape=(num_samples, seq_len), dtype=np.bool)
             lm_label_ids = np.full(shape=(num_samples, seq_len), dtype=np.int32, fill_value=-1)
-        logging.info(f"Loading training examples for epoch {epoch}")
+        # logging.info(f"Loading training examples for epoch {epoch}")
         i = 0
         with data_file.open() as f:
             for line in f:
