@@ -64,7 +64,7 @@ class Model(object):
             train_dataloader = DataLoader(epoch_dataset, sampler=train_sampler, batch_size=batch_size//gradient_accumulation_steps)
             stats = {'tr_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
             with tqdm(total=len(train_dataloader), desc=f"Epoch {epoch}") as pbar:
-                self.train(train_dataloader, pbar, stats data_parallel=bool(torch.cuda.device_count() > 1 and not args.no_cuda and not args.distributed))
+                self.train(train_dataloader, pbar, stats data_parallel=False)
             
             dev_loss, dev_metric = self.evaluate(dev_loader)
             t = datetime.now() - start
