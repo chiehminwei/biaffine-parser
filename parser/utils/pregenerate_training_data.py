@@ -224,12 +224,13 @@ def main():
                     start += 1
                 if len(line) <= 1:
                     sentence = Sentence(*zip(*[l.split('\t') for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
-                    rels.add(sentence.DEPREL)
+                    for rel in sentence.DEPREL:
+                        rels.add(rel)
                     doc.append(sentence)
                     start = i + 1
             docs.add_document(doc)
 
-        rel_dict = {rel: i for i, rel in enumerate(sorted([rel for rel in rels]))}
+        rel_dict = {rel: i for i, rel in enumerate(sorted(rels))}
         print(rel_dict)
         assert 1 == 2
 
