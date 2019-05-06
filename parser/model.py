@@ -142,7 +142,7 @@ class Model(object):
         mean_lm_loss = stats['lm_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
         mean_arc_loss = stats['arc_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
         mean_rel_loss = stats['rel_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
-        logging.info(f"{'train:':<6} Loss: {mean_loss:.4f} Arc: {mean_arc_loss:.4f} Rel: {mean_las_loss:.4f} LM: {mean_lm_loss:.4f}")
+        logging.info(f"{'train:':<6} Loss: {mean_loss:.4f} Arc: {mean_arc_loss:.4f} Rel: {mean_rel_loss:.4f} LM: {mean_lm_loss:.4f}")
         
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
