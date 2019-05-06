@@ -13,7 +13,7 @@ class Config(object):
     mlp_dropout = 0.33
 
     # [Optimizer]
-    lr = 1e-5
+    lr = 5e-5
 
     # [Run]
     batch_size = 8
