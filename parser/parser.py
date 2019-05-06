@@ -203,7 +203,7 @@ class BiaffineParser(nn.Module):
 
         return network
 
-    def save(self, fname, epoch, cloud_address, optimizer, max_metric, local_rank=0):
+    def save(self, fname, epoch, cloud_address, optimizer, max_metric, local_rank=0, is_best=False):
         state = {
             'params': self.params,
             'state_dict': self.state_dict(),
@@ -212,7 +212,10 @@ class BiaffineParser(nn.Module):
             'max_metric': max_metric,
         }
         torch.save(state, fname)
-        logging.info("Model saved.")
+        if is_best:
+            logging.info("Best model saved.")
+        else:
+            logging.info("Latest model saved.")
 
         # Save a copy to cloud as well
         # FNULL = open(os.devnull, 'w')

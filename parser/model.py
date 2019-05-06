@@ -24,9 +24,10 @@ class Model(object):
         self.network = network
         self.criterion = nn.CrossEntropyLoss()
         
-    def __call__(self, dev_loader, epochs, num_data_epochs, patience, lr, t_total, last_epoch, 
+    def __call__(self, loaders, epochs, num_data_epochs, patience, lr, t_total, last_epoch, 
                  cloud_address, args, batch_size, gradient_accumulation_steps=1, max_metric=0.0):
 
+        train_dataloader, dev_loader, test_loader = loaders
         self.gradient_accumulation_steps = gradient_accumulation_steps
         self.device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         total_time = timedelta()
@@ -41,10 +42,15 @@ class Model(object):
             {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
         ]
 
-        self.optimizer = BertAdam(optimizer_grouped_parameters,
-                             lr=lr,
-                             warmup=args.warmup_proportion,
-                             t_total=t_total)
+        if args.train_lm:
+            self.optimizer = BertAdam(optimizer_grouped_parameters,
+                                 lr=lr,
+                                 warmup=args.warmup_proportion,
+                                 t_total=t_total)
+        else:
+            self.optimizer = BertAdam(optimizer_grouped_parameters,
+                                 lr=lr,
+                                 warmup=args.warmup_proportion)
 
         tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
 
@@ -53,26 +59,29 @@ class Model(object):
         
         for epoch in range(last_epoch + 1, epochs + 1):
             start = datetime.now()
-
-            epoch_dataset = PregeneratedDataset(epoch=epoch, training_path=args.pregenerated_data, tokenizer=tokenizer,
-                                            num_data_epochs=num_data_epochs, reduce_memory=args.reduce_memory)
-            if args.distributed:
-                train_sampler = DistributedSampler(epoch_dataset)
-            else:
-                train_sampler = RandomSampler(epoch_dataset)
+            if args.train_lm:
+                epoch_dataset = PregeneratedDataset(epoch=epoch, training_path=args.pregenerated_data, tokenizer=tokenizer,
+                                                num_data_epochs=num_data_epochs, reduce_memory=args.reduce_memory)
+                if args.distributed:
+                    train_sampler = DistributedSampler(epoch_dataset)
+                else:
+                    train_sampler = RandomSampler(epoch_dataset)
+                
+                train_dataloader = DataLoader(epoch_dataset, sampler=train_sampler, batch_size=batch_size//gradient_accumulation_steps)
+                stats = {'tr_loss': 0, 'lm_loss': 0, 'arc_loss': 0, 'rel_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
             
-            train_dataloader = DataLoader(epoch_dataset, sampler=train_sampler, batch_size=batch_size//gradient_accumulation_steps)
-            stats = {'tr_loss': 0, 'lm_loss': 0, 'arc_loss': 0, 'rel_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
             with tqdm(total=len(train_dataloader), desc=f"Epoch {epoch}") as pbar:
                 self.train(train_dataloader, pbar, stats, args, data_parallel=bool(torch.cuda.device_count() > 1 and not args.no_cuda and not args.distributed))
             
-            train_loss, train_metric = self.evaluate(train_dataloader, trainset=True)
+            train_loss, train_metric = self.evaluate(train_dataloader, trainset=args.train_lm)
             dev_loss, dev_metric = self.evaluate(dev_loader)
+            test_loss, test_metric = self.evaluate(dev_loader)
             t = datetime.now() - start
             total_time += t            
             if args.local_rank == 0:
-                logging.info(f"{'train:':<6} Loss: {train_loss:.4f} {train_metric}")  
-                logging.info(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")            
+                logging.info(f"{'train:':<6} Loss: {train_loss:.4f} {train_metric}")
+                logging.info(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")
+                logging.info(f"{'test:':<6} Loss: {test_loss:.4f} {test_metric}")         
                 logging.info(f"{t}s elapsed\n")
             
             if args.local_rank == 0:
@@ -84,7 +93,7 @@ class Model(object):
                 if dev_metric > max_metric: # Save best
                     output_model_file = args.checkpoint_dir / "model_best.pt"
                     max_e, max_metric = epoch, dev_metric
-                    model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, max_metric)
+                    model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, max_metric, is_best=True)
 
                 elif epoch - max_e >= patience: # Early stopping
                     break
@@ -95,17 +104,19 @@ class Model(object):
             logging.info(f"mean time of each epoch is {total_time / epoch}s")
             logging.info(f"{total_time}s elapsed")
 
-    def train(self, loader, pbar, stats, args=None, data_parallel=False):
+    def train(self, loader, pbar, stats, args, data_parallel=False):
         self.network.train()
         assert data_parallel == False
         for step, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
 
-            input_ids, arc_ids, rel_ids, input_masks, word_start_masks, word_end_masks, lm_label_ids = batch 
-            
-            # Forward-pass
-            s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, lm_label_ids)
-            lm_loss = torch.mean(lm_loss)
+            if args.train_lm:
+                input_ids, arc_ids, rel_ids, input_masks, word_start_masks, word_end_masks, lm_label_ids = batch 
+                s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, lm_label_ids)
+                lm_loss = torch.mean(lm_loss)
+            else:
+                input_ids, input_masks, word_start_masks, arc_ids, rel_ids = batch
+                s_arc, s_rel = self.network(input_ids, input_masks)
             
             word_start_masks[:, 0] = 0  # ignore [CLS]
             lens = input_masks.sum(dim=1) - 1 # ignore [SEP]
@@ -128,7 +139,8 @@ class Model(object):
             
             # Handle tqdm
             stats['tr_loss'] += loss.item()
-            stats['lm_loss'] += lm_loss.item()
+            if args.train_lm:
+                stats['lm_loss'] += lm_loss.item()
             stats['arc_loss'] += arc_loss.item()
             stats['rel_loss'] += rel_loss.item()
             stats['nb_tr_examples'] += input_ids.size(0)
@@ -147,7 +159,10 @@ class Model(object):
         mean_arc_loss = stats['arc_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
         mean_rel_loss = stats['rel_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
         if args.local_rank == 0:
-            logging.info(f"{'train:':<6} Loss: {mean_loss:.4f} Arc: {mean_arc_loss:.4f} Rel: {mean_rel_loss:.4f} LM: {mean_lm_loss:.4f}")
+            if args.train_lm:
+                logging.info(f"{'train:':<6} Loss: {mean_loss:.4f} Arc: {mean_arc_loss:.4f} Rel: {mean_rel_loss:.4f} LM: {mean_lm_loss:.4f}")
+            else:
+                logging.info(f"{'train:':<6} Loss: {mean_loss:.4f} Arc: {mean_arc_loss:.4f} Rel: {mean_rel_loss:.4f}")
         
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False, trainset=False):
