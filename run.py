@@ -9,6 +9,21 @@ import torch
 import logging
 import random
 import numpy as np
+import sys
+
+class LogFile(object):
+    def __init__(self, name=None):
+        self.logger = logging.getLogger(name)
+
+    def write(self, msg, level=logging.INFO):
+    if len(msg) < 2:
+        pass
+    else:
+        self.logger.log(level, msg)
+
+    def flush(self):
+        for handler in self.logger.handlers:
+            handler.flush()
 
 
 if __name__ == '__main__':
@@ -43,7 +58,7 @@ if __name__ == '__main__':
         subparser.add_argument("--save_log_to_file",
                             action='store_true',
                             help="Whether to log to file")
-        subparser.add_argument('--logdir', default='logs', type=Path,
+        subparser.add_argument('--logdir', default='logging.log', type=str,
                                    help='Directory to save log')
         subparser.add_argument('--use_lstm',
                             action='store_true',
@@ -53,8 +68,11 @@ if __name__ == '__main__':
     log_format = '%(message)s'
     if args.save_log_to_file:
         if args.local_rank == 0:
-            args.logdir.mkdir(parents=True, exist_ok=True)
-            logging.basicConfig(filename="logs/log", filemode='w', format=log_format, level=logging.INFO)
+            logging.basicConfig(level=logging.INFO, 
+                    format=log_format,
+                    filename=args.logdir)
+            sys.stdout = LogFile('stdout')
+            sys.stderr = LogFile('stderr')
     else:
         if args.local_rank == 0:
             logging.basicConfig(format=log_format, level=logging.INFO)
