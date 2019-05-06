@@ -187,6 +187,7 @@ class Train(object):
             'n_bert_hidden': Config.n_bert_hidden,
             'bert_dropout': Config.bert_dropout,
             'n_lstm_layers': Config.n_lstm_layers,
+            'n_lstm_hidden': Config.n_lstm_hidden,
             'lstm_dropout': Config.lstm_dropout,
             'n_mlp_arc': Config.n_mlp_arc,
             'n_mlp_rel': Config.n_mlp_rel,
