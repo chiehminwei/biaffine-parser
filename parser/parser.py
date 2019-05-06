@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from parser.modules import MLP, Biaffine
-from parser.modules.dropout import SharedDropout
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
+from parser.modules import (MLP, Biaffine, BiLSTM, IndependentDropout,
+                            SharedDropout)
 
 import torch
 import torch.nn as nn
 from torch.nn import CrossEntropyLoss
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 import subprocess
 import os
@@ -40,6 +41,16 @@ class BiaffineParser(nn.Module):
         self.cls = lm.cls
         self.config = lm.config
         self.bert_dropout = SharedDropout(p=params['bert_dropout'])
+
+        # LSTM layer
+        if params['use_lstm']:
+            for param in self.bert.parameters():
+                param.requires_grad = False
+            self.lstm = BiLSTM(input_size=params['n_bert_hidden'],
+                             hidden_size=params['n_bert_hidden'],
+                             num_layers=params['n_lstm_layers'],
+                             dropout=params['lstm_dropout'])
+            self.lstm_dropout = SharedDropout(p=params['lstm_dropout'])
 
         # the MLP layers
         self.mlp_arc_h = MLP(n_in=params['n_bert_hidden'],
@@ -75,31 +86,29 @@ class BiaffineParser(nn.Module):
         # Dependency parsing
         x = sequence_output
 
-        logging.debug('input_ids', input_ids.shape)
-        logging.debug('bert output', x.shape)
-
-        # bert dropout
+        # bert dropout 
         x = self.bert_dropout(x)
+
+        # LSTM
+        if self.lstm:
+            sorted_lens, indices = torch.sort(lens, descending=True)
+            inverse_indices = indices.argsort()
+            x = pack_padded_sequence(x[indices], sorted_lens, True)
+            x = self.lstm(x)
+            x, _ = pad_packed_sequence(x, True)
+            x = self.lstm_dropout(x)[inverse_indices]
 
         # apply MLPs to the BERT output states
         arc_h = self.mlp_arc_h(x)
         arc_d = self.mlp_arc_d(x)
         rel_h = self.mlp_rel_h(x)
         rel_d = self.mlp_rel_d(x)
-        
-        logging.debug('arc_h', arc_h.shape)
-        logging.debug('arc_d', arc_d.shape)
-        logging.debug('rel_h', rel_h.shape)
-        logging.debug('rel_d', rel_d.shape)
 
         # get arc and rel scores from the bilinear attention
         # [batch_size, seq_len, seq_len]
         s_arc = self.arc_attn(arc_d, arc_h)
         # [batch_size, seq_len, seq_len, n_rels]
         s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
-
-        logging.debug('s_arc', s_arc.shape)
-        logging.debug('s_rel', s_rel.shape)
 
         # set the scores that exceed the length of each sentence to -inf
         len_mask = length_to_mask(lens, max_len=input_ids.shape[-1], dtype=torch.uint8)

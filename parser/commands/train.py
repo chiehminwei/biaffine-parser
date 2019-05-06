@@ -124,11 +124,14 @@ class Train(object):
         params = {
             'n_bert_hidden': Config.n_bert_hidden,
             'bert_dropout': Config.bert_dropout,
+            'n_lstm_layers': Config.n_lstm_layers,
+            'lstm_dropout': Config.lstm_dropout,
             'n_mlp_arc': Config.n_mlp_arc,
             'n_mlp_rel': Config.n_mlp_rel,
             'mlp_dropout': Config.mlp_dropout,
             'n_rels': vocab.n_rels,
             'bert_model': args.bert_model,
+            'use_lstm': args.use_lstm
         }
         if args.local_rank == 0:
             for k, v in params.items():

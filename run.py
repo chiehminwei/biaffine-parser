@@ -45,6 +45,9 @@ if __name__ == '__main__':
                             help="Whether to log to file")
         subparser.add_argument('--logdir', default='logs', type=Path,
                                    help='Directory to save log')
+        subparser.add_argument('--use_lstm',
+                            action='store_true',
+                            help="Whether to use BiLSTM and freeze BERT embeddings")
         
     args = parser.parse_args()
     log_format = '%(asctime)-10s: %(message)s'
