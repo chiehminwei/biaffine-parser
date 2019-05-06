@@ -16,10 +16,10 @@ class LogFile(object):
         self.logger = logging.getLogger(name)
 
     def write(self, msg, level=logging.INFO):
-    if len(msg) < 2:
-        pass
-    else:
-        self.logger.log(level, msg)
+        if len(msg) < 2:
+            pass
+        else:
+            self.logger.log(level, msg)
 
     def flush(self):
         for handler in self.logger.handlers:
