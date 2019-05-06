@@ -168,7 +168,7 @@ class Model(object):
             lens = input_masks.sum(dim=1) - 1
             word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
 
-            # ignore all punctuation if specified
+            # ignore all punctuation if specified 
             if not include_punct:
                 puncts = input_ids.new_tensor([punct for punct in self.vocab.puncts])
                 word_start_masks &= input_ids.unsqueeze(-1).ne(puncts).all(-1)
