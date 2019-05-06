@@ -171,7 +171,8 @@ class Model(object):
             gold_arcs, gold_rels = arc_ids[word_start_masks], rel_ids[word_start_masks]
             pred_arcs, pred_rels = self.decode(s_arc, s_rel)
             
-            loss += self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            loss += arc_loss + rel_loss
             metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
 
         loss /= len(loader)
