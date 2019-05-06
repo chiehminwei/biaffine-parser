@@ -105,7 +105,7 @@ class Model(object):
             
             # Forward-pass
             s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, lm_label_ids)
-            lm_loss = torch.sum(lm_loss)
+            lm_loss = torch.mean(lm_loss)
             
             word_start_masks[:, 0] = 0  # ignore [CLS]
             lens = input_masks.sum(dim=1) - 1 # ignore [SEP]
