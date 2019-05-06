@@ -43,6 +43,7 @@ class BiaffineParser(nn.Module):
         self.bert_dropout = SharedDropout(p=params['bert_dropout'])
 
         # LSTM layer
+        self.lstm = None
         if params['use_lstm']:
             for param in self.bert.parameters():
                 param.requires_grad = False
