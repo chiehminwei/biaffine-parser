@@ -116,7 +116,9 @@ class Model(object):
 
             # Get loss
             arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-            loss = arc_loss + rel_loss + lm_loss
+            loss = arc_loss + rel_loss
+            if args.train_lm:
+                loss += lm_loss
 
             if data_parallel:
                 loss = loss.mean() # mean() to average on multi-gpu.
@@ -145,7 +147,7 @@ class Model(object):
         mean_arc_loss = stats['arc_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
         mean_rel_loss = stats['rel_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
         if args.local_rank == 0:
-            logging.info(f"\n{'train:':<6} Loss: {mean_loss:.4f} Arc: {mean_arc_loss:.4f} Rel: {mean_rel_loss:.4f} LM: {mean_lm_loss:.4f}")
+            logging.info(f"{'train:':<6} Loss: {mean_loss:.4f} Arc: {mean_arc_loss:.4f} Rel: {mean_rel_loss:.4f} LM: {mean_lm_loss:.4f}")
         
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False, trainset=False):

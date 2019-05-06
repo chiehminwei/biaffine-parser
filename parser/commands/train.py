@@ -43,6 +43,7 @@ class Train(object):
                                help='path to raw dev file')
         subparser.add_argument('--fdev_cache', default='data/binary/devset',
                                help='path to dev file cache')
+        subparser.add_argument('--train_lm', action="store_true")
         subparser.set_defaults(func=self)
 
         return subparser
