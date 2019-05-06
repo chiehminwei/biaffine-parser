@@ -14,7 +14,7 @@ class Evaluate(object):
     def add_subparser(self, name, parser):
         subparser = parser.add_parser(
             name, help='Evaluate the specified model and dataset.'
-        )
+        ) 
         subparser.add_argument('--batch-size', default=200, type=int,
                                help='batch size')
         subparser.add_argument('--include-punct', action='store_true',
@@ -32,7 +32,7 @@ class Evaluate(object):
             cloud_address = os.path.join(args.cloud_address, args.vocab)
             # subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         vocab = torch.load(args.vocab)
-        network = BiaffineParser.load(args.file, args.cloud_address)
+        network = BiaffineParser.load(args.checkpoint_dir / "model_best.pt", args.cloud_address, args.local_rank)
         model = Model(vocab, network)
 
         print("Load the dataset")
