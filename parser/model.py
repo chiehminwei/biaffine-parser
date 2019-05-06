@@ -62,7 +62,7 @@ class Model(object):
                 train_sampler = RandomSampler(epoch_dataset)
             
             train_dataloader = DataLoader(epoch_dataset, sampler=train_sampler, batch_size=batch_size//gradient_accumulation_steps)
-            stats = {'tr_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
+            stats = {'tr_loss': 0, 'lm_loss': 0, 'arc_loss': 0, 'rel_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
             with tqdm(total=len(train_dataloader), desc=f"Epoch {epoch}") as pbar:
                 self.train(train_dataloader, pbar, stats, args, data_parallel=bool(torch.cuda.device_count() > 1 and not args.no_cuda and not args.distributed))
             
@@ -95,6 +95,7 @@ class Model(object):
 
     def train(self, loader, pbar, stats, args=None, data_parallel=False):
         self.network.train()
+        assert data_parallel == False
         for step, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
 
@@ -112,8 +113,8 @@ class Model(object):
             s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
 
             # Get loss
-            loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-            loss += lm_loss
+            arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            loss = arc_loss + rel_loss + lm_loss
 
             if data_parallel:
                 loss = loss.mean() # mean() to average on multi-gpu.
@@ -123,6 +124,9 @@ class Model(object):
             
             # Handle tqdm
             stats['tr_loss'] += loss.item()
+            stats['lm_loss'] += lm_loss.item()
+            stats['arc_loss'] += arc_loss.item()
+            stats['rel_loss'] += rel_loss.item()
             stats['nb_tr_examples'] += input_ids.size(0)
             stats['nb_tr_steps'] += 1
             pbar.update(1)
@@ -134,7 +138,12 @@ class Model(object):
                 nn.utils.clip_grad_norm_(self.network.parameters(), 5.0)
                 self.optimizer.step()
                 self.optimizer.zero_grad()
-
+        mean_loss = stats['tr_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
+        mean_lm_loss = stats['lm_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
+        mean_arc_loss = stats['arc_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
+        mean_rel_loss = stats['rel_loss'] * self.gradient_accumulation_steps / stats['nb_tr_steps']
+        logging.info(f"{'train:':<6} Loss: {mean_loss:.4f} Arc: {mean_arc_loss:.4f} Rel: {mean_las_loss:.4f} LM: {mean_lm_loss:.4f}")
+        
     @torch.no_grad()
     def evaluate(self, loader, include_punct=False):
         self.network.eval()
@@ -201,9 +210,9 @@ class Model(object):
 
         arc_loss = self.criterion(s_arc, gold_arcs)
         rel_loss = self.criterion(s_rel, gold_rels)
-        loss = arc_loss + rel_loss
+        # loss = arc_loss + rel_loss
 
-        return loss
+        return arc_loss, rel_loss
 
     def decode(self, s_arc, s_rel):
         pred_arcs = s_arc.argmax(dim=-1)

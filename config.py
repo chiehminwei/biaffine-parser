@@ -13,10 +13,10 @@ class Config(object):
     mlp_dropout = 0.33
 
     # [Optimizer]
-    lr = 5e-5
+    lr = 1e-5
 
     # [Run]
     batch_size = 8
-    epochs = 60
-    patience = 15
+    epochs = 1000
+    patience = 100
     gradient_accumulation_steps = 1
