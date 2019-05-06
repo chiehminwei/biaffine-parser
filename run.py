@@ -50,7 +50,7 @@ if __name__ == '__main__':
                             help="Whether to use BiLSTM and freeze BERT embeddings")
         
     args = parser.parse_args()
-    log_format = '%(asctime)-10s: %(message)s'
+    log_format = '%(message)s'
     if args.save_log_to_file:
         if args.local_rank == 0:
             args.logdir.mkdir(parents=True, exist_ok=True)

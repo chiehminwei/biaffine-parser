@@ -66,10 +66,12 @@ class Model(object):
             with tqdm(total=len(train_dataloader), desc=f"Epoch {epoch}") as pbar:
                 self.train(train_dataloader, pbar, stats, args, data_parallel=bool(torch.cuda.device_count() > 1 and not args.no_cuda and not args.distributed))
             
+            train_loss, train_metric = self.evaluate(train_dataloader, trainset=True)
             dev_loss, dev_metric = self.evaluate(dev_loader)
             t = datetime.now() - start
             total_time += t            
             if args.local_rank == 0:
+                logging.info(f"{'train:':<6} Loss: {train_loss:.4f} {train_metric}")  
                 logging.info(f"{'dev:':<6} Loss: {dev_loss:.4f} {dev_metric}")            
                 logging.info(f"{t}s elapsed\n")
             
@@ -146,14 +148,17 @@ class Model(object):
             logging.info(f"\n{'train:':<6} Loss: {mean_loss:.4f} Arc: {mean_arc_loss:.4f} Rel: {mean_rel_loss:.4f} LM: {mean_lm_loss:.4f}")
         
     @torch.no_grad()
-    def evaluate(self, loader, include_punct=False):
+    def evaluate(self, loader, include_punct=False, trainset=False):
         self.network.eval()
 
         loss, metric = 0, AttachmentMethod()
         for i, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
             
-            input_ids, input_masks, word_start_masks, arc_ids, rel_ids = batch
+            if trainset:
+                input_ids, arc_ids, rel_ids, input_masks, word_start_masks, word_end_masks, lm_label_ids = batch 
+            else: 
+                input_ids, input_masks, word_start_masks, arc_ids, rel_ids = batch
             
             # ignore [CLS]
             word_start_masks[:, 0] = 0
