@@ -87,7 +87,6 @@ class Vocab(object):
             sentennce_tag_ids = []
             token_starts = []
             attentions = []
-            if len(words) == 0: continue
             words = ['[CLS]'] + words + ['[SEP]']
             arcs = [0] + arcs + [0]
             rels = ['<ROOT>'] + rels + ['<ROOT>']
@@ -156,6 +155,7 @@ class Vocab(object):
                 
             # error checking for lengths
             len_sentence_token_ids = len(sentence_token_ids)
+            if len_sentence_token_ids == 0: continue
             len_sentence_arc_ids = len(sentence_arc_ids)
             len_sentence_rel_ids = len(sentence_rel_ids)
             len_token_starts = len(token_starts)
