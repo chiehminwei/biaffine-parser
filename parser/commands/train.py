@@ -61,6 +61,14 @@ class Train(object):
         if args.checkpoint_dir.is_dir() and list(args.checkpoint_dir.iterdir()):
             logging.warning(f"Output directory ({args.checkpoint_dir}) already exists and is not empty!")
         args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            index = args.vocab.rfind('/')
+            if index > -1:
+                save_dir = args.vocab[:index]
+                os.makedirs(save_dir, parents=True)
+        except FileExistsError:
+            # directory already exists
+            pass
 
 
         num_data_epochs = 0
@@ -102,7 +110,7 @@ class Train(object):
         test = Corpus.load(args.ftest)       
         if not os.path.isfile(args.vocab):
             vocab = Vocab.from_corpus(corpus=train, min_freq=2, bert_model=args.bert_model, do_lower_case=args.do_lower_case)
-            torch.save(vocab, args.vocab)
+            torch.save(vocab, args.vocab) 
         else:
             vocab = torch.load(args.vocab)
 
