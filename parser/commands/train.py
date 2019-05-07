@@ -209,8 +209,8 @@ class Train(object):
         if torch.cuda.is_available() and not args.no_cuda:
           network.to(torch.device('cuda'))
 
-        # if args.local_rank == 0:
-        #     logging.info(f"{network}\n")
+        if args.local_rank == 0:
+            logging.info(f"{network}\n")
 
         last_epoch = 0
         max_metric = 0.0
