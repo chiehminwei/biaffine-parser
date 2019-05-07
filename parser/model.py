@@ -136,19 +136,12 @@ class Model(object):
             s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
 
             # Get loss
-            try:
-                arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
-            except:
-                tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
-                for sent in input_ids:
-                    print(tokenizer.convert_ids_to_tokens(sent.tolist()))
+            arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            # except:
+            #     tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+            #     for sent in input_ids:
+            #         print(tokenizer.convert_ids_to_tokens(sent.tolist()))
 
-                print(s_arc)
-                print(s_rel)
-                print(gold_arcs)
-                print(gold_rels)
-                print(input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids)
-                assert 1 == 2
             loss = arc_loss + rel_loss
             if args.train_lm:
                 loss += lm_loss
@@ -159,11 +152,6 @@ class Model(object):
                 loss = loss / self.gradient_accumulation_steps
             loss.backward()
             
-            if torch.isinf(loss):
-                print(input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids)
-                print(gold_arcs, gold_rels)
-                print(s_arc, s_rel)
-                assert 1 == 2
             # Handle tqdm
             stats['tr_loss'] += loss.item()
             if args.train_lm:
