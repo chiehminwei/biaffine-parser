@@ -151,6 +151,7 @@ class Model(object):
                 print(input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids)
                 print(gold_arcs, gold_rels)
                 print(s_arc, s_rel)
+                assert 1 == 2
             # Handle tqdm
             stats['tr_loss'] += loss.item()
             if args.train_lm:
