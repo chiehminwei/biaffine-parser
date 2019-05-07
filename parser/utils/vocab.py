@@ -157,9 +157,9 @@ class Vocab(object):
                     continue
                 
             # error checking for lengths
-            if kkk < 3:
-                print(words)
-                print(self.tokenizer.convert_ids_to_tokens(sentence_token_ids))
+            # if kkk < 3:
+            #     print(words)
+            #     print(self.tokenizer.convert_ids_to_tokens(sentence_token_ids))
             len_sentence_token_ids = len(sentence_token_ids)
             if len_sentence_token_ids == 1: continue
             len_sentence_arc_ids = len(sentence_arc_ids)
