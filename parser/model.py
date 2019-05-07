@@ -94,7 +94,7 @@ class Model(object):
             
             if args.local_rank == 0:
                 model_to_save = self.network.module if hasattr(self.network, 'module') else self.network  # Only save the model itself
-                if epoch % 2 == 0: # Save latest every two epochs
+                if epoch % 5 == 0: # Save latest every five epochs
                     output_model_file = args.checkpoint_dir / "model_epoch{}.pt".format(epoch)
                     model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, dev_metric)
 
@@ -139,6 +139,10 @@ class Model(object):
             try:
                 arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             except:
+                tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+                for sent in input_ids:
+                    print(tokenizer.convert_ids_to_tokens([i for i in sent]))
+
                 print(s_arc)
                 print(s_rel)
                 print(gold_arcs)
