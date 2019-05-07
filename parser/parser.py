@@ -117,7 +117,7 @@ class BiaffineParser(nn.Module):
             sequence_output, _ = self.bert(input_ids, attention_mask=mask, output_all_encoded_layers=False)
         del _
 
-        if tags:
+        if tags is not None:
             tag_embed = self.tag_embed(tags)
             logging.info(sequence_output.shape)
             logging.info(tag_embed.shape)
