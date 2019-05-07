@@ -141,7 +141,7 @@ class Model(object):
             except:
                 tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
                 for sent in input_ids:
-                    print(tokenizer.convert_ids_to_tokens([i for i in sent]))
+                    print(tokenizer.convert_ids_to_tokens(sent.tolist()))
 
                 print(s_arc)
                 print(s_rel)
