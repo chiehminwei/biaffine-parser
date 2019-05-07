@@ -19,7 +19,7 @@ class Config(object):
     lr = 1e-5 # better for fine-tuning BERT and LM
 
     # [Run]
-    batch_size = 8
+    batch_size = 2
     epochs = 1000
     patience = 100
     gradient_accumulation_steps = 1
