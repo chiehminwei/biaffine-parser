@@ -79,18 +79,33 @@ class BiaffineParser(nn.Module):
 
         # the MLP layers
         else:
-            self.mlp_arc_h = MLP(n_in=params['n_bert_hidden'],
-                                 n_hidden=params['n_mlp_arc'],
-                                 dropout=params['mlp_dropout'])
-            self.mlp_arc_d = MLP(n_in=params['n_bert_hidden'],
-                                 n_hidden=params['n_mlp_arc'],
-                                 dropout=params['mlp_dropout'])
-            self.mlp_rel_h = MLP(n_in=params['n_bert_hidden'],
-                                 n_hidden=params['n_mlp_rel'],
-                                 dropout=params['mlp_dropout'])
-            self.mlp_rel_d = MLP(n_in=params['n_bert_hidden'],
-                                 n_hidden=params['n_mlp_rel'],
-                                 dropout=params['mlp_dropout'])
+            if params['use_pos']:
+                self.mlp_arc_h = MLP(n_in=params['n_bert_hidden'] + params['n_tag_embed'],
+                                     n_hidden=params['n_mlp_arc'],
+                                     dropout=params['mlp_dropout'])
+                self.mlp_arc_d = MLP(n_in=params['n_bert_hidden'] + params['n_tag_embed'],
+                                     n_hidden=params['n_mlp_arc'],
+                                     dropout=params['mlp_dropout'])
+                self.mlp_rel_h = MLP(n_in=params['n_bert_hidden'] + params['n_tag_embed'],
+                                     n_hidden=params['n_mlp_rel'],
+                                     dropout=params['mlp_dropout'])
+                self.mlp_rel_d = MLP(n_in=params['n_bert_hidden'] + params['n_tag_embed'],
+                                     n_hidden=params['n_mlp_rel'],
+                                     dropout=params['mlp_dropout'])
+
+            else:
+                self.mlp_arc_h = MLP(n_in=params['n_bert_hidden'],
+                                     n_hidden=params['n_mlp_arc'],
+                                     dropout=params['mlp_dropout'])
+                self.mlp_arc_d = MLP(n_in=params['n_bert_hidden'],
+                                     n_hidden=params['n_mlp_arc'],
+                                     dropout=params['mlp_dropout'])
+                self.mlp_rel_h = MLP(n_in=params['n_bert_hidden'],
+                                     n_hidden=params['n_mlp_rel'],
+                                     dropout=params['mlp_dropout'])
+                self.mlp_rel_d = MLP(n_in=params['n_bert_hidden'],
+                                     n_hidden=params['n_mlp_rel'],
+                                     dropout=params['mlp_dropout'])
 
         # the Biaffine layers
         self.arc_attn = Biaffine(n_in=params['n_mlp_arc'],
