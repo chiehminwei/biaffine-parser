@@ -134,7 +134,7 @@ class BiaffineParser(nn.Module):
             sorted_lens, indices = torch.sort(lens, descending=True)
             inverse_indices = indices.argsort()
             x = pack_padded_sequence(x[indices], sorted_lens, True)
-            loggin.info(x.shape)
+            logging.info(x.shape)
             x = self.lstm(x)
             x, _ = pad_packed_sequence(x, True)
             x = self.lstm_dropout(x)[inverse_indices]
