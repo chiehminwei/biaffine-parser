@@ -26,7 +26,7 @@ class Vocab(object):
         self.word_dict = {word: i for i, word in enumerate(self.words)}
         self.char_dict = {char: i for i, char in enumerate(self.chars)}
         self.rel_dict = {rel: i for i, rel in enumerate(self.rels)}
-        self.tag_dict = {tag: i for i, rel in enumerate(self.tags)}
+        self.tag_dict = {tag: i for i, tag in enumerate(self.tags)}
 
         # ids of punctuation that appear in words
         self.puncts = set(sorted(i for word, i in self.word_dict.items()
