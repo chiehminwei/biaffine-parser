@@ -46,6 +46,7 @@ class BiaffineParser(nn.Module):
         if params['use_pos']:
             self.tag_embed = nn.Embedding(num_embeddings=params['n_tags'],
                                           embedding_dim=params['n_tag_embed'])
+            nn.init.zeros_(self.tag_embed.weight)
 
         # LSTM layer
         self.lstm = None
