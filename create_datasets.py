@@ -38,6 +38,15 @@ parser.add_argument("--bert_model", type=str, required=True,
 parser.add_argument("--do_lower_case", action="store_true")
 args = parser.parse_args()
 
+try:
+    index = args.vocab.rfind('/')
+    if index > -1:
+        save_dir = args.vocab[:index]
+        os.makedirs(save_dir, parents=True)
+except FileExistsError:
+    # directory already exists
+    pass
+
 print("***Start preprocessing the data at {}***".format(datetime.now()))
 
 train = Corpus.load(args.ftrain)
