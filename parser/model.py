@@ -143,6 +143,8 @@ class Model(object):
                 print(s_rel)
                 print(gold_arcs)
                 print(gold_rels)
+                print(arc_ids)
+                print(input_ids)
                 assert 1 == 2
             loss = arc_loss + rel_loss
             if args.train_lm:
