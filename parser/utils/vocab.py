@@ -213,7 +213,7 @@ class Vocab(object):
             except FileExistsError:
                 # directory already exists
                 pass
-            torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical), save_name)
+            torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical), save_name)
         
         logging.info('Total number of sentences: {}'.format(sent_count))
         logging.info('Number of sentences exceeding max seq length of 128: {}'.format(exceeding_count))
