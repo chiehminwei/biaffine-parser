@@ -36,10 +36,6 @@ parser.add_argument("--bert_model", type=str, required=True,
                 choices=["bert-base-uncased", "bert-large-uncased", "bert-base-cased",
                          "bert-base-multilingual-cased", "bert-base-multilingual-uncased", "bert-base-chinese"])
 parser.add_argument("--do_lower_case", action="store_true")
-parser.add_argument('--use_pos',
-                    action='store_true',
-                    help="Whether to use POS tags")
-
 args = parser.parse_args()
 
 print("***Start preprocessing the data at {}***".format(datetime.now()))
@@ -68,20 +64,20 @@ else:
 print("***Start loading the dataset at {}***".format(datetime.now()))
 if not os.path.isfile(args.ftrain_cache):
     print('Loading trainset from scratch.')
-    vocab.numericalize(train, args.ftrain_cache, args.use_pos)
+    vocab.numericalize(train, args.ftrain_cache)
     print('***trainset loaded at {}***'.format(datetime.now()))
 else:
     print('trainset already exists.')
 
 if not os.path.isfile(args.fdev_cache):
     print('Loading devset from scratch.')
-    vocab.numericalize(dev, args.fdev_cache, args.use_pos)
+    vocab.numericalize(dev, args.fdev_cache)
     print('***devset loaded at {}***'.format(datetime.now()))
 else:
     print('devset already exists.')
 if not os.path.isfile(args.ftest_cache):
     print('Loading testset from scratch.')
-    vocab.numericalize(test, args.ftest_cache, args.use_pos)
+    vocab.numericalize(test, args.ftest_cache)
     print('***testset loaded at {}***'.format(datetime.now()))
 else:
     print('testset already exists.')

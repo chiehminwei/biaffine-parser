@@ -113,7 +113,7 @@ class Train(object):
         if not os.path.isfile(args.ftrain_cache):
             if args.local_rank == 0:
                 logging.info('Loading trainset from scratch.')
-            trainset = TextDataset(vocab.numericalize(train, args.ftrain_cache, args.use_pos))
+            trainset = TextDataset(vocab.numericalize(train, args.ftrain_cache))
         else:
             if args.local_rank == 0:
                 logging.info('Loading trainset from checkpoint.')
@@ -124,7 +124,7 @@ class Train(object):
         if not os.path.isfile(args.fdev_cache):
             if args.local_rank == 0:
                 logging.info('Loading devset from scratch.')
-            devset = TextDataset(vocab.numericalize(dev, args.fdev_cache, args.use_pos))
+            devset = TextDataset(vocab.numericalize(dev, args.fdev_cache))
         else:
             if args.local_rank == 0:
                 logging.info('Loading devset from checkpoint.')
@@ -135,7 +135,7 @@ class Train(object):
         if not os.path.isfile(args.ftest_cache):
             if args.local_rank == 0:
                 logging.info('Loading testset from scratch.')
-            testset = TextDataset(vocab.numericalize(test, args.ftest_cache, args.use_pos))
+            testset = TextDataset(vocab.numericalize(test, args.ftest_cache))
         else:
             if args.local_rank == 0:
                 logging.info('Loading testset from checkpoint.')

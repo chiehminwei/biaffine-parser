@@ -113,7 +113,6 @@ class Model(object):
 
     def train(self, loader, pbar, stats, args, data_parallel=False):
         self.network.train()
-        assert data_parallel == False
         for step, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
 
@@ -125,7 +124,7 @@ class Model(object):
                 input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids = batch
                 s_arc, s_rel = self.network(input_ids, input_masks, tags=tag_ids)
             else:
-                input_ids, input_masks, word_start_masks, arc_ids, rel_ids = batch
+                input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids = batch
                 s_arc, s_rel = self.network(input_ids, input_masks)
             
             word_start_masks[:, 0] = 0  # ignore [CLS]

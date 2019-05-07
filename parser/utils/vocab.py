@@ -67,7 +67,7 @@ class Vocab(object):
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
 
-    def numericalize(self, corpus, save_name=None, use_pos=False):
+    def numericalize(self, corpus, save_name=None):
         words_numerical = []
         arcs_numerical = []
         rels_numerical = []
@@ -218,11 +218,8 @@ class Vocab(object):
         logging.info('Total number of sentences: {}'.format(sent_count))
         logging.info('Number of sentences exceeding max seq length of 128: {}'.format(exceeding_count))
 
-        if use_pos:
-            return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical
-        else:
-            return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
-
+        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical
+        
     def numericalize_sentences(self, sentences):
         words_numerical = []
         token_start_mask = []
