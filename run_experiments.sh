@@ -17,8 +17,8 @@ for treebank in UD_v1.2 UD_v2.0; do
 			--ftrain_cache data/binary/${treebank}/UD_${language}/trainset   \
 			--fdev_cache   data/binary/${treebank}/UD_${language}/devset     \
 			--ftest_cache  data/binary/${treebank}/UD_${language}/testset    \
-			--vocab        vocabs/${language}.pt                             \
-			--bert_model   bert-base-multilingual                            \
+			--vocab        vocabs/${treebank}/${language}.pt                 \
+			--bert_model   bert-base-multilingual-cased                      \
 		&& CUDA_VISIBLE_DEVICES=0,1,2,3                                      \
 		python -m torch.distributed.launch --nproc_per_node=4                \
 		    run.py train   								                     \
@@ -29,8 +29,8 @@ for treebank in UD_v1.2 UD_v2.0; do
 			--ftrain_cache   data/binary/${treebank}/UD_${language}/trainset \
 			--fdev_cache     data/binary/${treebank}/UD_${language}/devset   \
 			--ftest_cache    data/binary/${treebank}/UD_${language}/testset  \
-			--vocab          vocabs/${language}.pt                           \
-			--bert_model     bert-base-multilingual                          \
+			--vocab          vocabs/${treebank}/${language}.pt               \
+			--bert_model     bert-base-multilingual-cased                    \
 			--use_lstm     
 	done
 done

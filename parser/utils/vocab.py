@@ -35,6 +35,7 @@ class Vocab(object):
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
         self.n_rels = len(self.rels)
+        self.n_tags = len(self.tags)
         self.n_train_words = self.n_words
 
         self.tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=do_lower_case)
