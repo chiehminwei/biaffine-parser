@@ -80,7 +80,9 @@ class Vocab(object):
         len_dict = defaultdict(int)
         sent_count = 0
         exceeding_count = 0
+        kkk = 0
         for words, arcs, rels, tags in zip(corpus.words, corpus.heads, corpus.rels, corpus.tags):
+            kkk += 1
             sentence_token_ids = []
             sentence_arc_ids = []
             sentence_rel_ids = []
@@ -154,6 +156,8 @@ class Vocab(object):
                     continue
                 
             # error checking for lengths
+            if kkk < 10:
+                print(self.tokenizer.convert_ids_to_tokens(sentence_token_ids))
             len_sentence_token_ids = len(sentence_token_ids)
             if len_sentence_token_ids == 1: continue
             len_sentence_arc_ids = len(sentence_arc_ids)
