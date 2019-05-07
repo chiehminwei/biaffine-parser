@@ -48,8 +48,8 @@ for treebank in UD_v2.0_POS; do
 			--ftrain_cache data/binary/${treebank}/UD_${language}/trainset   \
 			--fdev_cache   data/binary/${treebank}/UD_${language}/devset     \
 			--ftest_cache  data/binary/${treebank}/UD_${language}/testset    \
-			--vocab        vocabs/${language}.pt                             \
-			--bert_model   bert-base-multilingual                            \
+			--vocab        vocabs/${treebank}/${language}.pt                 \
+			--bert_model   bert-base-multilingual-cased                      \
 		&& CUDA_VISIBLE_DEVICES=0,1,2,3                                      \
 		python -m torch.distributed.launch --nproc_per_node=4                \
 		    run.py train   								                     \
@@ -60,8 +60,8 @@ for treebank in UD_v2.0_POS; do
 			--ftrain_cache   data/binary/${treebank}/UD_${language}/trainset \
 			--fdev_cache     data/binary/${treebank}/UD_${language}/devset   \
 			--ftest_cache    data/binary/${treebank}/UD_${language}/testset  \
-			--vocab          vocabs/${language}.pt                           \
-			--bert_model     bert-base-multilingual                          \
+			--vocab          vocabs/${treebank}/${language}.pt               \
+			--bert_model     bert-base-multilingual-cased                    \
 			--use_pos                                                        \
 			--use_lstm     
 	done
@@ -81,8 +81,8 @@ for language in German English Spanish French Italian Portuguese Swedish; do
 		--ftrain_cache data/binary/${treebank}/UD_${language}/reverse/trainset   \
 		--fdev_cache   data/binary/${treebank}/UD_${language}/reverse/devset     \
 		--ftest_cache  data/binary/${treebank}/UD_${language}/testset            \
-		--vocab        vocabs/${language}-reverse.pt                             \
-		--bert_model   bert-base-multilingual                                    \
+		--vocab        vocabs/${treebank}/${language}-reverse.pt                 \
+		--bert_model   bert-base-multilingual-cased                              \
 	&& CUDA_VISIBLE_DEVICES=0,1,2,3                                              \
 	python -m torch.distributed.launch --nproc_per_node=4                        \
 	    run.py train   								                             \
@@ -93,8 +93,8 @@ for language in German English Spanish French Italian Portuguese Swedish; do
 		--ftrain_cache   data/binary/${treebank}/UD_${language}/reverse/trainset \
 		--fdev_cache     data/binary/${treebank}/UD_${language}/reverse/devset   \
 		--ftest_cache    data/binary/${treebank}/UD_${language}/testset          \
-		--vocab          vocabs/${language}.pt                                   \
-		--bert_model     bert-base-multilingual                                  \
+		--vocab          vocabs/${treebank}/${language}-reverse.pt               \
+		--bert_model     bert-base-multilingual-cased                            \
 		--use_lstm     
 done
 
@@ -111,8 +111,8 @@ for language in German English Spanish French Italian Portuguese Swedish; do
 		--ftrain_cache data/binary/${treebank}/UD_${language}/reverse/trainset   \
 		--fdev_cache   data/binary/${treebank}/UD_${language}/reverse/devset     \
 		--ftest_cache  data/binary/${treebank}/UD_${language}/testset            \
-		--vocab        vocabs/${language}-reverse.pt                             \
-		--bert_model   bert-base-multilingual                                    \
+		--vocab        vocabs/${treebank}/${language}-reverse.pt                             \
+		--bert_model   bert-base-multilingual-cased                              \
 	&& CUDA_VISIBLE_DEVICES=0,1,2,3                                              \
 	python -m torch.distributed.launch --nproc_per_node=4                        \
 	    run.py train   								                             \
@@ -123,8 +123,8 @@ for language in German English Spanish French Italian Portuguese Swedish; do
 		--ftrain_cache   data/binary/${treebank}/UD_${language}/reverse/trainset \
 		--fdev_cache     data/binary/${treebank}/UD_${language}/reverse/devset   \
 		--ftest_cache    data/binary/${treebank}/UD_${language}/testset          \
-		--vocab          vocabs/${language}.pt                                   \
-		--bert_model     bert-base-multilingual                                  \
+		--vocab          vocabs/${treebank}/${language}-reverse.pt               \
+		--bert_model     bert-base-multilingual-cased                            \
 		--use_pos                                                                \
 		--use_lstm     
 done
@@ -143,8 +143,8 @@ python create_datasets.py                                            \
 	--ftrain_cache data/binary/${treebank}/UD_${language}/trainset   \
 	--fdev_cache   data/binary/${treebank}/UD_${language}/devset     \
 	--ftest_cache  data/binary/${treebank}/UD_${language}/testset    \
-	--vocab        vocabs/${language}.pt                             \
-	--bert_model   bert-base-multilingual                            \
+	--vocab        vocabs/${treebank}/${language}.pt                 \
+	--bert_model   bert-base-multilingual-cased                      \
 && CUDA_VISIBLE_DEVICES=0,1,2,3                                      \
 python -m torch.distributed.launch --nproc_per_node=4                \
     run.py train   								                     \
@@ -155,14 +155,14 @@ python -m torch.distributed.launch --nproc_per_node=4                \
 	--ftrain_cache   data/binary/${treebank}/UD_${language}/trainset \
 	--fdev_cache     data/binary/${treebank}/UD_${language}/devset   \
 	--ftest_cache    data/binary/${treebank}/UD_${language}/testset  \
-	--vocab          vocabs/${language}.pt                           \
-	--bert_model     bert-base-multilingual                          \
+	--vocab          vocabs/${treebank}/${language}.pt               \
+	--bert_model     bert-base-multilingual-cased                    \
 	--use_lstm     
 for language in German English Spanish French Italian Portuguese Swedish; do
 	echo $language
     python run.py evaluate   								         \
     --checkpoint_dir checkpoints/${treebank}/UD_${language}   		 \
-    --vocab          vocabs/${language}.pt    					     \
+    --vocab          vocabs/${treebank}/Universal.pt    	         \
     --fdata          data/${treebank}/UD_${language}/test.conllx     \
     --use_lstm 
 done
