@@ -64,7 +64,7 @@ class BiLSTM(nn.Module):
         return output
 
     def forward(self, x, hx=None):
-        x, batch_sizes = x.data, x.batzh_sizes
+        x, batch_sizes = x.data, x.batch_sizes
         batch_size = batch_sizes[0]
 
         if hx is None:
