@@ -37,7 +37,7 @@ class Predict(object):
 
         print("Load the dataset")
         corpus = Corpus.load(args.fdata)
-        dataset = TextDataset(vocab.numericalize(corpus))
+        dataset = TextDataset(vocab.numericalize(corpus, use_pos=args.use_pos))
         # set the data loader
         loader = DataLoader(dataset=dataset,
                             batch_size=args.batch_size,

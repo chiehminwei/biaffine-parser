@@ -77,6 +77,7 @@ done
 
 # - UD 2.0 on same 7 languages without POS tags
 # -- one parser for each language BUT trained on 6 other languages
+treebank=UD_v2.0
 for language in German English Spanish French Italian Portuguese Swedish; do
 	echo $language
 	python create_datasets.py                                                    \

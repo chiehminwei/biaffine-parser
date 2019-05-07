@@ -15,16 +15,18 @@ import logging
 class Vocab(object):
     PAD = '<PAD>'
 
-    def __init__(self, words, chars, rels, bert_model, do_lower_case):
+    def __init__(self, words, chars, rels, tags, bert_model, do_lower_case):
         self.pad_index = 0
 
         self.words = [self.PAD] + sorted(words)
         self.chars = [self.PAD] + sorted(chars)
         self.rels = sorted(rels)
+        self.tags = sorted(tags)
 
         self.word_dict = {word: i for i, word in enumerate(self.words)}
         self.char_dict = {char: i for i, char in enumerate(self.chars)}
         self.rel_dict = {rel: i for i, rel in enumerate(self.rels)}
+        self.tag_dict = {tag: i for i, rel in enumerate(self.tags)}
 
         # ids of punctuation that appear in words
         self.puncts = set(sorted(i for word, i in self.word_dict.items()
@@ -63,10 +65,11 @@ class Vocab(object):
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
 
-    def numericalize(self, corpus, save_name=None):
+    def numericalize(self, corpus, save_name=None, use_pos=False):
         words_numerical = []
         arcs_numerical = []
         rels_numerical = []
+        tags_numerical = []
         token_start_mask = []
         attention_mask = []
         offending_set = set()
@@ -75,16 +78,17 @@ class Vocab(object):
         len_dict = defaultdict(int)
         sent_count = 0
         exceeding_count = 0
-        for words, arcs, rels in zip(corpus.words, corpus.heads, corpus.rels):
+        for words, arcs, rels, tags in zip(corpus.words, corpus.heads, corpus.rels, corpus.tags):
             sentence_token_ids = []
             sentence_arc_ids = []
             sentence_rel_ids = []
+            sentennce_tag_ids = []
             token_starts = []
             attentions = []
             words = ['[CLS]'] + words + ['[SEP]']
             arcs = [0] + arcs + [0]
             rels = ['<ROOT>'] + rels + ['<ROOT>']
-            for word, arc, rel in zip(words, arcs, rels):
+            for word, arc, rel, tag in zip(words, arcs, rels, tags):
                 # skip <ROOT>
                 if word == '<ROOT>':
                     continue
@@ -136,6 +140,7 @@ class Vocab(object):
                     sentence_token_ids.extend(ids)
                     sentence_arc_ids.extend([arc] * len(tokens))
                     sentence_rel_ids.extend([self.rel_dict.get(rel, 0)] * len(tokens))
+                    sentennce_tag_ids.extend([self.tag_dict.get(tag, 0)] * len(tokens))
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
 
@@ -152,7 +157,8 @@ class Vocab(object):
             len_sentence_rel_ids = len(sentence_rel_ids)
             len_token_starts = len(token_starts)
             len_attentions = len(attentions)
-            if not (len_sentence_token_ids == len_sentence_arc_ids == len_sentence_rel_ids == len_token_starts == len_attentions):
+            len_sentence_tag_ids = len(sentennce_tag_ids)
+            if not (len_sentence_token_ids == len_sentence_arc_ids == len_sentence_rel_ids == len_token_starts == len_attentions == len_sentence_tag_ids):
                 logging.debug(words)
                 logging.debug(arcs)
                 logging.debug(rels)
@@ -161,6 +167,7 @@ class Vocab(object):
                 logging.debug('len_sentence_rel_ids', len_sentence_rel_ids)
                 logging.debug('len_token_starts', len_token_starts)
                 logging.debug('len_attentions', len_attentions)
+                logging.debug('len_sentence_tag_ids', len_sentence_tag_ids)
                 raise RuntimeError("Lengths don't match up.")
 
             # Skip too long sentences
@@ -173,6 +180,7 @@ class Vocab(object):
             words_numerical.append(torch.tensor(sentence_token_ids))
             arcs_numerical.append(torch.tensor(sentence_arc_ids))
             rels_numerical.append(torch.tensor(sentence_rel_ids))
+            tags_numerical.append(torch.tensor(sentennce_tag_ids))
             token_start_mask.append(torch.ByteTensor(token_starts))
             attention_mask.append(torch.ByteTensor(attentions))
 
@@ -208,7 +216,10 @@ class Vocab(object):
         logging.info('Total number of sentences: {}'.format(sent_count))
         logging.info('Number of sentences exceeding max seq length of 128: {}'.format(exceeding_count))
 
-        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
+        if use_pos:
+            return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical
+        else:
+            return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical
 
     def numericalize_sentences(self, sentences):
         words_numerical = []
@@ -380,6 +391,7 @@ class Vocab(object):
         words = list(word for word, freq in words.items() if freq >= min_freq)
         chars = list({char for seq in corpus.words for char in ''.join(seq)})
         rels = list({rel for seq in corpus.rels for rel in seq})
-        vocab = cls(words, chars, rels, bert_model, do_lower_case)
+        tags = list({tag for seq in corpus.tags for tag in seq})
+        vocab = cls(words, chars, rels, tags, bert_model, do_lower_case)
 
         return vocab

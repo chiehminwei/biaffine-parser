@@ -50,6 +50,8 @@ class Train(object):
         subparser.add_argument('--ftest_cache', default='data/binary/testset',
                                help='path to test file cache')
         subparser.add_argument('--train_lm', action="store_true")
+        subparser.add_argument('--step_decay_factor', type=float, default=0.5)
+        subparser.add_argument('--step_decay_patience', type=int, default=5)
         subparser.set_defaults(func=self)
 
         return subparser
@@ -111,7 +113,7 @@ class Train(object):
         if not os.path.isfile(args.ftrain_cache):
             if args.local_rank == 0:
                 logging.info('Loading trainset from scratch.')
-            trainset = TextDataset(vocab.numericalize(train, args.ftrain_cache))
+            trainset = TextDataset(vocab.numericalize(train, args.ftrain_cache, args.use_pos))
         else:
             if args.local_rank == 0:
                 logging.info('Loading trainset from checkpoint.')
@@ -122,7 +124,7 @@ class Train(object):
         if not os.path.isfile(args.fdev_cache):
             if args.local_rank == 0:
                 logging.info('Loading devset from scratch.')
-            devset = TextDataset(vocab.numericalize(dev, args.fdev_cache))
+            devset = TextDataset(vocab.numericalize(dev, args.fdev_cache, args.use_pos))
         else:
             if args.local_rank == 0:
                 logging.info('Loading devset from checkpoint.')
@@ -133,7 +135,7 @@ class Train(object):
         if not os.path.isfile(args.ftest_cache):
             if args.local_rank == 0:
                 logging.info('Loading testset from scratch.')
-            testset = TextDataset(vocab.numericalize(test, args.ftest_cache))
+            testset = TextDataset(vocab.numericalize(test, args.ftest_cache, args.use_pos))
         else:
             if args.local_rank == 0:
                 logging.info('Loading testset from checkpoint.')
@@ -194,7 +196,10 @@ class Train(object):
             'mlp_dropout': Config.mlp_dropout,
             'n_rels': vocab.n_rels,
             'bert_model': args.bert_model,
-            'use_lstm': args.use_lstm
+            'use_lstm': args.use_lstm,
+            'use_pos': args.use_pos,
+            'n_tags': vocab.n_tags,
+            'n_tag_embed': Config.n_tag_embed,
         }
         if args.local_rank == 0:
             for k, v in params.items():

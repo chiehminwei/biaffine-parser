@@ -49,6 +49,9 @@ if __name__ == '__main__':
         subparser.add_argument('--use_lstm',
                             action='store_true',
                             help="Whether to use BiLSTM and freeze BERT embeddings")
+        subparser.add_argument('--use_pos',
+                            action='store_true',
+                            help="Whether to use POS tags")
         
     args = parser.parse_args()
     log_format = '%(message)s'

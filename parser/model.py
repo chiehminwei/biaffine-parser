@@ -16,6 +16,8 @@ from tqdm import tqdm
 from datetime import datetime, timedelta
 import logging
 
+import torch.optim.lr_scheduler
+
 
 class Model(object):
     def __init__(self, vocab, network):
@@ -48,9 +50,13 @@ class Model(object):
                                  warmup=args.warmup_proportion,
                                  t_total=t_total)
         else:
-            self.optimizer = BertAdam(optimizer_grouped_parameters,
-                                 lr=lr,
-                                 warmup=args.warmup_proportion)
+            self.optimizer = BertAdam(optimizer_grouped_parameters, lr=lr)
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            self.optimizer, 'max',
+            factor=args.step_decay_factor,
+            patience=args.step_decay_patience,
+            verbose=True,
+        )
 
         tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
 
@@ -75,6 +81,7 @@ class Model(object):
             
             train_loss, train_metric = self.evaluate(train_dataloader, trainset=args.train_lm)
             dev_loss, dev_metric = self.evaluate(dev_loader)
+            self.scheduler.step(dev_metric)
             test_loss, test_metric = self.evaluate(dev_loader)
             t = datetime.now() - start
             total_time += t            
@@ -112,8 +119,11 @@ class Model(object):
 
             if args.train_lm:
                 input_ids, arc_ids, rel_ids, input_masks, word_start_masks, word_end_masks, lm_label_ids = batch 
-                s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, lm_label_ids)
+                s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, masked_lm_labels=lm_label_ids)
                 lm_loss = torch.mean(lm_loss)
+            elif args.use_pos:
+                input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids = batch
+                s_arc, s_rel = self.network(input_ids, input_masks, tags=tag_ids)
             else:
                 input_ids, input_masks, word_start_masks, arc_ids, rel_ids = batch
                 s_arc, s_rel = self.network(input_ids, input_masks)

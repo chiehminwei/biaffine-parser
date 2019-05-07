@@ -42,15 +42,26 @@ class BiaffineParser(nn.Module):
         self.config = lm.config
         self.bert_dropout = SharedDropout(p=params['bert_dropout'])
 
+        self.tag_embed = None
+        if params['use_pos']:
+            self.tag_embed = nn.Embedding(num_embeddings=params['n_tags'],
+                                          embedding_dim=params['n_tag_embed'])
+
         # LSTM layer
         self.lstm = None
         if params['use_lstm']:
             for param in self.bert.parameters():
                 param.requires_grad = False
-            self.lstm = BiLSTM(input_size=params['n_bert_hidden'],
+            if params['use_pos']:
+                self.lstm = BiLSTM(input_size=params['n_bert_hidden'] + params['n_tag_embed'],
                              hidden_size=params['n_lstm_hidden'],
                              num_layers=params['n_lstm_layers'],
                              dropout=params['lstm_dropout'])
+            else:
+                self.lstm = BiLSTM(input_size=params['n_bert_hidden'],
+                                 hidden_size=params['n_lstm_hidden'],
+                                 num_layers=params['n_lstm_layers'],
+                                 dropout=params['lstm_dropout'])
             self.lstm_dropout = SharedDropout(p=params['lstm_dropout'])
 
             self.mlp_arc_h = MLP(n_in=params['n_lstm_hidden'] * 2,
@@ -90,13 +101,25 @@ class BiaffineParser(nn.Module):
                                  bias_x=True,
                                  bias_y=True)
         
-    def forward(self, input_ids, mask, masked_lm_labels=None):
+    def forward(self, input_ids, mask, masked_lm_labels=None, tags=None):
         # get the mask and lengths of given batch
         lens = mask.sum(dim=1)
 
         # get outputs from bert
-        sequence_output, _ = self.bert(input_ids, attention_mask=mask, output_all_encoded_layers=False)
+        if self.lstm:
+            # Use BERT 9-12
+            layers = []
+            bert_output, _ = self.bert(input_ids, attention_mask=mask)
+            for layer in range(8, 12):
+                layers.append(bert_output[layer])
+            sequence_output = torch.sum(torch.stack(layers), dim=0)
+        else:
+            sequence_output, _ = self.bert(input_ids, attention_mask=mask, output_all_encoded_layers=False)
         del _
+
+        if tags:
+            tag_embed = self.tag_embed(tags)
+            sequence_output= torch.cat((sequence_output, tag_embed), dim=-1)
 
         # Dependency parsing
         x = sequence_output

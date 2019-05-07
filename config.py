@@ -5,6 +5,7 @@ class Config(object):
 
     # [Network]
     n_bert_hidden = 768
+    n_tag_embed = 100
     bert_dropout = 0.33
     n_lstm_layers = 3
     n_lstm_hidden = 400
