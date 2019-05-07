@@ -74,8 +74,8 @@ class Model(object):
                     train_sampler = RandomSampler(epoch_dataset)
                 
                 train_dataloader = DataLoader(epoch_dataset, sampler=train_sampler, batch_size=batch_size//gradient_accumulation_steps)
-                stats = {'tr_loss': 0, 'lm_loss': 0, 'arc_loss': 0, 'rel_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
             
+            stats = {'tr_loss': 0, 'lm_loss': 0, 'arc_loss': 0, 'rel_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
             with tqdm(total=len(train_dataloader), desc=f"Epoch {epoch}") as pbar:
                 self.train(train_dataloader, pbar, stats, args, data_parallel=bool(torch.cuda.device_count() > 1 and not args.no_cuda and not args.distributed))
             
