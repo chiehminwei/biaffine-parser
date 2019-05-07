@@ -92,6 +92,7 @@ class Vocab(object):
             words = ['[CLS]'] + words + ['[SEP]']
             arcs = [0] + arcs + [0]
             rels = ['<ROOT>'] + rels + ['<ROOT>']
+            tags = ['<ROOT>'] + tags + ['<ROOT>']
             for word, arc, rel, tag in zip(words, arcs, rels, tags):
                 # skip <ROOT>
                 if word == '<ROOT>':
