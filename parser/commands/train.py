@@ -65,7 +65,7 @@ class Train(object):
             index = args.vocab.rfind('/')
             if index > -1:
                 save_dir = args.vocab[:index]
-                os.makedirs(save_dir, parents=True)
+                os.makedirs(save_dir)
         except FileExistsError:
             # directory already exists
             pass
