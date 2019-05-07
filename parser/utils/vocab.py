@@ -119,7 +119,7 @@ class Vocab(object):
 
 
                 tokens = self.tokenizer.tokenize(word)                
-                if tokens:
+                if len(tokens) > 0:
                     ids = self.tokenizer.convert_tokens_to_ids(tokens)
 
                     # take care of punctuation
