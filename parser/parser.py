@@ -119,7 +119,11 @@ class BiaffineParser(nn.Module):
 
         if tags:
             tag_embed = self.tag_embed(tags)
+            logging.info(sequence_output.shape)
+            logging.info(tag_embed.shape)
             sequence_output= torch.cat((sequence_output, tag_embed), dim=-1)
+            logging.info(sequence_output.shape)
+
 
         # Dependency parsing
         x = sequence_output
@@ -134,14 +138,6 @@ class BiaffineParser(nn.Module):
             sorted_lens, indices = torch.sort(lens, descending=True)
             inverse_indices = indices.argsort()
             x = pack_padded_sequence(x[indices], sorted_lens, True)
-            logging.info(x)
-            logging.info(x.data.shape)
-            logging.info(x.data)
-            logging.info(x.batch_sizes)
-            logging.info(x.sorted_indices)
-            logging.info(x.unsorted_indices)
-            
-
             x = self.lstm(x)
             x, _ = pad_packed_sequence(x, True)
             x = self.lstm_dropout(x)[inverse_indices]
