@@ -26,8 +26,8 @@ class Train(object):
         )
         subparser.add_argument('--pregenerated_data', type=Path)
         subparser.add_argument("--bert_model", type=str, required=True,
-                        choices=["bert-base-uncased", "bert-large-uncased", "bert-base-cased",
-                                 "bert-base-multilingual", "bert-base-chinese"])
+                choices=["bert-base-uncased", "bert-large-uncased", "bert-base-cased",
+                         "bert-base-multilingual-cased", "bert-base-multilingual-uncased", "bert-base-chinese"])
         subparser.add_argument("--do_lower_case", action="store_true")
         subparser.add_argument("--reduce_memory", action="store_true",
                             help="Store training data as on-disc memmaps to massively reduce memory usage")

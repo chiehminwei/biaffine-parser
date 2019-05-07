@@ -34,7 +34,7 @@ parser.add_argument('--cloud_address', '-c',
                     help='path to Google Cloud Storage')
 parser.add_argument("--bert_model", type=str, required=True,
                 choices=["bert-base-uncased", "bert-large-uncased", "bert-base-cased",
-                         "bert-base-multilingual", "bert-base-chinese"])
+                         "bert-base-multilingual-cased", "bert-base-multilingual-uncased", "bert-base-chinese"])
 parser.add_argument("--do_lower_case", action="store_true")
 parser.add_argument('--use_pos',
                     action='store_true',
