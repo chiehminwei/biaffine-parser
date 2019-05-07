@@ -136,7 +136,14 @@ class Model(object):
             s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
 
             # Get loss
-            arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            try:
+                arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            except:
+                print(s_arc)
+                print(s_rel)
+                print(gold_arcs)
+                print(gold_rels)
+                assert 1 == 2
             loss = arc_loss + rel_loss
             if args.train_lm:
                 loss += lm_loss
