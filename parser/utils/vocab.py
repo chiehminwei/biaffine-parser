@@ -87,6 +87,7 @@ class Vocab(object):
             sentennce_tag_ids = []
             token_starts = []
             attentions = []
+            if len(words) == 0: continue
             words = ['[CLS]'] + words + ['[SEP]']
             arcs = [0] + arcs + [0]
             rels = ['<ROOT>'] + rels + ['<ROOT>']
