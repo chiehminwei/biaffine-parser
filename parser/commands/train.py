@@ -201,10 +201,10 @@ class Train(object):
             'n_tags': vocab.n_tags,
             'n_tag_embed': Config.n_tag_embed,
         }
-        if args.local_rank == 0:
-            for k, v in params.items():
-                if args.local_rank == 0:
-                    logging.info(f"  {k}: {v}")
+        # if args.local_rank == 0:
+        #     for k, v in params.items():
+        #         if args.local_rank == 0:
+        #             logging.info(f"  {k}: {v}")
         network = BiaffineParser(params)
         if torch.cuda.is_available() and not args.no_cuda:
           network.to(torch.device('cuda'))
