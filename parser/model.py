@@ -83,7 +83,7 @@ class Model(object):
             train_loss, train_metric = self.evaluate(train_dataloader, trainset=args.train_lm)
             dev_loss, dev_metric = self.evaluate(dev_loader)
             self.scheduler.step(dev_metric.score)
-            test_loss, test_metric = self.evaluate(dev_loader)
+            test_loss, test_metric = self.evaluate(test_loader)
             t = datetime.now() - start
             total_time += t            
             if args.local_rank == 0:
