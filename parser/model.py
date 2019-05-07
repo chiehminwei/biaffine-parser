@@ -147,6 +147,10 @@ class Model(object):
                 loss = loss / self.gradient_accumulation_steps
             loss.backward()
             
+            if torch.isinf(loss):
+                print(input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids)
+                print(gold_arcs, gold_rels)
+                print(s_arc, s_rel)
             # Handle tqdm
             stats['tr_loss'] += loss.item()
             if args.train_lm:
