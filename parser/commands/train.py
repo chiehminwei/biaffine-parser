@@ -158,7 +158,7 @@ class Train(object):
         train_loader = DataLoader(dataset=trainset,
                                 batch_size=Config.batch_size // Config.gradient_accumulation_steps,
                                 num_workers=0,
-                                shuffle=True,
+                                shuffle=(train_sampler is None),
                                 sampler=train_sampler,
                                 collate_fn=collate_fn)
 
