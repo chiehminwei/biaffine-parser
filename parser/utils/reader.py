@@ -82,7 +82,7 @@ class Corpus(object):
         for i, line in enumerate(lines):
             if line[0] == '#':
                 start += 1
-            if len(line) == 0:
+            if len(line) <= 1:
                 sentence = Sentence(*zip(*[l.split('\t') for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
                 if len(sentence.ID) > 0:
                     sentences.append(sentence)
