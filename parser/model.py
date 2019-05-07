@@ -20,12 +20,13 @@ import torch.optim.lr_scheduler
 
 
 class Model(object):
-    def __init__(self, vocab, network):
+    def __init__(self, vocab, network, use_pos=False):
         super(Model, self).__init__()
         self.vocab = vocab
         self.network = network
         self.criterion = nn.CrossEntropyLoss()
         self.device = torch.device('cpu')
+        self.use_pos = use_pos
         
     def __call__(self, loaders, epochs, num_data_epochs, patience, lr, t_total, last_epoch, 
                  cloud_address, args, batch_size, gradient_accumulation_steps=1, max_metric=0.0):
