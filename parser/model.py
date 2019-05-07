@@ -25,6 +25,7 @@ class Model(object):
         self.vocab = vocab
         self.network = network
         self.criterion = nn.CrossEntropyLoss()
+        self.device = torch.device('cpu')
         
     def __call__(self, loaders, epochs, num_data_epochs, patience, lr, t_total, last_epoch, 
                  cloud_address, args, batch_size, gradient_accumulation_steps=1, max_metric=0.0):
