@@ -119,11 +119,7 @@ class BiaffineParser(nn.Module):
 
         if tags is not None:
             tag_embed = self.tag_embed(tags)
-            logging.info(sequence_output.shape)
-            logging.info(tag_embed.shape)
             sequence_output= torch.cat((sequence_output, tag_embed), dim=-1)
-            logging.info(sequence_output.shape)
-
 
         # Dependency parsing
         x = sequence_output
@@ -131,10 +127,9 @@ class BiaffineParser(nn.Module):
         # bert dropout 
         x = self.bert_dropout(x)
 
-        logging.info(x.shape)
-
         # LSTM
         if self.lstm:
+            logging.info(x.shape)
             sorted_lens, indices = torch.sort(lens, descending=True)
             inverse_indices = indices.argsort()
             x = pack_padded_sequence(x[indices], sorted_lens, True)
