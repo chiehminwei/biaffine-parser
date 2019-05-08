@@ -142,6 +142,7 @@ class BiaffineParser(nn.Module):
 
         # Dependency parsing
         x = sequence_output
+        x = self.bert_down_projection(x)
 
         # bert dropout 
         x = self.bert_dropout(x)
