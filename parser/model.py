@@ -94,19 +94,20 @@ class Model(object):
                 logging.info(f"{'test:':<6} Loss: {test_loss:.4f} {test_metric}")         
                 logging.info(f"{t}s elapsed\n")
             
-            if args.local_rank == 0:
-                model_to_save = self.network.module if hasattr(self.network, 'module') else self.network  # Only save the model itself
-                if epoch % 5 == 0: # Save latest every five epochs
-                    output_model_file = args.checkpoint_dir / "model_epoch{}.pt".format(epoch)
+            model_to_save = self.network.module if hasattr(self.network, 'module') else self.network  # Only save the model itself
+            if epoch % 5 == 0: # Save latest every five epochs
+                output_model_file = args.checkpoint_dir / "model_epoch{}.pt".format(epoch)
+                if args.local_rank == 0:
                     model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, dev_metric)
 
-                if dev_metric > max_metric: # Save best
-                    output_model_file = args.checkpoint_dir / "model_best.pt"
-                    max_e, max_metric = epoch, dev_metric
+            if dev_metric > max_metric: # Save best
+                output_model_file = args.checkpoint_dir / "model_best.pt"
+                max_e, max_metric = epoch, dev_metric
+                if args.local_rank == 0:
                     model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, max_metric, is_best=True)
 
-                elif epoch - max_e >= patience: # Early stopping
-                    break
+            elif epoch - max_e >= patience: # Early stopping
+                break
 
         if args.local_rank == 0:
             logging.info('***Finished training at {}***'.format(datetime.now()))
