@@ -136,13 +136,14 @@ class BiaffineParser(nn.Module):
             sequence_output, _ = self.bert(input_ids, attention_mask=mask, output_all_encoded_layers=False)
         del _
 
+        sequence_output = self.bert_down_projection(sequence_output)
+
         if tags is not None:
             tag_embed = self.tag_embed(tags)
             sequence_output= torch.cat((sequence_output, tag_embed), dim=-1)
 
         # Dependency parsing
         x = sequence_output
-        x = self.bert_down_projection(x)
 
         # bert dropout 
         x = self.bert_dropout(x)
