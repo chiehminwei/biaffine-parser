@@ -40,7 +40,10 @@ class BiaffineParser(nn.Module):
         self.bert = lm.bert
         self.cls = lm.cls
         self.config = lm.config
+        self.bert_down_projection = MLP(n_in=params['n_bert_hidden'],
+                                        n_hidden=params['n_embed'])
         self.bert_dropout = SharedDropout(p=params['bert_dropout'])
+        
 
         self.tag_embed = None
         if params['use_pos']:
@@ -54,12 +57,12 @@ class BiaffineParser(nn.Module):
             for param in self.bert.parameters():
                 param.requires_grad = False
             if params['use_pos']:
-                self.lstm = BiLSTM(input_size=params['n_bert_hidden'] + params['n_tag_embed'],
+                self.lstm = BiLSTM(input_size=params['n_embed'] + params['n_tag_embed'],
                              hidden_size=params['n_lstm_hidden'],
                              num_layers=params['n_lstm_layers'],
                              dropout=params['lstm_dropout'])
             else:
-                self.lstm = BiLSTM(input_size=params['n_bert_hidden'],
+                self.lstm = BiLSTM(input_size=params['n_embed'],
                                  hidden_size=params['n_lstm_hidden'],
                                  num_layers=params['n_lstm_layers'],
                                  dropout=params['lstm_dropout'])
@@ -81,30 +84,30 @@ class BiaffineParser(nn.Module):
         # the MLP layers
         else:
             if params['use_pos']:
-                self.mlp_arc_h = MLP(n_in=params['n_bert_hidden'] + params['n_tag_embed'],
+                self.mlp_arc_h = MLP(n_in=params['n_embed'] + params['n_tag_embed'],
                                      n_hidden=params['n_mlp_arc'],
                                      dropout=params['mlp_dropout'])
-                self.mlp_arc_d = MLP(n_in=params['n_bert_hidden'] + params['n_tag_embed'],
+                self.mlp_arc_d = MLP(n_in=params['n_embed'] + params['n_tag_embed'],
                                      n_hidden=params['n_mlp_arc'],
                                      dropout=params['mlp_dropout'])
-                self.mlp_rel_h = MLP(n_in=params['n_bert_hidden'] + params['n_tag_embed'],
+                self.mlp_rel_h = MLP(n_in=params['n_embed'] + params['n_tag_embed'],
                                      n_hidden=params['n_mlp_rel'],
                                      dropout=params['mlp_dropout'])
-                self.mlp_rel_d = MLP(n_in=params['n_bert_hidden'] + params['n_tag_embed'],
+                self.mlp_rel_d = MLP(n_in=params['n_embed'] + params['n_tag_embed'],
                                      n_hidden=params['n_mlp_rel'],
                                      dropout=params['mlp_dropout'])
 
             else:
-                self.mlp_arc_h = MLP(n_in=params['n_bert_hidden'],
+                self.mlp_arc_h = MLP(n_in=params['n_embed'],
                                      n_hidden=params['n_mlp_arc'],
                                      dropout=params['mlp_dropout'])
-                self.mlp_arc_d = MLP(n_in=params['n_bert_hidden'],
+                self.mlp_arc_d = MLP(n_in=params['n_embed'],
                                      n_hidden=params['n_mlp_arc'],
                                      dropout=params['mlp_dropout'])
-                self.mlp_rel_h = MLP(n_in=params['n_bert_hidden'],
+                self.mlp_rel_h = MLP(n_in=params['n_embed'],
                                      n_hidden=params['n_mlp_rel'],
                                      dropout=params['mlp_dropout'])
-                self.mlp_rel_d = MLP(n_in=params['n_bert_hidden'],
+                self.mlp_rel_d = MLP(n_in=params['n_embed'],
                                      n_hidden=params['n_mlp_rel'],
                                      dropout=params['mlp_dropout'])
 

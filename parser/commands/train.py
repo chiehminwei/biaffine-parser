@@ -208,6 +208,7 @@ class Train(object):
             'use_pos': args.use_pos,
             'n_tags': vocab.n_tags,
             'n_tag_embed': Config.n_tag_embed,
+            'n_embed': Config.n_embed
         }
         if args.local_rank == 0:
             for k, v in params.items():
