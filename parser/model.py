@@ -230,12 +230,16 @@ class Model(object):
                 s_arc, s_rel = self.network(input_ids, input_masks)
             # s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]
             
-            gold_arcs, gold_rels = arc_ids[word_start_masks], rel_ids[word_start_masks]
+            gold_arcs, gold_rels = arc_ids[word_start_masks].to('cuda'), rel_ids[word_start_masks].to('cuda')
             
             pred_arcs, pred_rels = self.decode(s_arc, s_rel, lens)
             
             arc_loss, rel_loss = self.get_loss(s_arc[word_start_masks], s_rel[word_start_masks], gold_arcs, gold_rels)
             loss += arc_loss + rel_loss
+
+            print(input_masks)
+            print(word_start_masks)
+            print(lens)
             print(pred_arcs.shape)
             print(pred_rels.shape)
             print(gold_arcs.shape)
