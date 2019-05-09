@@ -123,18 +123,19 @@ class BiaffineParser(nn.Module):
     def forward(self, input_ids, mask, masked_lm_labels=None, tags=None):
         # get the mask and lengths of given batch
         lens = mask.sum(dim=1)
-
+ 
         # get outputs from bert
-        if self.lstm:
-            # Use BERT 9-12
-            layers = []
-            bert_output, _ = self.bert(input_ids, attention_mask=mask)
-            for layer in range(8, 12):
-                layers.append(bert_output[layer])
-            sequence_output = torch.sum(torch.stack(layers), dim=0)
-        else:
-            sequence_output, _ = self.bert(input_ids, attention_mask=mask, output_all_encoded_layers=False)
-        del _
+        # if self.lstm:
+        #     # Use BERT 9-12
+        #     layers = []
+        #     bert_output, _ = self.bert(input_ids, attention_mask=mask)
+        #     for layer in range(8, 12):
+        #         layers.append(bert_output[layer])
+        #     sequence_output = torch.sum(torch.stack(layers), dim=0)
+        # else:
+        #     sequence_output, _ = self.bert(input_ids, attention_mask=mask, output_all_encoded_layers=False)
+        # del _
+        sequence_output = input_ids
 
         sequence_output = self.bert_down_projection(sequence_output)
 

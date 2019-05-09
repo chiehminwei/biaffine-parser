@@ -4,6 +4,7 @@ from .dataset import TextDataset, collate_fn
 from .reader import Corpus
 from .vocab import Vocab
 from .finetune_on_pregenerated import PregeneratedDataset
+from .mst import mst
 
 
-__all__ = ['Corpus', 'TextDataset', 'Vocab', 'collate_fn', 'PregeneratedDataset']
+__all__ = ['Corpus', 'TextDataset', 'Vocab', 'collate_fn', 'PregeneratedDataset', mst]

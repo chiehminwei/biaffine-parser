@@ -3,6 +3,7 @@
 from parser.metric import AttachmentMethod
 from parser.parser import BiaffineParser
 from parser.utils import PregeneratedDataset
+from parser.utils import mst
 
 import torch
 import torch.nn as nn

@@ -5,7 +5,8 @@ from collections import Counter, defaultdict
 import regex
 import torch
 import torch.nn as nn
-from pytorch_pretrained_bert import BertTokenizer
+from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
+
 import numpy as np
 import unicodedata
 import os
@@ -39,7 +40,9 @@ class Vocab(object):
         self.n_train_words = self.n_words
 
         self.tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=do_lower_case)
-        assert self.tokenizer != None
+        self.bert = BertModel.from_pretrained(bert_model)
+        for param in self.bert.parameters():
+                param.requires_grad = False
 
     def __repr__(self):
         info = f"{self.__class__.__name__}(\n"
@@ -68,6 +71,133 @@ class Vocab(object):
         self.n_chars = len(self.chars)
 
     def numericalize(self, corpus, save_name=None):
+        words_numerical = []
+        arcs_numerical = []
+        rels_numerical = []
+        tags_numerical = []
+        token_start_mask = []
+        attention_mask = []
+        offending_set = set()
+        symbol_set = set()
+        empty_words = set()
+        len_dict = defaultdict(int)
+        sent_count = 0
+        exceeding_count = 0
+        kkk = 0
+        for words, arcs, rels, tags in zip(corpus.words, corpus.heads, corpus.rels, corpus.tags):
+            kkk += 1
+            sentence_token_ids = []
+            sentence_arc_ids = []
+            sentence_rel_ids = []
+            sentennce_tag_ids = []
+            token_starts = []
+            attentions = []
+            words = ['[CLS]'] + words + ['[SEP]']
+            arcs = [0] + arcs + [0]
+            rels = ['<ROOT>'] + rels + ['<ROOT>']
+            tags = ['<ROOT>'] + tags + ['<ROOT>']
+            for word, arc, rel, tag in zip(words, arcs, rels, tags):
+                # skip <ROOT>
+                if word == '<ROOT>':
+                    continue
+
+                tokens = self.tokenizer.tokenize(word)                
+                if len(tokens) > 0:
+                    ids = self.tokenizer.convert_tokens_to_ids(tokens)
+
+                    # take care of punctuation
+                    if regex.match(r'\p{P}+$', word):
+                        for token_id in ids:
+                            self.puncts.add(token_id)
+
+                    # log any unknown words
+                    if '[UNK]' in tokens:
+                        for offending_char in word:
+                            token = self.tokenizer.tokenize(offending_char)
+                            if '[UNK]' in token:
+                                if unicodedata.category(offending_char) != 'So':
+                                    offending_set.add(offending_char)
+                                else:
+                                    symbol_set.add(offending_char)
+                        
+                    # main thing to do
+                    sentence_token_ids.extend(ids)
+                    sentence_arc_ids.extend([arc])
+                    sentence_rel_ids.extend([self.rel_dict.get(rel, 0)])
+                    sentennce_tag_ids.extend([self.tag_dict.get(tag, 0)])
+                    token_starts.extend([1] + [0] * (len(tokens) - 1))
+                    attentions.extend([1] * len(tokens))
+
+                # take care of empty tokens
+                else:
+                    empty_words.add(word)
+                    continue
+
+            sent_count += 1                
+            # Skip too long sentences
+            len_dict[len_sentence_token_ids] += 1
+            if len_sentence_token_ids > 128:
+                exceeding_count += 1
+                continue
+            
+            # BERT9-12
+            layers = []
+            bert_output, _ = self.bert(torch.tensor(sentence_token_ids), torch.ByteTensor([1 for i in sentence_token_ids]))
+            del _
+            for layer in range(8, 12):
+                layers.append(bert_output[layer].masked_select(torch.ByteTensor(token_starts)))
+            bert_embeddings = torch.sum(torch.stack(layers), dim=0)
+            
+            words_numerical.append(bert_embeddings)
+            arcs_numerical.append(torch.tensor(sentence_arc_ids))
+            rels_numerical.append(torch.tensor(sentence_rel_ids))
+            tags_numerical.append(torch.tensor(sentennce_tag_ids))
+
+            token_start_mask.append(torch.ByteTensor(attentions))
+            attention_mask.append(torch.ByteTensor(attentions))
+            
+            if kkk < 5:
+                print(words)
+                print(words_numerical)
+                print(arcs_numerical)
+                print(rels_numerical)
+                print(tags_numerical)
+
+        if offending_set: 
+            logging.warning('WARNING: The following non-symbol characters are unknown to BERT:')
+            try:
+                logging.warning(offending_set)
+            except:
+                pass
+        if symbol_set:
+            logging.warning('WARNING: The following symbol characters are unknown to BERT:')
+            try:         
+                logging.warning(symbol_set)
+            except:
+                pass
+        if empty_words:
+            logging.warning('WARNING: The following characters are empty after going through tokenizer:')
+            try:
+                logging.warning(empty_words)
+            except:
+                pass
+        if save_name:
+            try:
+                index = save_name.rfind('/')
+                if index > -1:
+                    save_dir = save_name[:index]
+                    os.makedirs(save_dir)
+            except FileExistsError:
+                pass
+            torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical), save_name)
+        
+        logging.info('Total number of sentences: {}'.format(sent_count))
+        logging.info('Number of sentences exceeding max seq length of 128: {}'.format(exceeding_count))
+
+        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical
+
+
+    def numericalize_first_token(self, corpus, save_name=None):
         words_numerical = []
         arcs_numerical = []
         rels_numerical = []
