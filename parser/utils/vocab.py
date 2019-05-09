@@ -84,100 +84,102 @@ class Vocab(object):
         sent_count = 0
         exceeding_count = 0
         kkk = 0
-        for words, arcs, rels, tags in tqdm(zip(corpus.words, corpus.heads, corpus.rels, corpus.tags)):
-            kkk += 1
-            sentence_token_ids = []
-            sentence_arc_ids = []
-            sentence_rel_ids = []
-            sentennce_tag_ids = []
-            token_starts = []
-            attentions = []
+        with tqdm(total=len(corpus.words)) as pbar:
+            for words, arcs, rels, tags in tqdm(zip(corpus.words, corpus.heads, corpus.rels, corpus.tags)):
+                pbar.update(1)
+                kkk += 1
+                sentence_token_ids = []
+                sentence_arc_ids = []
+                sentence_rel_ids = []
+                sentennce_tag_ids = []
+                token_starts = []
+                attentions = []
 
 
-            
-            for word, arc, rel, tag in zip(words, arcs, rels, tags):
-                # skip <ROOT>
-                if word == '<ROOT>':
-                    word = '[CLS]'
+                
+                for word, arc, rel, tag in zip(words, arcs, rels, tags):
+                    # skip <ROOT>
+                    if word == '<ROOT>':
+                        word = '[CLS]'
 
-                tokens = self.tokenizer.tokenize(word)                
-                if len(tokens) > 0:
-                    ids = self.tokenizer.convert_tokens_to_ids(tokens)
+                    tokens = self.tokenizer.tokenize(word)                
+                    if len(tokens) > 0:
+                        ids = self.tokenizer.convert_tokens_to_ids(tokens)
 
-                    # take care of punctuation
-                    if regex.match(r'\p{P}+$', word):
-                        for token_id in ids:
-                            self.puncts.add(token_id)
+                        # take care of punctuation
+                        if regex.match(r'\p{P}+$', word):
+                            for token_id in ids:
+                                self.puncts.add(token_id)
 
-                    # log any unknown words
-                    if '[UNK]' in tokens:
-                        for offending_char in word:
-                            token = self.tokenizer.tokenize(offending_char)
-                            if '[UNK]' in token:
-                                if unicodedata.category(offending_char) != 'So':
-                                    offending_set.add(offending_char)
-                                else:
-                                    symbol_set.add(offending_char)
-                        
-                    # main thing to do
-                    sentence_token_ids.extend(ids)
-                    sentence_arc_ids.extend([arc])
-                    sentence_rel_ids.extend([self.rel_dict.get(rel, 0)])
-                    sentennce_tag_ids.extend([self.tag_dict.get(tag, 0)])
-                    token_starts.extend([1] + [0] * (len(tokens) - 1))
-                    attentions.extend([1])
+                        # log any unknown words
+                        if '[UNK]' in tokens:
+                            for offending_char in word:
+                                token = self.tokenizer.tokenize(offending_char)
+                                if '[UNK]' in token:
+                                    if unicodedata.category(offending_char) != 'So':
+                                        offending_set.add(offending_char)
+                                    else:
+                                        symbol_set.add(offending_char)
+                            
+                        # main thing to do
+                        sentence_token_ids.extend(ids)
+                        sentence_arc_ids.extend([arc])
+                        sentence_rel_ids.extend([self.rel_dict.get(rel, 0)])
+                        sentennce_tag_ids.extend([self.tag_dict.get(tag, 0)])
+                        token_starts.extend([1] + [0] * (len(tokens) - 1))
+                        attentions.extend([1])
 
-                # take care of empty tokens
-                else:
-                    empty_words.add(word)
+                    # take care of empty tokens
+                    else:
+                        empty_words.add(word)
+                        continue
+
+                sent_count += 1                
+                # Skip too long sentences
+                if len(sentence_token_ids) > 128:
+                    exceeding_count += 1
                     continue
+                
+                sentence_token_ids = self.tokenizer.convert_tokens_to_ids(['[CLS]']) + sentence_token_ids + self.tokenizer.convert_tokens_to_ids(['[SEP]'])
+                token_starts = [0] + token_starts + [0]
 
-            sent_count += 1                
-            # Skip too long sentences
-            if len(sentence_token_ids) > 128:
-                exceeding_count += 1
-                continue
-            
-            sentence_token_ids = self.tokenizer.convert_tokens_to_ids(['[CLS]']) + sentence_token_ids + self.tokenizer.convert_tokens_to_ids(['[SEP]'])
-            token_starts = [0] + token_starts + [0]
+                tokens_tensor = torch.tensor([sentence_token_ids]).to('cuda')
+                segments_tensors = torch.tensor([0 for i in sentence_token_ids]).to('cuda')
 
-            tokens_tensor = torch.tensor([sentence_token_ids]).to('cuda')
-            segments_tensors = torch.tensor([0 for i in sentence_token_ids]).to('cuda')
+                # BERT9-12
+                layers = []
+                with torch.no_grad():
+                    bert_output, _ = self.bert(tokens_tensor, segments_tensors)
+                del _
+                for layer in range(8, 12):
+                  layer_masked = []
+                  for i, mask in enumerate(token_starts):
+                    if mask == 1:
+                      layer_masked.append(bert_output[layer][0][i])
+                  layer_masked = torch.stack(layer_masked)
+                  layers.append(layer_masked)
+                bert_embeddings = torch.sum(torch.stack(layers), dim=0)
 
-            # BERT9-12
-            layers = []
-            with torch.no_grad():
-                bert_output, _ = self.bert(tokens_tensor, segments_tensors)
-            del _
-            for layer in range(8, 12):
-              layer_masked = []
-              for i, mask in enumerate(token_starts):
-                if mask == 1:
-                  layer_masked.append(bert_output[layer][0][i])
-              layer_masked = torch.stack(layer_masked)
-              layers.append(layer_masked)
-            bert_embeddings = torch.sum(torch.stack(layers), dim=0)
+                token_starts = token_starts[1:-1]
+                
+                words_numerical.append(bert_embeddings)
+                arcs_numerical.append(torch.tensor(sentence_arc_ids))
+                rels_numerical.append(torch.tensor(sentence_rel_ids))
+                tags_numerical.append(torch.tensor(sentennce_tag_ids))
 
-            token_starts = token_starts[1:-1]
-            
-            words_numerical.append(bert_embeddings)
-            arcs_numerical.append(torch.tensor(sentence_arc_ids))
-            rels_numerical.append(torch.tensor(sentence_rel_ids))
-            tags_numerical.append(torch.tensor(sentennce_tag_ids))
-
-            token_start_mask.append(torch.ByteTensor(attentions))
-            attention_mask.append(torch.ByteTensor(attentions))
-            
-            if kkk < 5:
-                pass
-                #print(token_start_mask)
-                # print(words)
-                # print(sum(token_starts))
-                # print(layers[0].shape)
-                # print(words_numerical[-1].shape)
-                # print(arcs_numerical[-1].shape)
-                # print(rels_numerical[-1].shape)
-                # print(tags_numerical[-1].shape)
+                token_start_mask.append(torch.ByteTensor(attentions))
+                attention_mask.append(torch.ByteTensor(attentions))
+                
+                if kkk < 5:
+                    pass
+                    #print(token_start_mask)
+                    # print(words)
+                    # print(sum(token_starts))
+                    # print(layers[0].shape)
+                    # print(words_numerical[-1].shape)
+                    # print(arcs_numerical[-1].shape)
+                    # print(rels_numerical[-1].shape)
+                    # print(tags_numerical[-1].shape)
 
         if offending_set: 
             logging.warning('WARNING: The following non-symbol characters are unknown to BERT:')
