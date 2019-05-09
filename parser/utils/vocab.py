@@ -141,13 +141,8 @@ class Vocab(object):
             
             # BERT9-12
             layers = []
-            try:
-                bert_output, _ = self.bert(sentence_token_ids)
-            except:
-                print(torch.tensor(sentence_token_ids).shape)
-                assert 1 == 2
-
-
+            bert_output, _ = self.bert(torch.tensor([sentence_token_ids]))
+            
             del _
             for layer in range(8, 12):
                 layers.append(bert_output[layer].masked_select(torch.ByteTensor(token_starts)))
