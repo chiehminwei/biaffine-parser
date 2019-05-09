@@ -172,13 +172,7 @@ class Vocab(object):
                 tags_numerical.append(torch.tensor(sentennce_tag_ids))
                 fuck_punctuations.append(torch.tensor(fuck_punctuation))
 
-                token_starts = []
-                for i in range(len(sentence_arc_ids)):
-                    if i == 0:
-                        token_starts.append(0)
-                    else:
-                        token_starts.append(1)
-                token_start_mask.append(torch.ByteTensor(token_starts))
+                token_start_mask.append(torch.ByteTensor(attentions))
                 attention_mask.append(torch.ByteTensor(attentions))
                 
                 # if kkk < 3:
