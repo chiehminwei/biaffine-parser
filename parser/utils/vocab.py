@@ -141,8 +141,8 @@ class Vocab(object):
                     exceeding_count += 1
                     continue
                 
-                sentence_token_ids = self.tokenizer.convert_tokens_to_ids(['[CLS]']) + sentence_token_ids + self.tokenizer.convert_tokens_to_ids(['[SEP]'])
-                token_starts = [0] + token_starts + [0]
+                sentence_token_ids = sentence_token_ids + self.tokenizer.convert_tokens_to_ids(['[SEP]'])
+                token_starts = token_starts + [0]
 
                 tokens_tensor = torch.tensor([sentence_token_ids]).to('cuda')
                 segments_tensors = torch.tensor([0 for i in sentence_token_ids]).to('cuda')
@@ -165,8 +165,6 @@ class Vocab(object):
                   layer_masked = torch.stack(layer_masked)
                   layers.append(layer_masked)
                 bert_embeddings = torch.sum(torch.stack(layers), dim=0)
-
-                token_starts = token_starts[1:-1]
                 
                 words_numerical.append(bert_embeddings)
                 arcs_numerical.append(torch.tensor(sentence_arc_ids))
@@ -174,7 +172,13 @@ class Vocab(object):
                 tags_numerical.append(torch.tensor(sentennce_tag_ids))
                 fuck_punctuations.append(torch.tensor(fuck_punctuation))
 
-                token_start_mask.append(torch.ByteTensor(attentions))
+                token_starts = []
+                for i in rage(len(sentence_arc_ids)):
+                    if i == 0:
+                        token_starts.append(0)
+                    else:
+                        token_starts.append(1)
+                token_start_mask.append(torch.ByteTensor(token_starts))
                 attention_mask.append(torch.ByteTensor(attentions))
                 
                 # if kkk < 3:

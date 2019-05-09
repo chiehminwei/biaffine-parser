@@ -214,8 +214,9 @@ class Model(object):
             # ignore [CLS]
             word_start_masks[:, 0] = 0
             # ignore [SEP]
-            lens = input_masks.sum(dim=1) - 1
-            word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
+            # lens = input_masks.sum(dim=1) - 1
+            # word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
+            lens = input_masks.sum(dim=1)
 
             # ignore all punctuation if specified 
             if not include_punct:
@@ -226,12 +227,13 @@ class Model(object):
                 s_arc, s_rel = self.network(input_ids, input_masks, tags=tag_ids)
             else:
                 s_arc, s_rel = self.network(input_ids, input_masks)
-            s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]
+            # s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]
             
             gold_arcs, gold_rels = arc_ids[word_start_masks], rel_ids[word_start_masks]
-            pred_arcs, pred_rels = self.decode(s_arc, s_rel)
             
-            arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+            pred_arcs, pred_rels = self.decode(s_arc, s_rel, lens)
+            
+            arc_loss, rel_loss = self.get_loss(s_arc[word_start_masks], s_rel[word_start_masks], gold_arcs, gold_rels)
             loss += arc_loss + rel_loss
             metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
 
@@ -249,12 +251,12 @@ class Model(object):
             # ignore [CLS]
             token_start_mask[:, 0] = 0
             # ignore [SEP]
-            lens = attention_mask.sum(dim=1) - 1
-            token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+            lens = attention_mask.sum(dim=1) # - 1
+            # token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
 
             s_arc, s_rel = self.network(words, attention_mask)
             s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
-            pred_arcs, pred_rels = self.decode(s_arc, s_rel)
+            pred_arcs, pred_rels = self.decode(s_arc, s_rel, lens)
 
             # lens for splitting
             lens = token_start_mask.sum(dim=1).tolist()
@@ -275,11 +277,30 @@ class Model(object):
 
         return arc_loss, rel_loss
 
-    def decode(self, s_arc, s_rel):
-        pred_arcs = s_arc.argmax(dim=-1)
-        pred_rels = s_rel[torch.arange(len(s_rel)), pred_arcs].argmax(dim=-1)
+    # def decode(self, s_arc, s_rel):
+    #     pred_arcs = s_arc.argmax(dim=-1)
+    #     pred_rels = s_rel[torch.arange(len(s_rel)), pred_arcs].argmax(dim=-1)
 
-        return pred_arcs, pred_rels
+    #     return pred_arcs, pred_rels
+
+    @torch.no_grad()
+    def decode(self, logits_arc, logits_rel, lengths):
+        mask = torch.full(logits_arc.shape, -float('inf'))
+        for i, length in enumerate(lengths):
+            mask[i, :, :length] = 0.0
+        arc_probs = F.softmax(logits_arc.data + mask, dim=2).data.to('cpu')
+        rel_probs = F.softmax(logits_rel, dim=3).data.to('cpu')
+        
+        pred_arcs = []
+        pred_rels = []
+        for arc_prob, rel_prob, length in zip(arc_probs, rel_probs, lengths):
+            arcs, rels = mst(arc_prob[:length, :length], rel_prob[:length, :length])
+            pred_arcs.extend(arcs.tolist())
+            pred_rels.extend(rels.tolist())
+        # parsed = [mst.mst(arc_prob[:length, :length], rel_prob[:length, :length])
+        #           for arc_prob, rel_prob, length
+        #           in zip(arc_probs, rel_probs, lengths)]
+        return torch.tensor(pred_arcs), torch.tensor(pred_rels)
 
     @torch.no_grad()
     def get_embeddings(self, loader, layer_index=-1, return_all=False, ignore=True, ignore_token_start_mask=False):
