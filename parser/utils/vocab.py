@@ -162,7 +162,7 @@ class Vocab(object):
             attention_mask.append(torch.ByteTensor(attentions))
             
             if kkk < 5:
-                pass
+                print(token_start_mask)
                 # print(words)
                 # print(sum(token_starts))
                 # print(layers[0].shape)
