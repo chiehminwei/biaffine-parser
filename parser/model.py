@@ -139,6 +139,9 @@ class Model(object):
             gold_arcs, gold_rels = arc_ids[word_start_masks], rel_ids[word_start_masks]
             s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
 
+            print(s_arc.shape, s_rel.shape)
+            print(gold_arcs)
+            print(gold_rels)
             # Get loss
             arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
             # except:
