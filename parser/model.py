@@ -18,6 +18,10 @@ from datetime import datetime, timedelta
 import logging
 
 import torch.optim.lr_scheduler
+import torch.distributed as dist
+
+def cleanup():
+    dist.destroy_process_group()
 
 
 class Model(object):
@@ -110,11 +114,12 @@ class Model(object):
             elif epoch - max_e >= patience: # Early stopping
                 break
 
-        if args.local_rank == 0:
-            logging.info('***Finished training at {}***'.format(datetime.now()))
-            logging.info(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
-            logging.info(f"mean time of each epoch is {total_time / epoch}s")
-            logging.info(f"{total_time}s elapsed")
+        logging.info('***Finished training at {}***'.format(datetime.now()))
+        logging.info(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
+        logging.info(f"mean time of each epoch is {total_time / epoch}s")
+        logging.info(f"{total_time}s elapsed")
+
+        cleanup()
 
     def train(self, loader, pbar, stats, args, data_parallel=False):
         self.network.train()
