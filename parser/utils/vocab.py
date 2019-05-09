@@ -138,7 +138,7 @@ class Vocab(object):
                 exceeding_count += 1
                 continue
             
-            sentence_token_ids = self.tokenizer.tokenize(['[CLS]']) + sentence_token_ids + self.tokenizer.tokenize(['[SEP]']) 
+            sentence_token_ids = self.tokenizer.tokenize('[CLS]') + sentence_token_ids + self.tokenizer.tokenize('[SEP]') 
             token_starts = [0] + token_starts + [0]
             # BERT9-12
             layers = []
