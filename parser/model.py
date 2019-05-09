@@ -239,6 +239,7 @@ class Model(object):
 
             print(input_masks)
             print(word_start_masks)
+            print(input_masks.sum(dim=1))
             print(lens)
             print(pred_arcs.shape)
             print(pred_rels.shape)
