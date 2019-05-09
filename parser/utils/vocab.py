@@ -123,10 +123,8 @@ class Vocab(object):
                     sentence_rel_ids.extend([self.rel_dict.get(rel, 0)])
                     sentennce_tag_ids.extend([self.tag_dict.get(tag, 0)])
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
-                    attentions.extend([1] * len(tokens))
+                    attentions.extend([1])
 
-                    token_starts[0] = 0
-                    token_starts[-1] = 0
                 # take care of empty tokens
                 else:
                     empty_words.add(word)
