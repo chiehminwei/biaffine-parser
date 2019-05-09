@@ -286,11 +286,11 @@ class Model(object):
 
     @torch.no_grad()
     def decode(self, logits_arc, logits_rel, lengths):
-        mask = torch.full(logits_arc.shape, -float('inf'))
+        mask = torch.full(logits_arc.shape, -float('inf')).to('gpu')
         for i, length in enumerate(lengths):
             mask[i, :, :length] = 0.0
-        arc_probs = F.softmax(logits_arc + mask, dim=2).to('cpu')
-        rel_probs = F.softmax(logits_rel, dim=3).to('cpu')
+        arc_probs = F.softmax(logits_arc + mask, dim=2).to('cpu').numpy()
+        rel_probs = F.softmax(logits_rel, dim=3).to('cpu').numpy()å
         
         pred_arcs = []
         pred_rels = []
