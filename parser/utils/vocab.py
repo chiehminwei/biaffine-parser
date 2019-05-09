@@ -173,7 +173,7 @@ class Vocab(object):
                 fuck_punctuations.append(torch.tensor(fuck_punctuation))
 
                 token_starts = []
-                for i in rage(len(sentence_arc_ids)):
+                for i in range(len(sentence_arc_ids)):
                     if i == 0:
                         token_starts.append(0)
                     else:
