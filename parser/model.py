@@ -147,16 +147,15 @@ class Model(object):
             _s_arc, _s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
 
             # Get loss
-            try:
-                arc_loss, rel_loss = self.get_loss(_s_arc, _s_rel, gold_arcs, gold_rels)
-            except:
-                print(_s_arc.shape, _s_rel.shape)
-                print(s_arc.shape, s_rel.shape)
-                print(gold_arcs.shape)
-                print(gold_rels.shape)
-                print(gold_arcs)
-                print(gold_rels)
-                assert 1 == 2
+            arc_loss, rel_loss = self.get_loss(_s_arc, _s_rel, gold_arcs, gold_rels)
+            # except:
+            #     print(_s_arc.shape, _s_rel.shape)
+            #     print(s_arc.shape, s_rel.shape)
+            #     print(gold_arcs.shape)
+            #     print(gold_rels.shape)
+            #     print(gold_arcs)
+            #     print(gold_rels)
+            #     assert 1 == 2
             # except:
             #     tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
             #     for sent in input_ids:
@@ -228,27 +227,17 @@ class Model(object):
                 s_arc, s_rel = self.network(input_ids, input_masks, tags=tag_ids)
             else:
                 s_arc, s_rel = self.network(input_ids, input_masks)
-            # s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]
             
             gold_arcs, gold_rels = arc_ids[word_start_masks], rel_ids[word_start_masks]
             
             pred_arcs, pred_rels = self.decode(s_arc, s_rel, lens)
-            pred_arcs, pred_rels = pred_arcs[word_start_masks].to('cuda'), pred_rels[word_start_masks].to('cuda') 
+            pred_arcs, pred_rels = pred_arcs[word_start_masks].to(self.device), pred_rels[word_start_masks].to(self.device) 
             
             arc_loss, rel_loss = self.get_loss(s_arc[word_start_masks], s_rel[word_start_masks], gold_arcs, gold_rels)
             loss += arc_loss + rel_loss
 
-            # print(input_masks)
-            # print(word_start_masks)
-            # print(input_masks.sum(dim=1))
-            # print(lens)
-            # print(pred_arcs.shape)
-            # print(pred_rels.shape)
-            # print(gold_arcs.shape)
-            # print(gold_rels.shape)
             metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
-            # assert 1 == 2
-
+            
         loss /= len(loader)
 
         return loss, metric
