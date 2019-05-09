@@ -289,8 +289,8 @@ class Model(object):
         mask = torch.full(logits_arc.shape, -float('inf'))
         for i, length in enumerate(lengths):
             mask[i, :, :length] = 0.0
-        arc_probs = F.softmax(logits_arc.data + mask, dim=2).data.to('cpu')
-        rel_probs = F.softmax(logits_rel, dim=3).data.to('cpu')
+        arc_probs = F.softmax(logits_arc + mask, dim=2).to('cpu')
+        rel_probs = F.softmax(logits_rel, dim=3).to('cpu')
         
         pred_arcs = []
         pred_rels = []
