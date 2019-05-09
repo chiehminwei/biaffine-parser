@@ -137,17 +137,19 @@ class Model(object):
             word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
             
             gold_arcs, gold_rels = arc_ids[word_start_masks], rel_ids[word_start_masks]
-            s_arc, s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
+            _s_arc, _s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
 
             # Get loss
             try:
-                arc_loss, rel_loss = self.get_loss(s_arc, s_rel, gold_arcs, gold_rels)
+                arc_loss, rel_loss = self.get_loss(_s_arc, _s_rel, gold_arcs, gold_rels)
             except:
+                print(_s_arc.shape, _s_rel.shape)
                 print(s_arc.shape, s_rel.shape)
                 print(gold_arcs.shape)
                 print(gold_rels.shape)
                 print(gold_arcs)
                 print(gold_rels)
+                assert 1 == 2
             # except:
             #     tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
             #     for sent in input_ids:
