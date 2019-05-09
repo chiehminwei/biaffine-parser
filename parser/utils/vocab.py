@@ -142,7 +142,7 @@ class Vocab(object):
             # BERT9-12
             layers = []
             try:
-                bert_output, _ = self.bert(torch.tensor(sentence_token_ids), attention_mask=torch.ByteTensor([1 for i in sentence_token_ids]))
+                bert_output, _ = self.bert(torch.tensor(sentence_token_ids).reshape(1, -1), attention_mask=torch.ByteTensor([1 for i in sentence_token_ids]).reshape(1,-1))
             except:
                 print(torch.tensor(sentence_token_ids).shape)
                 assert 1 == 2
