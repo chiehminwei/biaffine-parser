@@ -217,7 +217,7 @@ class Model(object):
             # ignore [SEP]
             # lens = input_masks.sum(dim=1) - 1
             # word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
-            lens = input_masks.sum(dim=1)
+            lens = word_start_masks.sum(dim=1)
 
             # ignore all punctuation if specified 
             if not include_punct:
