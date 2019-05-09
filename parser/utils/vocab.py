@@ -92,11 +92,13 @@ class Vocab(object):
             sentennce_tag_ids = []
             token_starts = []
             attentions = []
+
+
             
             for word, arc, rel, tag in zip(words, arcs, rels, tags):
                 # skip <ROOT>
                 if word == '<ROOT>':
-                    continue
+                    word = '[CLS]'
 
                 tokens = self.tokenizer.tokenize(word)                
                 if len(tokens) > 0:
