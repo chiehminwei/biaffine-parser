@@ -155,7 +155,7 @@ class BiaffineParser(nn.Module):
             inverse_indices = indices.argsort()
             x = pack_padded_sequence(x[indices], sorted_lens, True)
             x = self.lstm(x)
-            x, _ = pad_packed_sequence(x, True, total_length=tags.shape[-1])
+            x, _ = pad_packed_sequence(x, True, total_length=mask.shape[-1])
             x = self.lstm_dropout(x)[inverse_indices]
 
         # apply MLPs to the BERT output states
