@@ -149,7 +149,6 @@ class Vocab(object):
                   layer_masked.append(bert_output[layer][0][i])
               layer_masked = torch.stack(layer_masked)
               layers.append(layer_masked)
-            layers = torch.stack(layers)
             bert_embeddings = torch.sum(torch.stack(layers), dim=0)
 
             token_starts = token_starts[1:-1]
