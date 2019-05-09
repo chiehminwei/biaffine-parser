@@ -286,7 +286,7 @@ class Model(object):
 
     @torch.no_grad()
     def decode(self, logits_arc, logits_rel, lengths):
-        mask = torch.full(logits_arc.shape, -float('inf')).to('gpu')
+        mask = torch.full(logits_arc.shape, -float('inf')).to('cuda')
         for i, length in enumerate(lengths):
             mask[i, :, :length] = 0.0
         arc_probs = F.softmax(logits_arc + mask, dim=2).to('cpu').numpy()
