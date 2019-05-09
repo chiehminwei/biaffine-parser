@@ -145,7 +145,7 @@ class Vocab(object):
             
             del _
             for layer in range(8, 12):
-                print(bert_output[layer].shape)
+                print(bert_output[layer].shape, torch.ByteTensor([token_starts]).shape)
                 layers.append(bert_output[layer].masked_select(torch.ByteTensor([token_starts])))
             bert_embeddings = torch.sum(torch.stack(layers), dim=0)
             
