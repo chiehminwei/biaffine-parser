@@ -170,16 +170,16 @@ class BiaffineParser(nn.Module):
         # [batch_size, seq_len, seq_len, n_rels]
         s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
 
-        print('sequence_output',sequence_output.shape)
-        print('mask',mask.shape)
-        print('tags',tags.shape)
-        print('s_arc',s_arc.shape)
-        print('s_rel',s_rel.shape)
-        print('x', x.shape)
-        print('arc_h', arc_h.shape)
-        print('arc_d', arc_d.shape)
-        print('rel_h', rel_h .shape)
-        print('rel_d', rel_d.shape)
+        # print('sequence_output',sequence_output.shape)
+        # print('mask',mask.shape)
+        # print('tags',tags.shape)
+        # print('s_arc',s_arc.shape)
+        # print('s_rel',s_rel.shape)
+        # print('x', x.shape)
+        # print('arc_h', arc_h.shape)
+        # print('arc_d', arc_d.shape)
+        # print('rel_h', rel_h .shape)
+        # print('rel_d', rel_d.shape)
 
         # set the scores that exceed the length of each sentence to -inf
         len_mask = length_to_mask(lens, max_len=mask.shape[-1], dtype=torch.uint8)
