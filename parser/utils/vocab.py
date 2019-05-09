@@ -86,7 +86,7 @@ class Vocab(object):
         kkk = 0
         fuck_punctuations = []
         with tqdm(total=len(corpus.words)) as pbar:
-            for words, arcs, rels, tags in tqdm(zip(corpus.words, corpus.heads, corpus.rels, corpus.tags)):
+            for words, arcs, rels, tags in zip(corpus.words, corpus.heads, corpus.rels, corpus.tags):
                 pbar.update(1)
                 kkk += 1
                 sentence_token_ids = []
