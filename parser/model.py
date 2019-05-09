@@ -236,6 +236,10 @@ class Model(object):
             
             arc_loss, rel_loss = self.get_loss(s_arc[word_start_masks], s_rel[word_start_masks], gold_arcs, gold_rels)
             loss += arc_loss + rel_loss
+            print(pred_arcs.shape)
+            print(pred_rels.shape)
+            print(gold_arcs.shape)
+            print(gold_rels.shape)
             metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
 
         loss /= len(loader)
