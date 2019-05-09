@@ -175,6 +175,11 @@ class BiaffineParser(nn.Module):
         print('tags',tags.shape)
         print('s_arc',s_arc.shape)
         print('s_rel',s_rel.shape)
+        print('x', x.shape)
+        print('arc_h', arc_h.shape)
+        print('arc_d', arc_d.shape)
+        print('rel_h', rel_h .shape)
+        print('rel_d', rel_d.shape)
 
         # set the scores that exceed the length of each sentence to -inf
         len_mask = length_to_mask(lens, max_len=mask.shape[-1], dtype=torch.uint8)
