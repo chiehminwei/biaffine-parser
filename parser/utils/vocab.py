@@ -92,10 +92,7 @@ class Vocab(object):
             sentennce_tag_ids = []
             token_starts = []
             attentions = []
-            words = ['[CLS]'] + words + ['[SEP]']
-            arcs = [0] + arcs + [0]
-            rels = ['<ROOT>'] + rels + ['<ROOT>']
-            tags = ['<ROOT>'] + tags + ['<ROOT>']
+            
             for word, arc, rel, tag in zip(words, arcs, rels, tags):
                 # skip <ROOT>
                 if word == '<ROOT>':
@@ -128,8 +125,8 @@ class Vocab(object):
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
 
-                token_starts[0] = 0
-                token_starts[-1] = 0
+                    token_starts[0] = 0
+                    token_starts[-1] = 0
                 # take care of empty tokens
                 else:
                     empty_words.add(word)
@@ -141,6 +138,8 @@ class Vocab(object):
                 exceeding_count += 1
                 continue
             
+            sentence_token_ids = self.tokenizer.tokenize(['[CLS]']) + sentence_token_ids + self.tokenizer.tokenize(['[SEP]']) 
+            token_starts = [0] + token_starts + [0]
             # BERT9-12
             layers = []
             bert_output, _ = self.bert(torch.tensor([sentence_token_ids]))
@@ -149,6 +148,7 @@ class Vocab(object):
             for layer in range(8, 12):
                 layers.append(torch.stack([_ for i, _ in enumerate(bert_output[layer]) if token_starts[i] == 1]))
             bert_embeddings = torch.sum(torch.stack(layers), dim=0)
+            token_starts = token_starts[1:-1]
             
             words_numerical.append(bert_embeddings)
             arcs_numerical.append(torch.tensor(sentence_arc_ids))
