@@ -103,7 +103,8 @@ class Model(object):
             if epoch % 5 == 0: # Save latest every five epochs
                 output_model_file = args.checkpoint_dir / "model_epoch{}.pt".format(epoch)
                 if args.local_rank == 0:
-                    model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, dev_metric)
+                    pass
+                    # model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, dev_metric)
 
             if dev_metric > max_metric: # Save best
                 output_model_file = args.checkpoint_dir / "model_best.pt"
