@@ -136,9 +136,6 @@ class BiaffineParser(nn.Module):
         #     sequence_output, _ = self.bert(input_ids, attention_mask=mask, output_all_encoded_layers=False)
         # del _
         sequence_output = input_ids
-        print(sequence_output.shape)
-        print(mask.shape)
-        print(tags.shape)
 
         sequence_output = self.bert_down_projection(sequence_output)
 
@@ -172,6 +169,12 @@ class BiaffineParser(nn.Module):
         s_arc = self.arc_attn(arc_d, arc_h)
         # [batch_size, seq_len, seq_len, n_rels]
         s_rel = self.rel_attn(rel_d, rel_h).permute(0, 2, 3, 1)
+
+        print('sequence_output',sequence_output.shape)
+        print('mask',mask.shape)
+        print('tags',tags.shape)
+        print('s_arc',s_arc.shape)
+        print('s_rel',s_rel.shape)
 
         # set the scores that exceed the length of each sentence to -inf
         len_mask = length_to_mask(lens, max_len=mask.shape[-1], dtype=torch.uint8)
