@@ -138,16 +138,20 @@ class Vocab(object):
             
             sentence_token_ids = self.tokenizer.convert_tokens_to_ids(['[CLS]']) + sentence_token_ids + self.tokenizer.convert_tokens_to_ids(['[SEP]'])
             token_starts = [0] + token_starts + [0]
-            print(sentence_token_ids)
-            print(token_starts)
             # BERT9-12
             layers = []
-            bert_output, _ = self.bert(torch.tensor([sentence_token_ids]))
-            
+            bert_output, _ = bert(torch.tensor([sentence_token_ids]))
             del _
             for layer in range(8, 12):
-                layers.append(torch.stack([_ for i, _ in enumerate(bert_output[layer]) if token_starts[i] == 1]))
+              layer_masked = []
+              for i, mask in enumerate(token_starts):
+                if mask == 1:
+                  layer_masked.append(bert_output[layer][0][i])
+              layer_masked = torch.stack(layer_masked)
+              layers.append(layer_masked)
+            layers = torch.stack(layers)
             bert_embeddings = torch.sum(torch.stack(layers), dim=0)
+
             token_starts = token_starts[1:-1]
             
             words_numerical.append(bert_embeddings)
@@ -162,10 +166,10 @@ class Vocab(object):
                 print(words)
                 print(sum(token_starts))
                 print(layers[0].shape)
-                # print(words_numerical[0].shape)
-                # print(arcs_numerical[0].shape)
-                # print(rels_numerical[0].shape)
-                # print(tags_numerical[0].shape)
+                print(words_numerical[0].shape)
+                print(arcs_numerical[0].shape)
+                print(rels_numerical[0].shape)
+                print(tags_numerical[0].shape)
 
         if offending_set: 
             logging.warning('WARNING: The following non-symbol characters are unknown to BERT:')
