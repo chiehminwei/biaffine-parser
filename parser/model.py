@@ -290,7 +290,7 @@ class Model(object):
         for i, length in enumerate(lengths):
             mask[i, :, :length] = 0.0
         arc_probs = F.softmax(logits_arc + mask, dim=2).to('cpu').numpy()
-        rel_probs = F.softmax(logits_rel, dim=3).to('cpu').numpy()å
+        rel_probs = F.softmax(logits_rel, dim=3).to('cpu').numpy()
         
         pred_arcs = []
         pred_rels = []
