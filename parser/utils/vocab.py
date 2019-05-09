@@ -128,6 +128,8 @@ class Vocab(object):
                     token_starts.extend([1] + [0] * (len(tokens) - 1))
                     attentions.extend([1] * len(tokens))
 
+                token_starts[0] = 0
+                token_starts[-1] = 0
                 # take care of empty tokens
                 else:
                     empty_words.add(word)
