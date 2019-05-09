@@ -136,7 +136,7 @@ class BiaffineParser(nn.Module):
         #     sequence_output, _ = self.bert(input_ids, attention_mask=mask, output_all_encoded_layers=False)
         # del _
         sequence_output = input_ids
-        print(sequsequence_outputence.shape)
+        print(sequence_output.shape)
         print(mask.shape)
         print(tags.shape)
 
