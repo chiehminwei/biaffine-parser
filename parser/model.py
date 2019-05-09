@@ -125,6 +125,7 @@ class Model(object):
 
     def train(self, loader, pbar, stats, args, data_parallel=False):
         self.network.train()
+        assert not args.train_lm
         for step, batch in enumerate(loader):
             batch = tuple(t.to(self.device) for t in batch)
 
