@@ -162,13 +162,14 @@ class Vocab(object):
             attention_mask.append(torch.ByteTensor(attentions))
             
             if kkk < 5:
-                print(words)
-                print(sum(token_starts))
-                print(layers[0].shape)
-                print(words_numerical[-1].shape)
-                print(arcs_numerical[-1].shape)
-                print(rels_numerical[-1].shape)
-                print(tags_numerical[-1].shape)
+                pass
+                # print(words)
+                # print(sum(token_starts))
+                # print(layers[0].shape)
+                # print(words_numerical[-1].shape)
+                # print(arcs_numerical[-1].shape)
+                # print(rels_numerical[-1].shape)
+                # print(tags_numerical[-1].shape)
 
         if offending_set: 
             logging.warning('WARNING: The following non-symbol characters are unknown to BERT:')
