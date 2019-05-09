@@ -137,6 +137,8 @@ class BiaffineParser(nn.Module):
         # del _
         sequence_output = input_ids
         print(sequence_output.shape)
+        print(mask.shape)
+        print(tags.shape)
 
         sequence_output = self.bert_down_projection(sequence_output)
 
