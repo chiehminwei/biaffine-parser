@@ -158,10 +158,10 @@ class Vocab(object):
             
             if kkk < 5:
                 print(words)
-                print(words_numerical)
-                print(arcs_numerical)
-                print(rels_numerical)
-                print(tags_numerical)
+                print(words_numerical[0].shape)
+                print(arcs_numerical[0].shape)
+                print(rels_numerical[0].shape)
+                print(tags_numerical[0].shape)
 
         if offending_set: 
             logging.warning('WARNING: The following non-symbol characters are unknown to BERT:')
