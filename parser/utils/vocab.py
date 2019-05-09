@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
 
+import tqdm
 import numpy as np
 import unicodedata
 import os
@@ -83,7 +84,7 @@ class Vocab(object):
         sent_count = 0
         exceeding_count = 0
         kkk = 0
-        for words, arcs, rels, tags in zip(corpus.words, corpus.heads, corpus.rels, corpus.tags):
+        for words, arcs, rels, tags in tqdm(zip(corpus.words, corpus.heads, corpus.rels, corpus.tags)):
             kkk += 1
             sentence_token_ids = []
             sentence_arc_ids = []
