@@ -144,9 +144,7 @@ class Vocab(object):
             try:
                 bert_output, _ = self.bert(torch.tensor(sentence_token_ids), attention_mask=torch.ByteTensor([1 for i in sentence_token_ids]))
             except:
-                print(len(words), words)
-                print(len(sentence_token_ids), sentence_token_ids)
-                print(torch.ByteTensor([1 for i in sentence_token_ids]))
+                print(torch.tensor(sentence_token_ids).shape)
                 assert 1 == 2
 
 
