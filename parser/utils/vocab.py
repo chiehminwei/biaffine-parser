@@ -40,9 +40,8 @@ class Vocab(object):
         self.n_train_words = self.n_words
 
         self.tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=do_lower_case)
-        self.bert = BertModel.from_pretrained(bert_model)
-        for param in self.bert.parameters():
-                param.requires_grad = False
+        self.bert = BertModel.from_pretrained(bert_model).to('cuda')
+        self.bert.eval()
 
     def __repr__(self):
         info = f"{self.__class__.__name__}(\n"
@@ -140,9 +139,14 @@ class Vocab(object):
             
             sentence_token_ids = self.tokenizer.convert_tokens_to_ids(['[CLS]']) + sentence_token_ids + self.tokenizer.convert_tokens_to_ids(['[SEP]'])
             token_starts = [0] + token_starts + [0]
+
+            tokens_tensor = torch.tensor([sentence_token_ids]).to('cuda')
+            segments_tensors = torch.tensor([0 for i in sentence_token_ids]).to('cuda')
+
             # BERT9-12
             layers = []
-            bert_output, _ = self.bert(torch.tensor([sentence_token_ids]).to(torch.device('cuda')))
+            with torch.no_grad():
+                bert_output, _ = self.bert(tokens_tensor, segments_tensors)
             del _
             for layer in range(8, 12):
               layer_masked = []
