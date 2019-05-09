@@ -141,7 +141,7 @@ class Vocab(object):
             
             # BERT9-12
             layers = []
-            bert_output, _ = self.bert(torch.tensor(sentence_token_ids), torch.ByteTensor([1 for i in sentence_token_ids]))
+            bert_output, _ = self.bert(torch.tensor(sentence_token_ids), attention_mask=torch.ByteTensor([1 for i in sentence_token_ids]))
             del _
             for layer in range(8, 12):
                 layers.append(bert_output[layer].masked_select(torch.ByteTensor(token_starts)))
