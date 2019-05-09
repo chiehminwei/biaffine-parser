@@ -84,6 +84,7 @@ class Vocab(object):
         sent_count = 0
         exceeding_count = 0
         kkk = 0
+        fuck_punctuations = []
         with tqdm(total=len(corpus.words)) as pbar:
             for words, arcs, rels, tags in tqdm(zip(corpus.words, corpus.heads, corpus.rels, corpus.tags)):
                 pbar.update(1)
@@ -146,6 +147,11 @@ class Vocab(object):
                 tokens_tensor = torch.tensor([sentence_token_ids]).to('cuda')
                 segments_tensors = torch.tensor([0 for i in sentence_token_ids]).to('cuda')
 
+                fuck_punctuation = []
+                for i, mask in enumerate(token_starts):
+                    if mask == 1:
+                      fuck_punctuation.append(sentence_token_ids[i])
+
                 # BERT9-12
                 layers = []
                 with torch.no_grad():
@@ -166,19 +172,20 @@ class Vocab(object):
                 arcs_numerical.append(torch.tensor(sentence_arc_ids))
                 rels_numerical.append(torch.tensor(sentence_rel_ids))
                 tags_numerical.append(torch.tensor(sentennce_tag_ids))
+                fuck_punctuations.append(torch.tensor(fuck_punctuation))
 
                 token_start_mask.append(torch.ByteTensor(attentions))
                 attention_mask.append(torch.ByteTensor(attentions))
                 
-                if kkk < 3:
-                    print(token_start_mask)
-                    print(words)
-                    print(sum(token_starts))
-                    print(layers[0].shape)
-                    print(words_numerical[-1].shape)
-                    print(arcs_numerical[-1].shape)
-                    print(rels_numerical[-1].shape)
-                    print(tags_numerical[-1].shape)
+                # if kkk < 3:
+                #     print(token_start_mask)
+                #     print(words)
+                #     print(sum(token_starts))
+                #     print(layers[0].shape)
+                #     print(words_numerical[-1].shape)
+                #     print(arcs_numerical[-1].shape)
+                #     print(rels_numerical[-1].shape)
+                #     print(tags_numerical[-1].shape)
 
         if offending_set: 
             logging.warning('WARNING: The following non-symbol characters are unknown to BERT:')
@@ -206,12 +213,12 @@ class Vocab(object):
                     os.makedirs(save_dir)
             except FileExistsError:
                 pass
-            torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical), save_name)
+            torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical, fuck_punctuations), save_name)
         
         logging.info('Total number of sentences: {}'.format(sent_count))
         logging.info('Number of sentences exceeding max seq length of 128: {}'.format(exceeding_count))
 
-        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical
+        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical, fuck_punctuations
 
 
     def numericalize_first_token(self, corpus, save_name=None):

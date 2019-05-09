@@ -132,10 +132,10 @@ class Model(object):
                 s_arc, s_rel, lm_loss = self.network(input_ids, input_masks, masked_lm_labels=lm_label_ids)
                 lm_loss = torch.mean(lm_loss)
             elif self.use_pos:
-                input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids = batch
+                input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids, puncs = batch
                 s_arc, s_rel = self.network(input_ids, input_masks, tags=tag_ids)
             else:
-                input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids = batch
+                input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids, puncs = batch
                 s_arc, s_rel = self.network(input_ids, input_masks)
             
             word_start_masks[:, 0] = 0  # ignore [CLS]
@@ -209,7 +209,7 @@ class Model(object):
             if trainset:
                 input_ids, arc_ids, rel_ids, input_masks, word_start_masks, word_end_masks, lm_label_ids = batch 
             else: 
-                input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids = batch
+                input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids, puncs = batch
             
             # ignore [CLS]
             word_start_masks[:, 0] = 0
@@ -219,8 +219,8 @@ class Model(object):
 
             # ignore all punctuation if specified 
             if not include_punct:
-                puncts = input_ids.new_tensor([punct for punct in self.vocab.puncts])
-                word_start_masks &= input_ids.unsqueeze(-1).ne(puncts).all(-1)
+                puncts = puncs.new_tensor([punct for punct in self.vocab.puncts])
+                word_start_masks &= puncs.unsqueeze(-1).ne(puncts).all(-1)
 
             if self.use_pos:
                 s_arc, s_rel = self.network(input_ids, input_masks, tags=tag_ids)
