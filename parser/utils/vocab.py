@@ -140,7 +140,7 @@ class Vocab(object):
             token_starts = [0] + token_starts + [0]
             # BERT9-12
             layers = []
-            bert_output, _ = self.bert(torch.tensor([sentence_token_ids], device=torch.device('cuda')).to(torch.device('cpu'))
+            bert_output, _ = self.bert(torch.tensor([sentence_token_ids], device=torch.device('cuda')).to(torch.device('cpu')))
             del _
             for layer in range(8, 12):
               layer_masked = []
