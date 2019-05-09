@@ -135,8 +135,7 @@ class Vocab(object):
 
             sent_count += 1                
             # Skip too long sentences
-            len_dict[len_sentence_token_ids] += 1
-            if len_sentence_token_ids > 128:
+            if len(sentence_token_ids) > 128:
                 exceeding_count += 1
                 continue
             
