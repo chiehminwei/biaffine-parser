@@ -6,7 +6,8 @@ import numpy as np
 def mst(arc_probs, rel_probs):
     arcs = _arc_argmax(arc_probs)
     rels = _rel_argmax(rel_probs[np.arange(len(arcs)), arcs])
-    return arcs[1:], rels[1:]
+    # return arcs[1:], rels[1:]
+    return arcs, rels
 
 
 def _arc_argmax(probs):

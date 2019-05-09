@@ -233,21 +233,21 @@ class Model(object):
             gold_arcs, gold_rels = arc_ids[word_start_masks], rel_ids[word_start_masks]
             
             pred_arcs, pred_rels = self.decode(s_arc, s_rel, lens)
-            pred_arcs, pred_rels = pred_arcs.to('cuda'), pred_rels.to('cuda') 
+            pred_arcs, pred_rels = pred_arcs[word_start_masks].to('cuda'), pred_rels[word_start_masks].to('cuda') 
             
             arc_loss, rel_loss = self.get_loss(s_arc[word_start_masks], s_rel[word_start_masks], gold_arcs, gold_rels)
             loss += arc_loss + rel_loss
 
-            print(input_masks)
-            print(word_start_masks)
-            print(input_masks.sum(dim=1))
-            print(lens)
-            print(pred_arcs.shape)
-            print(pred_rels.shape)
-            print(gold_arcs.shape)
-            print(gold_rels.shape)
+            # print(input_masks)
+            # print(word_start_masks)
+            # print(input_masks.sum(dim=1))
+            # print(lens)
+            # print(pred_arcs.shape)
+            # print(pred_rels.shape)
+            # print(gold_arcs.shape)
+            # print(gold_rels.shape)
             metric(pred_arcs, pred_rels, gold_arcs, gold_rels)
-            assert 1 == 2
+            # assert 1 == 2
 
         loss /= len(loader)
 
@@ -306,13 +306,17 @@ class Model(object):
         pred_arcs = []
         pred_rels = []
         for arc_prob, rel_prob, length in zip(arc_probs, rel_probs, lengths):
-            arcs, rels = mst(arc_prob[:length, :length], rel_prob[:length, :length])
-            pred_arcs.extend(arcs.tolist())
-            pred_rels.extend(rels.tolist())
+            # arcs, rels = mst(arc_prob[:length, :length], rel_prob[:length, :length])
+            arcs, rels = mst(arc_prob, rel_prob)
+            pred_arcs.append(torch.tensor(arcs))
+            pred_rels.append(torch.tensor(rels))
+            # pred_arcs.extend(arcs.tolist())
+            # pred_rels.extend(rels.tolist())
         # parsed = [mst.mst(arc_prob[:length, :length], rel_prob[:length, :length])
         #           for arc_prob, rel_prob, length
         #           in zip(arc_probs, rel_probs, lengths)]
-        return torch.tensor(pred_arcs), torch.tensor(pred_rels)
+        # return torch.tensor(pred_arcs), torch.tensor(pred_rels)
+        return torch.stack(pred_arcs), torch.stack(pred_rels)
 
     @torch.no_grad()
     def get_embeddings(self, loader, layer_index=-1, return_all=False, ignore=True, ignore_token_start_mask=False):
