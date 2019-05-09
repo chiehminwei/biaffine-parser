@@ -138,6 +138,8 @@ class Vocab(object):
             
             sentence_token_ids = self.tokenizer.convert_tokens_to_ids(['[CLS]']) + sentence_token_ids + self.tokenizer.convert_tokens_to_ids(['[SEP]'])
             token_starts = [0] + token_starts + [0]
+            print(sentence_token_ids)
+            print(token_starts)
             # BERT9-12
             layers = []
             bert_output, _ = self.bert(torch.tensor([sentence_token_ids]))
