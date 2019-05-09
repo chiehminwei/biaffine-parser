@@ -7,6 +7,7 @@ from parser.utils import mst
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset, RandomSampler
 from torch.utils.data.distributed import DistributedSampler
 from pytorch_pretrained_bert import BertAdam, BertTokenizer
@@ -139,8 +140,8 @@ class Model(object):
                 s_arc, s_rel = self.network(input_ids, input_masks)
             
             word_start_masks[:, 0] = 0  # ignore [CLS]
-            lens = input_masks.sum(dim=1) - 1 # ignore [SEP]
-            word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
+            # lens = input_masks.sum(dim=1) - 1 # ignore [SEP]
+            # word_start_masks[torch.arange(len(word_start_masks)), lens] = 0
             
             gold_arcs, gold_rels = arc_ids[word_start_masks], rel_ids[word_start_masks]
             _s_arc, _s_rel = s_arc[word_start_masks], s_rel[word_start_masks]            
