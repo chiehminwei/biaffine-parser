@@ -40,7 +40,7 @@ class Vocab(object):
         self.n_train_words = self.n_words
 
         self.tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=do_lower_case)
-        self.bert = BertModel.from_pretrained(bert_model)
+        self.bert = BertModel.from_pretrained(bert_model).to(torch.device('cuda'))
         for param in self.bert.parameters():
                 param.requires_grad = False
 
