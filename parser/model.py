@@ -20,6 +20,7 @@ import logging
 
 import torch.optim.lr_scheduler
 import torch.distributed as dist
+import slack
 
 def cleanup():
     dist.destroy_process_group()
@@ -113,15 +114,23 @@ class Model(object):
                 if args.local_rank == 0:
                     output_model_file = args.checkpoint_dir / "model_best.pt"
                     max_e, max_metric = epoch, dev_metric
+                    max_test_metric = test_metric
                     model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, max_metric, is_best=True)
 
             elif epoch - max_e >= patience: # Early stopping
                 break
 
         logging.info('***Finished training at {}***'.format(datetime.now()))
-        logging.info(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}")
+        logging.info(f"max score of dev is {max_metric.score:.2%} at epoch {max_e}. Test is {max_test_metric.score:.2%}")
         logging.info(f"mean time of each epoch is {total_time / epoch}s")
         logging.info(f"{total_time}s elapsed")
+
+        token='xoxp-632776866800-621347539810-632776987968-24d5e0ae5ff3eea0d2f1998d07d59281'
+        client = slack.WebClient(token=token)
+
+        response = client.chat_postMessage(channel='#random', text=f"Training done! GPU {args.local_rank}  epoch{max_e} dev{max_metric.score:.2%} test{max_test_metric.score:.2%}")
+
+
 
         if args.distributed:
             cleanup()
