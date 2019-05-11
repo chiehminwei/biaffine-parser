@@ -93,7 +93,7 @@ class Corpus(object):
                     if len(sentence.ID) > 0:
                         sentences.append(sentence)
                 except:
-                    print(i)
+                    pass
                 start = i + 1
         print(len(sentences))
         assert 1 == 2
