@@ -130,6 +130,8 @@ class Vocab(object):
                         sentence_arc_ids.extend([arc])
                         sentence_rel_ids.extend([self.rel_dict.get(rel, 0)])
                         sentennce_tag_ids.extend([self.tag_dict.get(tag, 0)])
+                        print(lang)
+                        print(self.lang_dict.get(lang, 0))
                         sentence_lang_ids.extend([self.lang_dict.get(lang, 0)])
                         token_starts.extend([1] + [0] * (len(tokens) - 1))
                         attentions.extend([1])
