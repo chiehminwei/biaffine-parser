@@ -64,7 +64,7 @@ class ImbalancedDatasetSampler(torch.utils.data.sampler.Sampler):
 
     def _get_label(self, dataset, idx):
         words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical, langs_numerical, fuck_punctuations = dataset[idx]
-        return langs_numerical[-1]
+        return langs_numerical[-1].item()
                 
     def __iter__(self):
         return (self.indices[i] for i in torch.multinomial(
