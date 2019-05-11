@@ -51,7 +51,6 @@ class ImbalancedDatasetSampler(torch.utils.data.sampler.Sampler):
         label_to_count = {}
         for idx in self.indices:
             label = self._get_label(dataset, idx)
-            print(label)
             if label in label_to_count:
                 label_to_count[label] += 1
             else:
