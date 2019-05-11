@@ -16,23 +16,6 @@ for language in German English Spanish French Italian Portuguese Swedish; do
 		--bert_model   bert-base-multilingual-cased                              
 done
 
-echo "- UD 2.0 on same 7 languages with POS tags"
-echo "--one parser for each language BUT trained on 6 other languages"
-# -- one parser for each language BUT trained on 6 other languages
-treebank=UD_v2.0_POS
-for language in German English Spanish French Italian Portuguese Swedish; do
-	echo $treebank $language "Reverse"
-	python create_datasets.py                                                    \
-		--ftrain       data/${treebank}/UD_${language}/reverse/train.conllx      \
-		--fdev         data/${treebank}/UD_${language}/reverse/dev.conllx        \
-		--ftest        data/${treebank}/UD_${language}/test.conllx               \
-		--ftrain_cache data/binary/${treebank}/UD_${language}/reverse/trainset   \
-		--fdev_cache   data/binary/${treebank}/UD_${language}/reverse/devset     \
-		--ftest_cache  data/binary/${treebank}/UD_${language}/testset            \
-		--vocab        vocabs/${treebank}/${language}-reverse.pt                 \
-		--bert_model   bert-base-multilingual-cased                              
-done
-
 
 # - UD 1.2 on 7 langauges without POS tags
 # -- one universal parser for all 7 of them  (BERT9-12)
