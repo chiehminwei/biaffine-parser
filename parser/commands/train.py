@@ -155,7 +155,8 @@ class Train(object):
         train_sampler = None        
         if args.distributed:
             train_sampler = DistributedSampler(trainset)
-        train_sampler = ImbalancedDatasetSampler(trainset)
+        elif args.use_use_resample:
+            train_sampler = ImbalancedDatasetSampler(trainset)
         train_loader = DataLoader(dataset=trainset,
                                 batch_size=Config.batch_size // Config.gradient_accumulation_steps,
                                 num_workers=0,
@@ -166,7 +167,8 @@ class Train(object):
         dev_sampler = None        
         if args.distributed:
             dev_sampler = DistributedSampler(devset)
-        dev_sampler = ImbalancedDatasetSampler(devset)
+        elif args.use_use_resample:
+            dev_sampler = ImbalancedDatasetSampler(devset)
         dev_loader = DataLoader(dataset=devset,
                                 batch_size=Config.batch_size,
                                 num_workers=0,

@@ -52,6 +52,9 @@ if __name__ == '__main__':
         subparser.add_argument('--use_pos',
                             action='store_true',
                             help="Whether to use POS tags")
+        subparser.add_argument('--use_resample',
+                            action='store_true',
+                            help="Whether to use resampling to balance languages")
         
     args = parser.parse_args()
     log_format = '%(message)s'
