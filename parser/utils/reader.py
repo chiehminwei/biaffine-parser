@@ -90,13 +90,13 @@ class Corpus(object):
             if len(line) <= 1:
                 try:
                     sentence = Sentence(*zip(*[l.split('\t') for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
+                    if len(sentence.ID) > 0:
+                        sentences.append(sentence)
                 except:
                     print(i)
-                    assert 1 == 2
-                if len(sentence.ID) > 0:
-                    sentences.append(sentence)
                 start = i + 1
-
+        print(len(sentences))
+        assert 1 == 2
         corpus = cls(sentences)
 
         return corpus
