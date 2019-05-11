@@ -31,8 +31,7 @@ class Vocab(object):
         self.rel_dict = {rel: i for i, rel in enumerate(self.rels)}
         self.tag_dict = {tag: i for i, tag in enumerate(self.tags)}
         self.lang_dict = {lang: i for i, lang in enumerate(self.langs)}
-        print(self.lang_dict)
-
+        
         # ids of punctuation that appear in words
         self.puncts = set(sorted(i for word, i in self.word_dict.items()
                                 if regex.match(r'\p{P}+$', word)))
@@ -130,8 +129,6 @@ class Vocab(object):
                         sentence_arc_ids.extend([arc])
                         sentence_rel_ids.extend([self.rel_dict.get(rel, 0)])
                         sentennce_tag_ids.extend([self.tag_dict.get(tag, 0)])
-                        print(lang)
-                        print(self.lang_dict.get(lang, 0))
                         sentence_lang_ids.extend([self.lang_dict.get(lang, 0)])
                         token_starts.extend([1] + [0] * (len(tokens) - 1))
                         attentions.extend([1])
