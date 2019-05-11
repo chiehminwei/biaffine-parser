@@ -2,9 +2,9 @@ echo "- UD 2.0 on same 7 languages with POS tags"
 echo "--one parser for each language BUT trained on 6 other languages"
 # -- one parser for each language BUT trained on 6 other languages
 treebank=UD_v2.0_POS
-for language in German; do
+for language in Spanish; do
 	echo $treebank $language "Reverse"
-	CUDA_VISIBLE_DEVICES=0                                                       \
+	CUDA_VISIBLE_DEVICES=2                                                       \
 	python create_datasets.py                                                    \
 		--ftrain       data/${treebank}/UD_${language}/reverse/train.conllx      \
 		--fdev         data/${treebank}/UD_${language}/reverse/dev.conllx        \
@@ -14,7 +14,7 @@ for language in German; do
 		--ftest_cache  data/binary/${treebank}/UD_${language}/testset            \
 		--vocab        vocabs/${treebank}/${language}-reverse.pt                 \
 		--bert_model   bert-base-multilingual-cased                              \
-	&& CUDA_VISIBLE_DEVICES=0                                                    \
+	&& CUDA_VISIBLE_DEVICES=2                                                    \
 	python run.py train   								                         \
 		--checkpoint_dir checkpoints/${treebank}/UD_${language}-reverse/         \
 		--ftrain         data/${treebank}/UD_${language}/reverse/train.conllx    \
@@ -33,9 +33,9 @@ done
 echo "- UD 2.0 on same 7 languages without POS tags"
 echo "--one parser for each language BUT trained on 6 other languages"
 treebank=UD_v2.0
-for language in German; do
+for language in Spanish; do
 	echo $treebank $language "Reverse"
-	CUDA_VISIBLE_DEVICES=0                                                       \
+	CUDA_VISIBLE_DEVICES=2                                                       \
 	python create_datasets.py                                                    \
 		--ftrain       data/${treebank}/UD_${language}/reverse/train.conllx      \
 		--fdev         data/${treebank}/UD_${language}/reverse/dev.conllx        \
@@ -45,7 +45,7 @@ for language in German; do
 		--ftest_cache  data/binary/${treebank}/UD_${language}/testset            \
 		--vocab        vocabs/${treebank}/${language}-reverse.pt                 \
 		--bert_model   bert-base-multilingual-cased                              \
-	&& CUDA_VISIBLE_DEVICES=0                                                    \
+	&& CUDA_VISIBLE_DEVICES=2                                                    \
 	python run.py train   								                         \
 		--checkpoint_dir checkpoints/${treebank}/UD_${language}-reverse/         \
 		--ftrain         data/${treebank}/UD_${language}/reverse/train.conllx    \
@@ -62,9 +62,9 @@ done
 
 echo "One parser trained for  each language (BERT9-12, UD_v1.2 with POS)"
 for treebank in UD_v1.2; do
-	for language in German; do
+	for language in Spanish; do
 		echo $treebank $language "S==T"
-		CUDA_VISIBLE_DEVICES=0                                               \
+		CUDA_VISIBLE_DEVICES=2                                               \
 		python create_datasets.py                                            \
 			--ftrain       data/${treebank}/UD_${language}/train.conllx      \
 			--fdev         data/${treebank}/UD_${language}/dev.conllx        \
@@ -74,7 +74,7 @@ for treebank in UD_v1.2; do
 			--ftest_cache  data/binary/${treebank}/UD_${language}/testset    \
 			--vocab        vocabs/${treebank}/${language}.pt                 \
 			--bert_model   bert-base-multilingual-cased                      \
-		&& CUDA_VISIBLE_DEVICES=0                                            \
+		&& CUDA_VISIBLE_DEVICES=2                                            \
 		python run.py train   								                 \
 			--checkpoint_dir checkpoints/${treebank}/UD_${language}/         \
 			--ftrain         data/${treebank}/UD_${language}/train.conllx    \
