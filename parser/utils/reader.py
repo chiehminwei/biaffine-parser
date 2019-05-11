@@ -95,8 +95,6 @@ class Corpus(object):
                 except:
                     pass
                 start = i + 1
-        print(len(sentences))
-        assert 1 == 2
         corpus = cls(sentences)
 
         return corpus
