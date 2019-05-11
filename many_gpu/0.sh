@@ -1,0 +1,30 @@
+echo "- UD 2.0 on same 7 languages with POS tags"
+echo "--one parser for each language BUT trained on 6 other languages"
+# -- one parser for each language BUT trained on 6 other languages
+treebank=UD_v2.0_POS
+for language in German; do
+	echo $treebank $language "Reverse"
+	CUDA_VISIBLE_DEVICES=0                                                       \
+	python create_datasets.py                                                    \
+		--ftrain       data/${treebank}/UD_${language}/reverse/train.conllx      \
+		--fdev         data/${treebank}/UD_${language}/reverse/dev.conllx        \
+		--ftest        data/${treebank}/UD_${language}/test.conllx               \
+		--ftrain_cache data/binary/${treebank}/UD_${language}/reverse/trainset   \
+		--fdev_cache   data/binary/${treebank}/UD_${language}/reverse/devset     \
+		--ftest_cache  data/binary/${treebank}/UD_${language}/testset            \
+		--vocab        vocabs/${treebank}/${language}-reverse.pt                             \
+		--bert_model   bert-base-multilingual-cased                              \
+	&& CUDA_VISIBLE_DEVICES=0                                                    \
+	python run.py train   								                         \
+		--checkpoint_dir checkpoints/${treebank}/UD_${language}-reverse/         \
+		--ftrain         data/${treebank}/UD_${language}/reverse/train.conllx    \
+		--fdev           data/${treebank}/UD_${language}/reverse/dev.conllx      \
+		--ftest          data/${treebank}/UD_${language}/test.conllx             \
+		--ftrain_cache   data/binary/${treebank}/UD_${language}/reverse/trainset \
+		--fdev_cache     data/binary/${treebank}/UD_${language}/reverse/devset   \
+		--ftest_cache    data/binary/${treebank}/UD_${language}/testset          \
+		--vocab          vocabs/${treebank}/${language}-reverse.pt               \
+		--bert_model     bert-base-multilingual-cased                            \
+		--use_pos                                                                \
+		--use_lstm     
+done

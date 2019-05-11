@@ -86,6 +86,8 @@ class Model(object):
             
             stats = {'tr_loss': 0, 'lm_loss': 0, 'arc_loss': 0, 'rel_loss': 0, 'nb_tr_examples': 0, 'nb_tr_steps': 0}
             with tqdm(total=len(train_dataloader), desc=f"Epoch {epoch}") as pbar:
+                if args.distributed:
+                    train_dataloader.sampler.set_epoch(epoch)
                 self.train(train_dataloader, pbar, stats, args, data_parallel=bool(torch.cuda.device_count() > 1 and not args.no_cuda and not args.distributed))
             
             train_loss, train_metric = self.evaluate(train_dataloader, trainset=args.train_lm)
@@ -108,9 +110,9 @@ class Model(object):
                     # model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, dev_metric)
 
             if dev_metric > max_metric: # Save best
-                output_model_file = args.checkpoint_dir / "model_best.pt"
-                max_e, max_metric = epoch, dev_metric
                 if args.local_rank == 0:
+                    output_model_file = args.checkpoint_dir / "model_best.pt"
+                    max_e, max_metric = epoch, dev_metric
                     model_to_save.save(output_model_file, epoch, cloud_address, self.optimizer, max_metric, is_best=True)
 
             elif epoch - max_e >= patience: # Early stopping
@@ -121,7 +123,8 @@ class Model(object):
         logging.info(f"mean time of each epoch is {total_time / epoch}s")
         logging.info(f"{total_time}s elapsed")
 
-        cleanup()
+        if args.distributed:
+            cleanup()
 
     def train(self, loader, pbar, stats, args, data_parallel=False):
         self.network.train()
