@@ -10,7 +10,7 @@ import os
 Sentence = namedtuple(typename='Sentence',
                       field_names=['ID', 'FORM', 'LEMMA', 'CPOS',
                                    'POS', 'FEATS', 'HEAD', 'DEPREL',
-                                   'PHEAD', 'PDEPREL'])
+                                   'PHEAD', 'PDEPREL', 'LANGUAGE'])
 
 
 class Corpus(object):
@@ -61,6 +61,11 @@ class Corpus(object):
     @property
     def rels(self):
         return [[self.ROOT] + list(sentence.DEPREL)
+                for sentence in self.sentences]
+
+    @property
+    def langs(self):
+        return [[self.ROOT] + list(sentence.LANGUAGE)
                 for sentence in self.sentences]
 
     @heads.setter

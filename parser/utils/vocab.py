@@ -17,18 +17,20 @@ import logging
 class Vocab(object):
     PAD = '<PAD>'
 
-    def __init__(self, words, chars, rels, tags, bert_model, do_lower_case):
+    def __init__(self, words, chars, rels, tags, langs, bert_model, do_lower_case):
         self.pad_index = 0
 
         self.words = [self.PAD] + sorted(words)
         self.chars = [self.PAD] + sorted(chars)
         self.rels = sorted(rels)
         self.tags = sorted(tags)
+        self.langs = sorted(langs)
 
         self.word_dict = {word: i for i, word in enumerate(self.words)}
         self.char_dict = {char: i for i, char in enumerate(self.chars)}
         self.rel_dict = {rel: i for i, rel in enumerate(self.rels)}
         self.tag_dict = {tag: i for i, tag in enumerate(self.tags)}
+        self.lang_dict = {lang: i for i, lang in enumerate(self.langs)}
 
         # ids of punctuation that appear in words
         self.puncts = set(sorted(i for word, i in self.word_dict.items()
@@ -75,6 +77,7 @@ class Vocab(object):
         arcs_numerical = []
         rels_numerical = []
         tags_numerical = []
+        langs_numerical = []
         token_start_mask = []
         attention_mask = []
         offending_set = set()
@@ -86,17 +89,16 @@ class Vocab(object):
         kkk = 0
         fuck_punctuations = []
         with tqdm(total=len(corpus.words)) as pbar:
-            for words, arcs, rels, tags in zip(corpus.words, corpus.heads, corpus.rels, corpus.tags):
+            for words, arcs, rels, tags, langs in zip(corpus.words, corpus.heads, corpus.rels, corpus.tags, corpus.langs):
                 pbar.update(1)
                 kkk += 1
                 sentence_token_ids = []
                 sentence_arc_ids = []
                 sentence_rel_ids = []
                 sentennce_tag_ids = []
+                sentence_lang_ids = []
                 token_starts = []
                 attentions = []
-
-
                 
                 for word, arc, rel, tag in zip(words, arcs, rels, tags):
                     # skip <ROOT>
@@ -127,6 +129,7 @@ class Vocab(object):
                         sentence_arc_ids.extend([arc])
                         sentence_rel_ids.extend([self.rel_dict.get(rel, 0)])
                         sentennce_tag_ids.extend([self.tag_dict.get(tag, 0)])
+                        sentence_lang_ids.extend([self.lang_dict.get(lang, 0)])
                         token_starts.extend([1] + [0] * (len(tokens) - 1))
                         attentions.extend([1])
 
@@ -170,6 +173,7 @@ class Vocab(object):
                 arcs_numerical.append(torch.tensor(sentence_arc_ids))
                 rels_numerical.append(torch.tensor(sentence_rel_ids))
                 tags_numerical.append(torch.tensor(sentennce_tag_ids))
+                langs_numerical.append(torch.tensor(sentence_lang_ids))
                 fuck_punctuations.append(torch.tensor(fuck_punctuation))
 
                 token_start_mask.append(torch.ByteTensor(attentions))
@@ -211,12 +215,12 @@ class Vocab(object):
                     os.makedirs(save_dir)
             except FileExistsError:
                 pass
-            torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical, fuck_punctuations), save_name)
+            torch.save((words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical, langs_numerical, fuck_punctuations), save_name)
         
         logging.info('Total number of sentences: {}'.format(sent_count))
         logging.info('Number of sentences exceeding max seq length of 128: {}'.format(exceeding_count))
 
-        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical, fuck_punctuations
+        return words_numerical, attention_mask, token_start_mask, arcs_numerical, rels_numerical, tags_numerical, langs_numerical, fuck_punctuations
 
 
     def numericalize_first_token(self, corpus, save_name=None):
@@ -550,6 +554,7 @@ class Vocab(object):
         chars = list({char for seq in corpus.words for char in ''.join(seq)})
         rels = list({rel for seq in corpus.rels for rel in seq})
         tags = list({tag for seq in corpus.tags for tag in seq})
-        vocab = cls(words, chars, rels, tags, bert_model, do_lower_case)
+        langs = list({lang for seq in corpus.tags for lang in seq})
+        vocab = cls(words, chars, rels, tags, langs, bert_model, do_lower_case)
 
         return vocab
