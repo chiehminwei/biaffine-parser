@@ -100,7 +100,7 @@ class Vocab(object):
                 token_starts = []
                 attentions = []
                 
-                for word, arc, rel, tag in zip(words, arcs, rels, tags):
+                for word, arc, rel, tag, lang in zip(words, arcs, rels, tags, langs):
                     # skip <ROOT>
                     if word == '<ROOT>':
                         word = '[CLS]'
