@@ -557,7 +557,7 @@ class Vocab(object):
         chars = list({char for seq in corpus.words for char in ''.join(seq)})
         rels = list({rel for seq in corpus.rels for rel in seq})
         tags = list({tag for seq in corpus.tags for tag in seq})
-        langs = list({lang for seq in corpus.tags for lang in seq})
+        langs = list({lang for seq in corpus.langs for lang in seq})
         vocab = cls(words, chars, rels, tags, langs, bert_model, do_lower_case)
 
         return vocab
