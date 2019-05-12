@@ -125,11 +125,12 @@ class Model(object):
         logging.info(f"mean time of each epoch is {total_time / epoch}s")
         logging.info(f"{total_time}s elapsed")
 
-        token='12345'
-        client = slack.WebClient(token=token)
-
-        response = client.chat_postMessage(channel='#random', text=f"Training done! GPU {args.local_rank}  epoch{max_e} dev{max_metric.score:.2%} test{max_test_metric.score:.2%}")
-
+        try:
+            token='12345'
+            client = slack.WebClient(token=token)
+            response = client.chat_postMessage(channel='#random', text=f"Training done! GPU {args.local_rank}  epoch{max_e} dev{max_metric.score:.2%} test{max_test_metric.score:.2%}")
+        except:
+            pass
 
 
         if args.distributed:
