@@ -128,7 +128,7 @@ class Model(object):
         try:
             token='12345'
             client = slack.WebClient(token=token)
-            response = client.chat_postMessage(channel='#random', text=f"Training done! GPU {args.local_rank}  epoch{max_e} dev{max_metric.score:.2%} test{max_test_metric.score:.2%}")
+            response = client.chat_postMessage(channel='#random', text=f"Training done! Checkpoint {args.checkpoint_dir}  epoch{max_e} dev{max_metric.score:.2%} test{max_test_metric.score:.2%}")
         except:
             pass
 
