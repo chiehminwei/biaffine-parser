@@ -2,7 +2,7 @@
 
 import os
 from parser import BiaffineParser, Model
-from parser.utils import Corpus, TextDataset, collate_fn
+from parser.utils import Corpus, TextDataset, collate_fn, Vocab
 
 import torch
 from torch.utils.data import DataLoader
@@ -31,7 +31,9 @@ class Evaluate(object):
             FNULL = open(os.devnull, 'w')
             cloud_address = os.path.join(args.cloud_address, args.vocab)
             # subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
-        vocab = torch.load(args.vocab)
+        train = Corpus.load(args.ftrain)
+        vocab = Vocab.from_corpus(corpus=train, min_freq=2, bert_model=args.bert_model, do_lower_case=args.do_lower_case)
+        # vocab = torch.load(args.vocab)
         network = BiaffineParser.load(args.checkpoint_dir / "model_best.pt", args.cloud_address, args.local_rank)
         model = Model(vocab, network, args.use_pos)
 
