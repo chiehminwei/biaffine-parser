@@ -36,9 +36,9 @@ class Evaluate(object):
         model = Model(vocab, network, args.use_pos)
 
         print("Load the dataset")
-       #  corpus = Corpus.load(args.fdata)
-        # dataset = TextDataset(vocab.numericalize(corpus))
-        dataset = TextDataset(torch.load(args.fdata))
+        corpus = Corpus.load(args.fdata)
+        dataset = TextDataset(vocab.numericalize(corpus))
+        # dataset = TextDataset(torch.load(args.fdata))
         # set the data loader
         loader = DataLoader(dataset=dataset,
                             batch_size=args.batch_size,
