@@ -34,8 +34,8 @@ class Evaluate(object):
             cloud_address = os.path.join(args.cloud_address, args.vocab)
             # subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         train = Corpus.load(args.ftrain)
-        vocab = Vocab.from_corpus(corpus=train, min_freq=2, bert_model='bert-base-multilingual-cased', do_lower_case=False)
-        # vocab = torch.load(args.vocab)
+        # vocab = Vocab.from_corpus(corpus=train, min_freq=2, bert_model='bert-base-multilingual-cased', do_lower_case=False)
+        vocab = torch.load(args.vocab)
         network = BiaffineParser.load(args.checkpoint_dir / "model_best.pt", args.cloud_address, args.local_rank)
         model = Model(vocab, network, args.use_pos)
 
