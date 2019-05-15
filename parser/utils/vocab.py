@@ -73,6 +73,8 @@ class Vocab(object):
         self.n_chars = len(self.chars)
 
     def numericalize(self, corpus, save_name=None):
+        if self.lang_dict is None:
+            self.lang_dict = {}
         words_numerical = []
         arcs_numerical = []
         rels_numerical = []
