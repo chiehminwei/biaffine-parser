@@ -95,13 +95,13 @@ class Corpus(object):
                 except:
                     pass
                 start = i + 1
-        try:
-            sentence = Sentence(*zip(*[l.split('\t') for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
-            if len(sentence.ID) > 0:
-                sentences.append(sentence)
-        except:
-            print('No left over sentences!')
-            pass
+        # try:
+        #     sentence = Sentence(*zip(*[l.split('\t') for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
+        #     if len(sentence.ID) > 0:
+        #         sentences.append(sentence)
+        # except:
+        #     print('No left over sentences!')
+        #     pass
         corpus = cls(sentences)
 
         return corpus
