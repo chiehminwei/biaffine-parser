@@ -143,7 +143,8 @@ for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sente
     for gold_rel, test_rel in zip(gold_rels, test_rels):
         if gold_rel == 'nsubj' or gold_rel == 'nsubjpass':
             nsubj += 1
-            if test_rel == 'nsubj' or test_rel == 'nsubjpass':
+            # if test_rel == 'nsubj' or test_rel == 'nsubjpass':
+            if test_rel == gold_rel:
                 tnsubj += 1
         elif gold_rel == 'dobj':
             dobj += 1
@@ -155,7 +156,8 @@ for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sente
                 tconj += 1
         elif gold_rel == 'ccomp' or gold_rel == 'xcomp':
             comp += 1
-            if test_rel == 'ccomp' or test_rel == 'xcomp':
+            if test_rel == gold_rel:
+            # if test_rel == 'ccomp' or test_rel == 'xcomp':
                 tcomp += 1
         elif gold_rel == 'case':
             case += 1
@@ -163,7 +165,8 @@ for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sente
                 tcase += 1
         elif gold_rel == 'nmod' or gold_rel =='nummod' or gold_rel == 'amod' or gold_rel == 'appos':
             mod += 1
-            if test_rel == 'nmod' or test_rel =='nummod' or test_rel == 'amod' or test_rel == 'appos':
+            if test_rel == gold_rel:
+            # if test_rel == 'nmod' or test_rel =='nummod' or test_rel == 'amod' or test_rel == 'appos':
                 tmod += 1
 
     gold_heads = gold_sentence.HEAD
@@ -197,14 +200,14 @@ for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sente
             if gold_head == test_head:
                 t_long += 1
 
-print('left', tleft/left)
-print('right', tright/right)
-print('root', troot/root)
-print('short', tshort/short)
-print('long', t_long/_long)
-print('nsubj', tnsubj/nsubj)
-print('dobj', tdobj/dobj)
-print('conj', tconj/conj)
-print('comp', tcomp/comp)
-print('mod', tmod/mod)
-print('case', tcase/case)
+print('left', tleft/left*100)
+print('right', tright/right*100)
+print('root', troot/root*100)
+print('short', tshort/short*100)
+print('long', t_long/_long*100)
+print('nsubj', tnsubj/nsubj*100)
+print('dobj', tdobj/dobj*100)
+print('conj', tconj/conj*100)
+print('comp', tcomp/comp*100)
+print('case', tcase/case*100)
+print('mod', tmod/mod*100)
