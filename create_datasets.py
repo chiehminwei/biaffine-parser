@@ -73,7 +73,7 @@ else:
 print("***Start loading the dataset at {}***".format(datetime.now()))
 if not os.path.isfile(args.ftrain_cache):
     print('Loading trainset from scratch.')
-    vocab.numericalize(train, args.ftrain_cache)
+    vocab.numericalize(train, args.ftrain_cache, skip_long=True)
     print('***trainset loaded at {}***'.format(datetime.now()))
 else:
     print('trainset already exists.')

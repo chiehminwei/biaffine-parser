@@ -72,7 +72,7 @@ class Vocab(object):
         self.n_words = len(self.words)
         self.n_chars = len(self.chars)
 
-    def numericalize(self, corpus, save_name=None):
+    def numericalize(self, corpus, save_name=None, skip_long=False):
         if not hasattr(self, 'lang_dict'):
             self.lang_dict = {}
         words_numerical = []
@@ -142,7 +142,7 @@ class Vocab(object):
 
                 sent_count += 1                
                 # Skip too long sentences
-                if len(sentence_token_ids) > 128:
+                if len(sentence_token_ids) > 128 and skip_long:
                     exceeding_count += 1
                     continue
                 

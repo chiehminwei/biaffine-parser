@@ -121,7 +121,7 @@ class Train(object):
         if not os.path.isfile(args.ftrain_cache):
             if args.local_rank == 0:
                 logging.info('Loading trainset from scratch.')
-            trainset = TextDataset(vocab.numericalize(train, args.ftrain_cache))
+            trainset = TextDataset(vocab.numericalize(train, args.ftrain_cache, skip_long=True))
         else:
             if args.local_rank == 0:
                 logging.info('Loading trainset from checkpoint.')
