@@ -200,7 +200,7 @@ for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sente
             if gold_head == test_head:
                 t_long += 1
 
-print('left', tleft/left*100)
+print('left {0.2f}'.format(tleft/left*100))
 print('right', tright/right*100)
 print('root', troot/root*100)
 print('short', tshort/short*100)
