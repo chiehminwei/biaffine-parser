@@ -280,6 +280,7 @@ class Model(object):
             pred_arcs, pred_rels = pred_arcs[word_start_masks].to(self.device), pred_rels[word_start_masks].to(self.device) 
             
             # lens for splitting
+            lens = word_start_masks.sum(dim=1)
             print(pred_arcs.shape, pred_rels.shape, lens.shape)
             print(lens)
             print(pred_arcs)
