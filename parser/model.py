@@ -281,16 +281,15 @@ class Model(object):
             
             # lens for splitting
             lens = word_start_masks.sum(dim=1)
-            print(pred_arcs.shape, pred_rels.shape, lens.shape)
-            print(lens)
-            print(pred_arcs)
-            print(pred_rels)
+            # print(pred_arcs.shape, pred_rels.shape, lens.shape)
+            # print(lens)
+            # print(pred_arcs)
+            # print(pred_rels)
             lens = lens.tolist()
             
             all_arcs.extend(torch.split(pred_arcs, lens))
             all_rels.extend(torch.split(pred_rels, lens))
-            assert 1 == 2
-
+            
         all_arcs = [seq.tolist() for seq in all_arcs]
         all_rels = [self.vocab.id2rel(seq) for seq in all_rels]
             
