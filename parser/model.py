@@ -277,14 +277,19 @@ class Model(object):
                 s_arc, s_rel = self.network(input_ids, input_masks)
 
             pred_arcs, pred_rels = self.decode(s_arc, s_rel, lens)
-            pred_arcs, pred_rels = pred_arcs[word_start_masks].to(self.device), pred_rels[word_start_masks].to(self.device) 
+            # pred_arcs, pred_rels = pred_arcs[word_start_masks].to(self.device), pred_rels[word_start_masks].to(self.device) 
             
             # lens for splitting
+            print(pred_arcs.shape, pred_rels.shape, lens.shape)
+            print(lens)
+            print(pred_arcs)
+            print(pred_rels)
             lens = lens.tolist()
+            assert 1 == 2
 
             all_arcs.extend(torch.split(pred_arcs, lens))
             all_rels.extend(torch.split(pred_rels, lens))
-            
+
         all_arcs = [seq.tolist() for seq in all_arcs]
         all_rels = [self.vocab.id2rel(seq) for seq in all_rels]
             
