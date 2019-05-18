@@ -25,7 +25,7 @@ class Corpus(object):
         return len(self.sentences)
 
     def __repr__(self):
-        return '\n'.join(
+        return ''.join(
             ''.join('\t'.join(map(str, i)) for i in zip(*sentence)) + '\n'
             for sentence in self
         )
