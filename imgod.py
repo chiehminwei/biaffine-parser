@@ -5,6 +5,23 @@ import argparse
 from collections import namedtuple
 from collections import defaultdict
 
+'''
+Calculate recall for some clases of dependency relations
+
+We consider the recall of 
+    left attachments (where the head word precedes the dependent word in the sentence),
+    right attachments, 
+    root attachments, 
+    short-attachments (with distance = 1), 
+    long attachments (with distance>6), 
+    as well as the following relation groups: 
+        nsubj (nominal subjects:nsubj,nsubjpass), 
+        dobj (direct object:dobj),
+        conj (conjunct:conj), 
+        comp (clausal complements:ccomp,xcomp), 
+        case (clitics and adpositions:case), 
+        mod(modifiers of a noun:nmod,nummod,amod,appos)
+'''
 
 Sentence = namedtuple(typename='Sentence',
                       field_names=['ID', 'FORM', 'LEMMA', 'CPOS',
@@ -77,39 +94,15 @@ class Corpus(object):
             if line[0] == '#':
                 start += 1
             if len(line) <= 1:
-                # try:
                 sentence = Sentence(*zip(*[l.split('\t') for l in lines[start:i] if "." not in l.split('\t')[0] and "-" not in l.split('\t')[0]]))
                 if len(sentence.ID) > 0:
                     sentences.append(sentence)
-                # except:
-                #     print('fuck')
-                #     pass
+
                 start = i + 1
         corpus = cls(sentences)
 
         return corpus
 
-
-# Calculate recall for some clases of dependency relations
-# Sentence = namedtuple(typename='Sentence',
-#                       field_names=['ID', 'FORM', 'LEMMA', 'CPOS',
-#                                    'POS', 'FEATS', 'HEAD', 'DEPREL',
-#                                    'PHEAD', 'PDEPREL', 'LANGUAGE'])
-#                                
-
-# We consider the recall of 
-# left attachments (where the head word precedes the dependent word in the sentence),
-# right attachments, 
-# root attachments, 
-# short-attachments (with distance = 1), 
-# long attachments (with distance>6), 
-# as well as the following relation groups: 
-# nsubj (nominal subjects:nsubj,nsubjpass), 
-# dobj (direct object:dobj),
-# conj (conjunct:conj), 
-# comp (clausal complements:ccomp,xcomp), 
-# case (clitics and adpositions:case), 
-# mod(modifiers of a noun:nmod,nummod,amod,appos)
 
 parser = argparse.ArgumentParser(
     description='Data preprocessing module.'
