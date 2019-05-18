@@ -24,7 +24,7 @@ class Predict(object):
         subparser.set_defaults(func=self)
 
         return subparser
-
+ 
     def __call__(self, args):
         print("Load the model")
         if not os.path.isfile(args.vocab):
@@ -32,8 +32,8 @@ class Predict(object):
             cloud_address = os.path.join(args.cloud_address, args.vocab)
             # subprocess.call(['gsutil', 'cp', cloud_address, args.vocab], stdout=FNULL, stderr=subprocess.STDOUT)
         vocab = torch.load(args.vocab)
-        network = BiaffineParser.load(args.file, args.cloud_address)
-        model = Model(vocab, network)
+        network = BiaffineParser.load(args.checkpoint_dir / "model_best.pt", args.cloud_address, args.local_rank)
+        model = Model(vocab, network, args.use_pos)
 
         print("Load the dataset")
         corpus = Corpus.load(args.fdata)

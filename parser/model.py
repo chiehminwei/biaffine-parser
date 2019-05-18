@@ -262,24 +262,51 @@ class Model(object):
         self.network.eval()
 
         all_arcs, all_rels = [], []
-        for words, attention_mask, token_start_mask, arcs, rels in loader:
+        for i, batch in enumerate(loader):
+            batch = tuple(t.to(self.device) for t in batch)
+            input_ids, input_masks, word_start_masks, arc_ids, rel_ids, tag_ids, lang_ids, puncs = batch
             # ignore [CLS]
-            token_start_mask[:, 0] = 0
-            # ignore [SEP]
-            lens = attention_mask.sum(dim=1) # - 1
-            # token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+            word_start_masks[:, 0] = 0
+            lens = input_masks.sum(dim=1)
 
-            s_arc, s_rel = self.network(words, attention_mask)
-            s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
+            if self.use_pos:
+                print('Using POS!')
+                s_arc, s_rel = self.network(input_ids, input_masks, tags=tag_ids)
+            else:
+                print('Not using POS!')
+                s_arc, s_rel = self.network(input_ids, input_masks)
+
             pred_arcs, pred_rels = self.decode(s_arc, s_rel, lens)
-
+            pred_arcs, pred_rels = pred_arcs[word_start_masks].to(self.device), pred_rels[word_start_masks].to(self.device) 
+            
             # lens for splitting
-            lens = token_start_mask.sum(dim=1).tolist()
+            lens = lens.tolist()
 
             all_arcs.extend(torch.split(pred_arcs, lens))
             all_rels.extend(torch.split(pred_rels, lens))
+            
         all_arcs = [seq.tolist() for seq in all_arcs]
         all_rels = [self.vocab.id2rel(seq) for seq in all_rels]
+            
+
+        # for words, attention_mask, token_start_mask, arcs, rels in loader:
+        #     # ignore [CLS]
+        #     token_start_mask[:, 0] = 0
+        #     # ignore [SEP]
+        #     lens = attention_mask.sum(dim=1) # - 1
+        #     # token_start_mask[torch.arange(len(token_start_mask)), lens] = 0
+
+        #     s_arc, s_rel = self.network(words, attention_mask)
+        #     s_arc, s_rel = s_arc[token_start_mask], s_rel[token_start_mask]
+        #     pred_arcs, pred_rels = self.decode(s_arc, s_rel, lens)
+
+        #     # lens for splitting
+        #     lens = token_start_mask.sum(dim=1).tolist()
+ 
+        #     all_arcs.extend(torch.split(pred_arcs, lens))
+        #     all_rels.extend(torch.split(pred_rels, lens))
+        # all_arcs = [seq.tolist() for seq in all_arcs]
+        # all_rels = [self.vocab.id2rel(seq) for seq in all_rels]
 
         return all_arcs, all_rels
 

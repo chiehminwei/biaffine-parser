@@ -131,6 +131,8 @@ tcase, case = 0, 0
 tmod, mod = 0, 0
 
 for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sentences):
+    # TODO: ignore all punctuation
+    
     gold_rels = gold_sentence.DEPREL
     test_rels = test_sentence.DEPREL
     for gold_rel, test_rel in zip(gold_rels, test_rels):
