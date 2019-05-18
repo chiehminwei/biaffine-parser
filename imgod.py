@@ -132,12 +132,13 @@ tconj, conj = 0, 0
 tcomp, comp = 0, 0
 tcase, case = 0, 0
 tmod, mod = 0, 0
-
+assert len(gold_corpus.sentences) == len(test_corpus.sentences)
 for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sentences):
     # TODO: ignore all punctuation
     
     gold_rels = gold_sentence.DEPREL
     test_rels = test_sentence.DEPREL
+    assert len(gold_rels) == len(test_rels)
     for gold_rel, test_rel in zip(gold_rels, test_rels):
         if gold_rel == 'nsubj' or gold_rel == 'nsubjpass':
             nsubj += 1
