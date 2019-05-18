@@ -26,7 +26,7 @@ We consider the recall of
 Sentence = namedtuple(typename='Sentence',
                       field_names=['ID', 'FORM', 'LEMMA', 'CPOS',
                                    'POS', 'FEATS', 'HEAD', 'DEPREL',
-                                   'PHEAD', 'PDEPREL'])
+                                   'PHEAD', 'PDEPREL', 'LANGUAGE'])
 
 
 class Corpus(object):

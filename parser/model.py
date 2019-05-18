@@ -260,6 +260,10 @@ class Model(object):
     @torch.no_grad()
     def predict(self, loader):
         self.network.eval()
+        if self.use_pos:
+            print('Using POS!')
+        else:
+            print('Not using POS!')
 
         all_arcs, all_rels = [], []
         for i, batch in enumerate(loader):
@@ -270,10 +274,8 @@ class Model(object):
             lens = input_masks.sum(dim=1)
 
             if self.use_pos:
-                print('Using POS!')
                 s_arc, s_rel = self.network(input_ids, input_masks, tags=tag_ids)
             else:
-                print('Not using POS!')
                 s_arc, s_rel = self.network(input_ids, input_masks)
 
             pred_arcs, pred_rels = self.decode(s_arc, s_rel, lens)
