@@ -133,6 +133,8 @@ tconj, conj = 0, 0
 tcomp, comp = 0, 0
 tcase, case = 0, 0
 tmod, mod = 0, 0
+
+ncorrect, denominator = 0, 0
 print(len(gold_corpus.sentences), len(test_corpus.sentences))
 assert len(gold_corpus.sentences) == len(test_corpus.sentences)
 for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sentences):
@@ -142,10 +144,13 @@ for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sente
     gold_rels = gold_sentence.DEPREL
     test_rels = test_sentence.DEPREL
     assert len(gold_rels) == len(test_rels)
-    for word, gold_rel, test_rel in zip(words, gold_rels, test_rels):
+    for word, gold_rel, test_rel, gold_head, test_head in zip(words, gold_rels, test_rels, gold_heads, test_heads):
         # Ignore punctuation
         if regex.match(r'\p{P}+$', word):
             continue
+        denominator += 1
+        if test_rel == gold_rel and test_head == gold_head:
+            ncorrect += 1
         if gold_rel == 'nsubj' or gold_rel == 'nsubjpass':
             nsubj += 1
             # if test_rel == 'nsubj' or test_rel == 'nsubjpass':
@@ -178,8 +183,12 @@ for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sente
     test_heads = test_sentence.HEAD
 
     position = 0
-    for gold_head, test_head in zip(gold_heads, test_heads):
+    for word, gold_head, test_head in zip(words, gold_heads, test_heads):
         position += 1
+        # Ignore punctuation
+        if regex.match(r'\p{P}+$', word):
+            continue
+
         gold_head, test_head = int(gold_head), int(test_head)
         if gold_head > position:
             left += 1
@@ -216,3 +225,4 @@ print('conj {0:.2f}'.format(tconj/conj*100))
 print('comp {0:.2f}'.format(tcomp/comp*100))
 print('case {0:.2f}'.format(tcase/case*100))
 print('mod {0:.2f}'.format(tmod/mod*100))
+print('LAS {0:.2f}'.format(ncorrect/denominator*100))
