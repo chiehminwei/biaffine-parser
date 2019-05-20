@@ -216,6 +216,7 @@ for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sente
             if gold_head == test_head:
                 t_long += 1
 
+print('LAS {0:.2f}'.format(ncorrect/denominator*100))
 print('left {0:.2f}'.format(tleft/left*100))
 print('right {0:.2f}'.format(tright/right*100))
 print('root {0:.2f}'.format(troot/root*100))
@@ -227,4 +228,3 @@ print('conj {0:.2f}'.format(tconj/conj*100))
 print('comp {0:.2f}'.format(tcomp/comp*100))
 print('case {0:.2f}'.format(tcase/case*100))
 print('mod {0:.2f}'.format(tmod/mod*100))
-print('LAS {0:.2f}'.format(ncorrect/denominator*100))
