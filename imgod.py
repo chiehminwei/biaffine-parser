@@ -143,6 +143,8 @@ for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sente
     
     gold_rels = gold_sentence.DEPREL
     test_rels = test_sentence.DEPREL
+    gold_heads = gold_sentence.HEAD
+    test_heads = test_sentence.HEAD
     assert len(gold_rels) == len(test_rels)
     for word, gold_rel, test_rel, gold_head, test_head in zip(words, gold_rels, test_rels, gold_heads, test_heads):
         # Ignore punctuation
