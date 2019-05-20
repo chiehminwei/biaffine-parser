@@ -1,0 +1,49 @@
+German monolingual with gold POS (model trained with gold POS and uses gold POS at test set)
+left 91.49
+right 83.03
+root 89.24
+short 92.64
+long 80.60
+nsubj 89.50
+dobj 87.69
+conj 90.22
+comp 64.66
+case 98.95
+mod 93.17
+
+
+German monolingual with predicted POS (model trained with gold POS and uses predicted POS at test set)
+left 90.14
+right 81.52
+root 86.80
+short 91.98
+long 77.79
+nsubj 89.27
+dobj 86.36
+conj 89.06
+comp 62.07
+case 98.69
+mod 92.61
+
+German monolingual with no POS (model trained without POS, so use no POS information)
+left 90.41
+right 81.12
+root 90.27
+short 91.44
+long 78.85
+nsubj 87.83
+dobj 88.87
+conj 88.26
+comp 46.55
+case 97.83
+mod 91.01
+
+Zero-shot LAS UDT2.0 using predicted POS (trained on gold POS)
+German 66.34
+Spanish 81.01
+French 78.54
+Italian 79.00
+Portuguese 83.68
+Swedish 74.73
+
+

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import regex
 
 from collections import namedtuple
 from collections import defaultdict
@@ -136,11 +137,15 @@ print(len(gold_corpus.sentences), len(test_corpus.sentences))
 assert len(gold_corpus.sentences) == len(test_corpus.sentences)
 for gold_sentence, test_sentence in zip(gold_corpus.sentences, test_corpus.sentences):
     # TODO: ignore all punctuation
+    words = gold_sentence.FORM
     
     gold_rels = gold_sentence.DEPREL
     test_rels = test_sentence.DEPREL
     assert len(gold_rels) == len(test_rels)
-    for gold_rel, test_rel in zip(gold_rels, test_rels):
+    for word, gold_rel, test_rel in zip(words, gold_rels, test_rels):
+        # Ignore punctuation
+        if regex.match(r'\p{P}+$', word):
+            continue
         if gold_rel == 'nsubj' or gold_rel == 'nsubjpass':
             nsubj += 1
             # if test_rel == 'nsubj' or test_rel == 'nsubjpass':
